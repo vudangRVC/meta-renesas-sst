@@ -6,6 +6,9 @@ PN = "mmngr-user-module"
 S = "${WORKDIR}/mmngr"
 SRC_URI = "file://mmngr.tar.bz2"
 
+# These modules are machine specific.
+PACKAGE_ARCH = "${MACHINE_ARCH}"
+
 sysroot_stage_all_append () {
     # add shared header files
     sysroot_stage_dir ${D}/usr/local/include/ ${SYSROOT_DESTDIR}${includedir}
@@ -75,4 +78,4 @@ python do_package_ipk_prepend () {
 }
 
 # Skip debug strip of do_populate_sysroot()
-INHIBIT_SYSROOT_STRIP = "1" 
+INHIBIT_SYSROOT_STRIP = "1"

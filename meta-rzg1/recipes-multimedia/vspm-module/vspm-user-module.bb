@@ -4,13 +4,16 @@ LICENSE = "CLOSED"
 DEPENDS = "kernel-module-vspm"
 PN = "vspm-user-module"
 PR = "r0"
+
+# These modules are machine specific.
+PACKAGE_ARCH = "${MACHINE_ARCH}"
+
 SRC_URI = "file://vspm-user.tar.bz2 \
 "
 
 S = "${WORKDIR}/vspm"
 
 includedir = "${RENESAS_DATADIR}/include"
-libdir = "${RENESAS_DATADIR}/lib"
 
 do_compile() {
     # Build shared library
@@ -49,13 +52,13 @@ PACKAGES = "\
 "
 
 FILES_${PN} = " \
-    /usr/local/lib/libvspm.so.* \
+    /usr/lib/libvspm.so.* \
 "
 
 FILES_${PN}-dev = " \
-    /usr/local/lib \
-    /usr/local/lib/libvspm.so \
-    /usr/local/lib/* \
+    /usr/lib \
+    /usr/lib/libvspm.so \
+    /usr/lib/* \
     /usr/local/include \
     /usr/local/include/*.h \
 "

@@ -6,6 +6,9 @@ PN = "s3ctl-user-module"
 PR = "r0"
 SRC_URI = "file://s3ctl.tar.bz2"
 
+# These modules are machine specific.
+PACKAGE_ARCH = "${MACHINE_ARCH}"
+
 S = "${WORKDIR}/s3ctl"
 
 sysroot_stage_all_append () {

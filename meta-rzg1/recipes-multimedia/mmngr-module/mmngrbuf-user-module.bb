@@ -7,6 +7,9 @@ PR = "r0"
 S = "${WORKDIR}/mmngrbuf"
 SRC_URI = "file://mmngrbuf.tar.bz2"
 
+# These modules are machine specific.
+PACKAGE_ARCH = "${MACHINE_ARCH}"
+
 sysroot_stage_all_append () {
     # add shared header files
     sysroot_stage_dir ${D}/usr/local/include/ ${SYSROOT_DESTDIR}${includedir}

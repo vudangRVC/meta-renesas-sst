@@ -6,6 +6,9 @@ PN = "fdpm-user-module"
 SRC_URI = "file://fdpm.tar.bz2 \
 "
 
+# These modules are machine specific.
+PACKAGE_ARCH = "${MACHINE_ARCH}"
+
 S = "${WORKDIR}/fdpm"
 
 sysroot_stage_all_append () {
