@@ -28,3 +28,5 @@ BBMASK_append = " trusted-firmware-a "
 # Avoid using these recipes in meta-rz-common, use rzg1 recipes instead
 BBMASK_append = " meta-rz-common/recipes-multimedia/mmngr-module meta-rz-common/recipes-multimedia/vspmif-module"
 BBMASK_append = " meta-rz-common/recipes-kernel/kernel-module-mmngr meta-rz-common/recipes-kernel/kernel-module-vspm meta-rz-common/recipes-kernel/kernel-module-vspmif"
+
+MACHINE_FEATURES_append = " opengles opencl hwh264dec hwh264enc"
