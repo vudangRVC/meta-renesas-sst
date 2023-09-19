@@ -1,0 +1,627 @@
+From f905e1cd9c23eba8d33da1c4ff11663a6baaf89b Mon Sep 17 00:00:00 2001
+From: Vu Dang <vu.dang.te@renesas.com>
+Date: Tue, 19 Sep 2023 13:39:55 +0700
+Subject: [PATCH] renesas: rzg2l: add support for RZ SBC board
+
+Signed-off-by: Vu Dang <vu.dang.te@renesas.com>
+---
+ arch/arm/dts/Makefile            |   1 +
+ arch/arm/dts/rzpi.dts            | 117 +++++++++++++++++++++++++++++++
+ arch/arm/mach-rmobile/Kconfig.64 |   6 ++
+ board/novtech/rzpi/Kconfig       |  15 ++++
+ board/novtech/rzpi/Makefile      |  13 ++++
+ board/novtech/rzpi/common.c      |  45 ++++++++++++
+ board/novtech/rzpi/gen3-spl.c    |  60 ++++++++++++++++
+ board/novtech/rzpi/rzpi.c        | 112 +++++++++++++++++++++++++++++
+ configs/rzpi_defconfig           |  74 +++++++++++++++++++
+ include/configs/rzpi.h           |  77 ++++++++++++++++++++
+ 10 files changed, 520 insertions(+)
+ create mode 100644 arch/arm/dts/rzpi.dts
+ create mode 100644 board/novtech/rzpi/Kconfig
+ create mode 100644 board/novtech/rzpi/Makefile
+ create mode 100644 board/novtech/rzpi/common.c
+ create mode 100644 board/novtech/rzpi/gen3-spl.c
+ create mode 100644 board/novtech/rzpi/rzpi.c
+ create mode 100644 configs/rzpi_defconfig
+ create mode 100644 include/configs/rzpi.h
+
+diff --git a/arch/arm/dts/Makefile b/arch/arm/dts/Makefile
+index 2717044fc7..90fea7295e 100644
+--- a/arch/arm/dts/Makefile
++++ b/arch/arm/dts/Makefile
+@@ -796,6 +796,7 @@ dtb-$(CONFIG_RCAR_GEN3) += \
+ 	r8a77995-draak-u-boot.dtb \
+ 	rzg2l-dev.dtb \
+ 	smarc-rzg2l.dtb \
++	rzpi.dtb \
+ 	rzv2l-dev.dtb \
+ 	smarc-rzv2l.dtb \
+ 	rzg2lc-dev.dtb \
+diff --git a/arch/arm/dts/rzpi.dts b/arch/arm/dts/rzpi.dts
+new file mode 100644
+index 0000000000..fe4de7e1ec
+--- /dev/null
++++ b/arch/arm/dts/rzpi.dts
+@@ -0,0 +1,117 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Device Tree Source for the GR-Peach board
++ *
++ * Copyright (C) 2017 Jacopo Mondi <jacopo+renesas@jmondi.org>
++ * Copyright (C) 2016 Renesas Electronics
++ */
++
++/dts-v1/;
++#include <dt-bindings/gpio/gpio.h>
++#include "r9a07g044l.dtsi"
++#include "r9a07g044l-u-boot.dtsi"
++#include <dt-bindings/pinctrl/rzg2l-pinctrl.h>
++
++/ {
++	model = "RZpi";
++	compatible = "renesas,r9a07g044l", "renesas,rzg2l";
++
++	aliases {
++		serial0 = &scif0;
++	};
++
++	chosen {
++		stdout-path = "serial0:115200n8";
++	};
++
++	memory@48000000 {
++		device_type = "memory";
++		/* first 128MB is reserved for secure area. */
++		reg = <0 0x48000000 0 0x78000000>;
++	};
++
++};
++
++&pinctrl {
++	eth0_pins: eth0 {
++		pinmux = <RZG2L_PINMUX(20, 0, 1)>,
++				<RZG2L_PINMUX(20, 1, 1)>,
++				<RZG2L_PINMUX(20, 2, 1)>,
++				<RZG2L_PINMUX(21, 0, 1)>,
++				<RZG2L_PINMUX(21, 1, 1)>,
++				<RZG2L_PINMUX(22, 0, 1)>,
++				<RZG2L_PINMUX(22, 1, 1)>,
++				<RZG2L_PINMUX(23, 0, 1)>,
++				<RZG2L_PINMUX(23, 1, 1)>,
++				<RZG2L_PINMUX(24, 0, 1)>,
++				<RZG2L_PINMUX(24, 1, 1)>,
++				<RZG2L_PINMUX(25, 0, 1)>,
++				<RZG2L_PINMUX(25, 1, 1)>,
++				<RZG2L_PINMUX(26, 0, 1)>,
++				<RZG2L_PINMUX(26, 1, 1)>,
++				<RZG2L_PINMUX(27, 0, 1)>,
++				<RZG2L_PINMUX(27, 1, 1)>,
++				<RZG2L_PINMUX(28, 0, 1)>,
++				<RZG2L_PINMUX(28, 1, 1)>;
++	};
++
++	i2c1_pins: i2c1 {
++		pinmux = <RZG2L_PINMUX(14, 2, 1)>,
++				<RZG2L_PINMUX(14, 3, 1)>;
++	};
++
++};
++
++&xinclk {
++        clock-frequency = <24000000>;
++};
++
++&scif0 {
++	status = "okay";
++	clock = <100000000>;
++};
++
++&sdhi0 {
++	/* pinctrl placeholder
++	 * If this channel is used for interfacing with a SD card, a power enable
++	 * pin (SD0_PWR_EN) must be defined.
++	 * The SD0_PWR_EN pin is associated with P4_1.
++	 * A HIGH signal on SD0_PWR_EN will enable supply voltage for SD card.
++	*/
++	bus-width = <8>;
++	status = "okay";
++};
++
++&sdhi1 {
++	/* pinctrl placeholder
++	 * A power enable pin (SD1_PWR_EN) must be defined to interface with a
++	 * SD card.
++	 * The SD1_PWR_EN pin is associated with P39_2.
++	 * A HIGH signal on SD1_PWR_EN will enable supply voltage for SD card.
++	*/
++	bus-width = <4>;
++	status = "okay";
++};
++
++&eth0 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&eth0_pins>;
++	status = "okay";
++
++	phy-handle = <&phy0>;
++	phy-mode = "rgmii";
++	phy0: ethernet-phy@7 {
++		reg = <7>;
++	};
++};
++
++&i2c1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&i2c1_pins>;
++	status = "okay";
++
++	adv7535: hdmi@3d {
++		compatible = "adi,adv7535";
++		reg = <0x3d>;
++	};
++};
+diff --git a/arch/arm/mach-rmobile/Kconfig.64 b/arch/arm/mach-rmobile/Kconfig.64
+index ba7d960b1a..09137f5a91 100644
+--- a/arch/arm/mach-rmobile/Kconfig.64
++++ b/arch/arm/mach-rmobile/Kconfig.64
+@@ -119,6 +119,11 @@ config TARGET_SMARC_RZG2L
+ 	help
+           Support for Renesas RZ/G2L Dev Platform
+ 
++config TARGET_RZPI
++	bool "NovTech RZpi board"
++	help
++          Support for NovTech's Raspberry-Pi-like board
++
+ config TARGET_RZV2L_DEV
+ 	bool "RZ/V2L Dev board"
+ 	help
+@@ -172,6 +177,7 @@ source "board/renesas/salvator-x/Kconfig"
+ source "board/renesas/ulcb/Kconfig"
+ source "board/beacon/beacon-rzg2m/Kconfig"
+ source "board/renesas/rzg2l-dev/Kconfig"
++source "board/novtech/rzpi/Kconfig"
+ source "board/renesas/rzv2l-dev/Kconfig"
+ source "board/renesas/rzg2lc-dev/Kconfig"
+ source "board/renesas/rzg2ul-dev/Kconfig"
+diff --git a/board/novtech/rzpi/Kconfig b/board/novtech/rzpi/Kconfig
+new file mode 100644
+index 0000000000..3678bef67f
+--- /dev/null
++++ b/board/novtech/rzpi/Kconfig
+@@ -0,0 +1,15 @@
++if TARGET_RZPI
++
++config SYS_SOC
++	default "rmobile"
++
++config SYS_BOARD
++	default "rzpi"
++
++config SYS_VENDOR
++	default "novtech"
++
++config SYS_CONFIG_NAME
++	default "rzpi"
++
++endif
+diff --git a/board/novtech/rzpi/Makefile b/board/novtech/rzpi/Makefile
+new file mode 100644
+index 0000000000..1f7b10a71b
+--- /dev/null
++++ b/board/novtech/rzpi/Makefile
+@@ -0,0 +1,13 @@
++#
++# board/renesas/salvator-x/Makefile
++#
++# Copyright (C) 2015 Renesas Electronics Corporation
++#
++# SPDX-License-Identifier: GPL-2.0+
++#
++
++ifdef CONFIG_SPL_BUILD
++obj-y	:= gen3-spl.o
++else
++obj-y	:= rzpi.o common.o
++endif
+diff --git a/board/novtech/rzpi/common.c b/board/novtech/rzpi/common.c
+new file mode 100644
+index 0000000000..a735fb0aa7
+--- /dev/null
++++ b/board/novtech/rzpi/common.c
+@@ -0,0 +1,45 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * board/renesas/rcar-common/common.c
++ *
++ * Copyright (C) 2013 Renesas Electronics Corporation
++ * Copyright (C) 2013 Nobuhiro Iwamatsu <nobuhiro.iwamatsu.yj@renesas.com>
++ * Copyright (C) 2015 Nobuhiro Iwamatsu <iwamatsu@nigauri.org>
++ */
++
++#include <common.h>
++#include <dm.h>
++#include <init.h>
++#include <dm/uclass-internal.h>
++#include <asm/arch/rmobile.h>
++#include <linux/libfdt.h>
++
++#ifdef CONFIG_RCAR_GEN3
++
++DECLARE_GLOBAL_DATA_PTR;
++
++/* If the firmware passed a device tree use it for U-Boot DRAM setup. */
++extern u64 rcar_atf_boot_args[];
++
++#if !(defined(CONFIG_R9A07G044L) || defined(CONFIG_R9A07G044C) || defined(CONFIG_R9A07G054L) || defined(CONFIG_R9A07G043U))
++int fdtdec_board_setup(const void *fdt_blob)
++{
++	void *atf_fdt_blob = (void *)(rcar_atf_boot_args[1]);
++	if (fdt_magic(atf_fdt_blob) == FDT_MAGIC)
++		fdt_overlay_apply_node((void *)fdt_blob, 0, atf_fdt_blob, 0);
++	return 0;
++}
++#endif
++
++int dram_init(void)
++{
++	return fdtdec_setup_mem_size_base();
++}
++
++int dram_init_banksize(void)
++{
++	fdtdec_setup_memory_banksize();
++
++	return 0;
++}
++#endif
+diff --git a/board/novtech/rzpi/gen3-spl.c b/board/novtech/rzpi/gen3-spl.c
+new file mode 100644
+index 0000000000..fd6e5054a6
+--- /dev/null
++++ b/board/novtech/rzpi/gen3-spl.c
+@@ -0,0 +1,60 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * R-Car Gen3 recovery SPL
++ *
++ * Copyright (C) 2019 Marek Vasut <marek.vasut@gmail.com>
++ */
++
++#include <common.h>
++#include <cpu_func.h>
++#include <image.h>
++#include <init.h>
++#include <log.h>
++#include <asm/io.h>
++#include <spl.h>
++#include <linux/bitops.h>
++
++#define RCAR_CNTC_BASE	0xE6080000
++#define CNTCR_EN	BIT(0)
++
++void board_init_f(ulong dummy)
++{
++	writel(CNTCR_EN, RCAR_CNTC_BASE);
++	timer_init();
++}
++
++void spl_board_init(void)
++{
++	/* UART clocks enabled and gd valid - init serial console */
++	preloader_console_init();
++}
++
++u32 spl_boot_device(void)
++{
++	return BOOT_DEVICE_UART;
++}
++
++void __noreturn jump_to_image_no_args(struct spl_image_info *spl_image)
++{
++	debug("image entry point: 0x%lx\n", spl_image->entry_point);
++	if (spl_image->os == IH_OS_ARM_TRUSTED_FIRMWARE) {
++		typedef void (*image_entry_arg_t)(int, int, int, int)
++			__attribute__ ((noreturn));
++		image_entry_arg_t image_entry =
++			(image_entry_arg_t)(uintptr_t) spl_image->entry_point;
++		image_entry(IH_MAGIC, CONFIG_SPL_TEXT_BASE, 0, 0);
++	} else {
++		typedef void __noreturn (*image_entry_noargs_t)(void);
++		image_entry_noargs_t image_entry =
++			(image_entry_noargs_t)spl_image->entry_point;
++		image_entry();
++	}
++}
++
++void s_init(void)
++{
++}
++
++void reset_cpu(ulong addr)
++{
++}
+diff --git a/board/novtech/rzpi/rzpi.c b/board/novtech/rzpi/rzpi.c
+new file mode 100644
+index 0000000000..de1bc99611
+--- /dev/null
++++ b/board/novtech/rzpi/rzpi.c
+@@ -0,0 +1,112 @@
++#include <common.h>
++#include <cpu_func.h>
++#include <image.h>
++#include <init.h>
++#include <malloc.h>
++#include <netdev.h>
++#include <dm.h>
++#include <dm/platform_data/serial_sh.h>
++#include <asm/processor.h>
++#include <asm/mach-types.h>
++#include <asm/io.h>
++#include <linux/bitops.h>
++#include <linux/errno.h>
++#include <asm/arch/sys_proto.h>
++#include <asm/gpio.h>
++#include <asm/arch/gpio.h>
++#include <asm/arch/rmobile.h>
++#include <asm/arch/rcar-mstp.h>
++#include <asm/arch/sh_sdhi.h>
++#include <i2c.h>
++#include <mmc.h>
++
++DECLARE_GLOBAL_DATA_PTR;
++
++#define PFC_BASE	0x11030000
++
++#define ETH_CH0		(PFC_BASE + 0x300c)
++#define ETH_CH1		(PFC_BASE + 0x3010)
++#define I2C_CH1 	(PFC_BASE + 0x1870)
++#define ETH_PVDD_3300	0x00
++#define ETH_PVDD_1800	0x01
++#define ETH_PVDD_2500	0x02
++#define ETH_MII_RGMII	(PFC_BASE + 0x3018)
++
++/* CPG */
++#define CPG_BASE					0x11010000
++#define CPG_CLKON_BASE				(CPG_BASE + 0x500)
++#define CPG_RESET_BASE				(CPG_BASE + 0x800)
++#define CPG_RESET_ETH				(CPG_RESET_BASE + 0x7C)
++#define CPG_RESET_I2C                           (CPG_RESET_BASE + 0x80)
++#define CPG_PL2_SDHI_DSEL                           (CPG_BASE + 0x218)
++#define CPG_CLK_STATUS                           (CPG_BASE + 0x280)
++
++void s_init(void)
++{
++	/* can go in board_eht_init() once enabled */
++	*(volatile u32 *)(ETH_CH0) = (*(volatile u32 *)(ETH_CH0) & 0xFFFFFFFC) | ETH_PVDD_1800;
++	*(volatile u32 *)(ETH_CH1) = (*(volatile u32 *)(ETH_CH1) & 0xFFFFFFFC) | ETH_PVDD_1800;
++	/* Enable RGMII for both ETH{0,1} */
++	*(volatile u32 *)(ETH_MII_RGMII) = (*(volatile u32 *)(ETH_MII_RGMII) & 0xFFFFFFFC);
++	/* ETH CLK */
++	*(volatile u32 *)(CPG_RESET_ETH) = 0x30003;
++	/* I2C CLK */
++	*(volatile u32 *)(CPG_RESET_I2C) = 0xF000F;
++	/* I2C pin non GPIO enable */
++	*(volatile u32 *)(I2C_CH1) = 0x01010101;
++	/* SD CLK */
++	*(volatile u32 *)(CPG_PL2_SDHI_DSEL) = 0x00110011;
++	while (*(volatile u32 *)(CPG_CLK_STATUS) != 0)
++		;
++}
++
++int board_early_init_f(void)
++{
++
++	return 0;
++}
++
++/* PFC */
++#define PFC_P37						(PFC_BASE + 0x037)
++#define PFC_PM37					(PFC_BASE + 0x16E)
++#define PFC_PMC37					(PFC_BASE + 0x237)
++
++#define CONFIG_SYS_SH_SDHI0_BASE	0x11C00000
++#define CONFIG_SYS_SH_SDHI1_BASE	0x11C10000
++int board_mmc_init(struct bd_info *bis)
++{
++	int ret = 0;
++
++	/* SD1 power control: P39_1 = 0; P39_2 = 1; */
++	*(volatile u32 *)(PFC_PMC37) &= 0xFFFFFFF9; /* Port func mode 0b00 */
++	*(volatile u32 *)(PFC_PM37) = (*(volatile u32 *)(PFC_PM37) & 0xFFFFFFC3) | 0x28; /* Port output mode 0b1010 */
++#if CONFIG_TARGET_RZPI
++	*(volatile u32 *)(PFC_P37) = (*(volatile u32 *)(PFC_P37) & 0xFFFFFFF9) | 0x6;	/* Port 39[2:1] output value 0b11*/
++#else
++
++	*(volatile u32 *)(PFC_P37) = (*(volatile u32 *)(PFC_P37) & 0xFFFFFFF9) | 0x4;	/* Port 39[2:1] output value 0b10*/
++#endif
++
++	ret |= sh_sdhi_init(CONFIG_SYS_SH_SDHI0_BASE,
++						0,
++						SH_SDHI_QUIRK_64BIT_BUF);
++	ret |= sh_sdhi_init(CONFIG_SYS_SH_SDHI1_BASE,
++						1,
++						SH_SDHI_QUIRK_64BIT_BUF);
++
++	return ret;
++}
++
++
++int board_init(void)
++{
++	/* adress of boot parameters */
++	gd->bd->bi_boot_params = CONFIG_SYS_TEXT_BASE + 0x50000;
++
++	return 0;
++}
++
++void reset_cpu(ulong addr)
++{
++
++}
+diff --git a/configs/rzpi_defconfig b/configs/rzpi_defconfig
+new file mode 100644
+index 0000000000..eb32340bbe
+--- /dev/null
++++ b/configs/rzpi_defconfig
+@@ -0,0 +1,74 @@
++CONFIG_ARM=y
++CONFIG_ARCH_CPU_INIT=y
++CONFIG_ARCH_RMOBILE=y
++CONFIG_SYS_TEXT_BASE=0x50000000
++CONFIG_ENV_SIZE=0x20000
++CONFIG_ENV_OFFSET=0xFFFE0000
++CONFIG_DM_GPIO=y
++CONFIG_RCAR_GEN3=y
++CONFIG_R9A07G044L=y
++CONFIG_TARGET_RZPI=y
++# CONFIG_SPL is not set
++CONFIG_DEFAULT_DEVICE_TREE="rzpi"
++CONFIG_SMBIOS_PRODUCT_NAME=""
++CONFIG_FIT=y
++CONFIG_USE_BOOTARGS=y
++CONFIG_BOOTARGS="rw rootwait earlycon root=/dev/mmcblk0p1"
++CONFIG_SUPPORT_RAW_INITRD=y
++CONFIG_DEFAULT_FDT_FILE="rzpi.dtb"
++CONFIG_VERSION_VARIABLE=y
++CONFIG_HUSH_PARSER=y
++CONFIG_CMD_BOOTZ=y
++CONFIG_CMD_GPIO=y
++CONFIG_CMD_I2C=y
++CONFIG_CMD_MMC=y
++CONFIG_CMD_PCI=y
++CONFIG_CMD_USB=y
++CONFIG_CMD_DHCP=y
++CONFIG_CMD_MII=y
++CONFIG_CMD_PING=y
++CONFIG_CMD_SMC=y
++CONFIG_CMD_EXT2=y
++CONFIG_CMD_EXT4=y
++CONFIG_CMD_EXT4_WRITE=y
++CONFIG_CMD_FAT=y
++CONFIG_CMD_FS_GENERIC=y
++CONFIG_OF_CONTROL=y
++CONFIG_ENV_OVERWRITE=y
++CONFIG_ENV_IS_IN_MMC=y
++CONFIG_SYS_RELOC_GD_ENV_ADDR=y
++CONFIG_SYS_MMC_ENV_PART=2
++CONFIG_REGMAP=y
++CONFIG_SYSCON=y
++CONFIG_CLK=y
++CONFIG_CLK_RENESAS=y
++CONFIG_CLK_R9A07G044L=y
++CONFIG_RCAR_GPIO=y
++CONFIG_RZG2L_GPIO=y
++CONFIG_DM_I2C=y
++CONFIG_SYS_I2C_RCAR_IIC=y
++CONFIG_SYS_I2C_RZG2L_RIIC=y
++CONFIG_SH_SDHI=y
++CONFIG_BITBANGMII=y
++CONFIG_PHY_MICREL=y
++CONFIG_PHY_MICREL_KSZ90X1=y
++CONFIG_DM_ETH=y
++CONFIG_RENESAS_RAVB=y
++CONFIG_PCI=y
++CONFIG_DM_PCI=y
++CONFIG_PCI_RCAR_GEN3=y
++CONFIG_PINCTRL_PFC_RZG2L=y
++CONFIG_DM_REGULATOR=y
++CONFIG_DM_REGULATOR_FIXED=y
++CONFIG_DM_REGULATOR_GPIO=y
++CONFIG_SCIF_CONSOLE=y
++CONFIG_TEE=y
++CONFIG_OPTEE=y
++CONFIG_USB=y
++CONFIG_DM_USB=y
++CONFIG_USB_XHCI_HCD=y
++CONFIG_USB_EHCI_HCD=y
++CONFIG_USB_EHCI_GENERIC=y
++CONFIG_USB_STORAGE=y
++CONFIG_OF_LIBFDT_OVERLAY=y
++CONFIG_SMBIOS_MANUFACTURER=""
+diff --git a/include/configs/rzpi.h b/include/configs/rzpi.h
+new file mode 100644
+index 0000000000..71b454d069
+--- /dev/null
++++ b/include/configs/rzpi.h
+@@ -0,0 +1,77 @@
++/* SPDX-License-Identifier: GPL-2.0+ */
++/*
++ * Copyright (C) 2015 Renesas Electronics Corporation
++ */
++
++#ifndef __RZPI_H
++#define __RZPI_H
++
++#include <asm/arch/rmobile.h>
++
++#define CONFIG_REMAKE_ELF
++
++#ifdef CONFIG_SPL
++#define CONFIG_SPL_TARGET	"spl/u-boot-spl.scif"
++#endif
++
++/* boot option */
++
++#define CONFIG_CMDLINE_TAG
++#define CONFIG_SETUP_MEMORY_TAGS
++#define CONFIG_INITRD_TAG
++
++/* Generic Interrupt Controller Definitions */
++/* RZ/G2L use GIC-v3 */
++#define CONFIG_GICV3
++#define GICD_BASE	0x11900000
++#define GICR_BASE	0x11960000
++
++/* console */
++#define CONFIG_SYS_CBSIZE		2048
++#define CONFIG_SYS_BARGSIZE		CONFIG_SYS_CBSIZE
++#define CONFIG_SYS_MAXARGS		64
++#define CONFIG_SYS_BAUDRATE_TABLE	{ 115200, 38400 }
++
++/* PHY needs a longer autoneg timeout */
++#define PHY_ANEG_TIMEOUT		20000
++
++/* MEMORY */
++#define CONFIG_SYS_INIT_SP_ADDR		CONFIG_SYS_TEXT_BASE
++
++/* SDHI clock freq */
++#define CONFIG_SH_SDHI_FREQ		133000000
++
++#define DRAM_RSV_SIZE			0x08000000
++#define CONFIG_SYS_SDRAM_BASE		(0x40000000 + DRAM_RSV_SIZE)
++#define CONFIG_SYS_SDRAM_SIZE		(0x80000000u - DRAM_RSV_SIZE) //total 2GB
++#define CONFIG_SYS_LOAD_ADDR		0x58000000
++#define CONFIG_LOADADDR			CONFIG_SYS_LOAD_ADDR // Default load address for tfpt,bootp...
++#define CONFIG_VERY_BIG_RAM
++#define CONFIG_MAX_MEM_MAPPED		(0x80000000u - DRAM_RSV_SIZE)
++
++#define CONFIG_SYS_MONITOR_BASE		0x00000000
++#define CONFIG_SYS_MONITOR_LEN		(1 * 1024 * 1024)
++#define CONFIG_SYS_MALLOC_LEN		(64 * 1024 * 1024)
++#define CONFIG_SYS_BOOTM_LEN		(64 << 20)
++
++/* The HF/QSPI layout permits up to 1 MiB large bootloader blob */
++#define CONFIG_BOARD_SIZE_LIMIT		1048576
++
++/* ENV setting */
++
++#define CONFIG_EXTRA_ENV_SETTINGS \
++	"bootm_size=0x10000000 \0" \
++	"prodsdbootargs=setenv bootargs rw rootwait earlycon root=/dev/mmcblk1p1 \0" \
++	"prodemmcbootargs=setenv bootargs rw rootwait earlycon root=/dev/mmcblk0p1 \0" \
++	"bootimage=unzip 0x4A080000 0x48080000; booti 0x48080000 - 0x48000000 \0" \
++	"emmcload=ext4load mmc 0:1 0x4A080000 boot/Image.gz;ext4load mmc 0:1 0x48000000 boot/rzpi.dtb;run prodemmcbootargs \0" \
++	"sd1load=ext4load mmc 1:1 0x4A080000 boot/Image.gz;ext4load mmc 1:1 0x48000000 boot/rzpi.dtb;run prodsdbootargs \0" \
++	"bootcmd_check=if mmc dev 1; then run sd1load; else run emmcload; fi \0"
++
++#define CONFIG_BOOTCOMMAND	"env default -a;run bootcmd_check;run bootimage"
++
++/* For board */
++/* Ethernet RAVB */
++#define CONFIG_BITBANGMII_MULTI
++
++#endif /* __RZPI_H */
+-- 
+2.34.1
+
