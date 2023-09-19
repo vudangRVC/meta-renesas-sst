@@ -34,3 +34,17 @@ do_deploy_append() {
         ln -sf ${UBOOT_SREC_IMAGE} ${UBOOT_SREC}
     fi
 }
+
+# Support for RZ SBC board
+LICENSE = "MIT"
+LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
+
+BRANCH = "v2020.10/rzg2l"
+SRCREV = "0767c36bea79f82c27e4efd3f3d11670c81741b0"
+
+FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+
+SRC_URI += " \
+	file://0001-renesas-rzg2l-add-support-for-RZ-SBC-board.patch \
+"
+
