@@ -5,7 +5,7 @@ BB_STRICT_CHEKSUM:forcevariable = "0"
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}/:"
 
 KERNEL_URL = "git://git@github.com/preetam-reddy/linux-rz-dev.git"
-BRANCH = "dunfell/rz-sbc"
+BRANCH = "rz-sbc-dev"
 SRCREV = "${AUTOREV}"
 SRC_URI = "${KERNEL_URL};protocol=ssh;nocheckout=1;branch=${BRANCH}"
 
