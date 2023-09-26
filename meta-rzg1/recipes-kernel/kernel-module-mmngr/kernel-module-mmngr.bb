@@ -13,7 +13,10 @@ DEPENDS = "linux-renesas"
 PN = "kernel-module-mmngr"
 PR = "r0"
 
-SRC_URI = "file://mmngr.tar.bz2"
+SRC_URI = " \
+    file://mmngr.tar.bz2 \
+    file://0001-Change-VTOP-ioctl-number-to-match-with-other-platfor.patch \
+"
 S = "${WORKDIR}/mmngr"
 includedir = "${RENESAS_DATADIR}/include"
 
