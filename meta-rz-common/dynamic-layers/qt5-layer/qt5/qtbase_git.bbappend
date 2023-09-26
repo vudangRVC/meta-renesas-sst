@@ -56,7 +56,11 @@ PACKAGECONFIG_append += " sm linuxfb gles2"
 # nis option is not supported anymore, disable it here
 PACKAGECONFIG[nis] = ""
 
-INSANE_SKIP_qtbase-plugins = " file-rdeps"
+# Avoid error in do_package_qa due to missing rdepends to graphic libraries
+# Should not use RDEPENDS here because graphic libraries can be provided by different packages
+INSANE_SKIP_${PN}-plugins = " file-rdeps"
+INSANE_SKIP_${PN}_append = " file-rdeps"
+INSANE_SKIP_${PN}-examples_append = " file-rdeps"
 
 #Skip QA for patch-fuzz here because main layer meta-qt5 has patch that is not matched with source, also their source too.
 WARN_QA_remove = "patch-fuzz"
