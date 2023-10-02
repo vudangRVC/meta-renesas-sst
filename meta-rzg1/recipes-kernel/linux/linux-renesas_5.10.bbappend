@@ -3,6 +3,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 USB3_FW = "https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain/r8a779x_usb3_v1.dlmem?h=20230625;md5sum=5a3cb919ba099d9cd21cf3685eb59b5d;downloadfilename=r8a779x_usb3_v1.dlmem"
 REGULATORY_DB = "https://git.kernel.org/pub/scm/linux/kernel/git/sforshee/wireless-regdb.git/plain/regulatory.db?h=master-2019-06-03;md5sum=ce7cdefff7ba0223de999c9c18c2ff6f;downloadfilename=regulatory.db"
 REGULATORY_DB_P7S = "https://git.kernel.org/pub/scm/linux/kernel/git/sforshee/wireless-regdb.git/plain/regulatory.db.p7s?h=master-2019-06-03;md5sum=489924336479385e2c35c21d10eb3ca2;downloadfilename=regulatory.db.p7s"
+RT2870_BIN = "https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain/rt2870.bin;md5sum=5f36cd9c2b182bc591987c929a3c2773;downloadfilename=rt2870.bin"
 
 SRC_URI_append = " \
 	file://rzg1_common.cfg \
@@ -10,6 +11,7 @@ SRC_URI_append = " \
 	${USB3_FW} \
 	${REGULATORY_DB} \
 	${REGULATORY_DB_P7S} \
+	${RT2870_BIN} \
 "
 
 SRC_URI_append_iwg22m = " \
@@ -38,6 +40,7 @@ do_download_firmware () {
        install -m 755 ${WORKDIR}/r8a779x_usb3_v1.dlmem ${FIRMWARE_DIR}
        install -m 755 ${WORKDIR}/regulatory.db ${FIRMWARE_DIR}
        install -m 755 ${WORKDIR}/regulatory.db.p7s ${FIRMWARE_DIR}
+       install -m 755 ${WORKDIR}/rt2870.bin ${FIRMWARE_DIR}
 }
 addtask do_download_firmware after do_configure before do_compile
 
