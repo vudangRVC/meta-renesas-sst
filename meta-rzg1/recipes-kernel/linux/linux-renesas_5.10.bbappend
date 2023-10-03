@@ -16,6 +16,7 @@ SRC_URI_append = " \
 
 SRC_URI_append_iwg22m = " \
 	file://iwg22m.cfg \
+	file://patches_iwg22m.scc \
 "
 
 SRC_URI_append_iwg20m-g1m = " \
