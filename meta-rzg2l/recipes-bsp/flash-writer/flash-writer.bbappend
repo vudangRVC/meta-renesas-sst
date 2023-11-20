@@ -1,4 +1,4 @@
-require include/rzg2l-security-config.inc
+require include/rzg2l-optee-config.inc
 inherit python3native
 
 DEPENDS_append = " \
