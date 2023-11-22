@@ -5,6 +5,11 @@ DEPENDS_append = " \
 	${@oe.utils.conditional("TRUSTED_BOARD_BOOT", "1", "python3-pycryptodome-native python3-pycryptodomex-native secprv-native bootparameter-native", "",d)} \
 "
 
+FLASH_WRITER_URL = "git://git@github.com/preetam-reddy/flash_writer.git"
+BRANCH = "rz_g2l-dev-sbc"
+SRC_URI = "${FLASH_WRITER_URL};protocol=ssh;branch=${BRANCH}"
+SRCREV = "${AUTOREV}"
+
 BUILD_TBB_DIR = "${S}/build_tbb"
 PMIC_BUILD_TBB_DIR = "${S}/build_pmic_tbb"
 
@@ -75,7 +80,7 @@ do_deploy_append() {
 # Support for RZ SBC board
 do_compile_prepend() {
 	if [ "${MACHINE}" = "rzpi" ]; then
-		BOARD="RZG2L_SMARC";
+		BOARD="RZG2L_SBC";
 		PMIC_BOARD="RZG2L_SMARC_PMIC";
 	fi
 }
