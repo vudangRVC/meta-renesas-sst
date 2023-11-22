@@ -80,9 +80,13 @@ do_deploy_append() {
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
 
-BRANCH = "v2.5/rzg2l"
-SRCREV = "1939ffd728e1af90fd76b083ee471feef9128db6"
-PV = "v2.5+git"
+SRC_URI = " \
+        git://git@github.com/preetam-reddy/rz-atf.git;branch=${BRANCH};protocol=ssh \
+        git://github.com/ARMmbed/mbedtls.git;branch=${BRANCH_mbedtls};name=mbedtls;destsuffix=mbedtls \
+"
+BRANCH = "v2.9/rz-sbc-release1"
+SRCREV = "${AUTOREV}"
+PV = "v2.9+git"
 
 COMPATIBLE_MACHINE_rzg2l = "(smarc-rzg2l|rzg2l-dev|smarc-rzg2lc|rzg2lc-dev|smarc-rzg2ul|rzg2ul-dev|smarc-rzv2l|rzv2l-dev|rzpi)"
 
@@ -91,14 +95,8 @@ SRC_URI_remove = " \
 	git://github.com/ARMmbed/mbedtls.git;branch=mbedtls-2.28;name=mbedtls;destsuffix=mbedtls \
 "
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
-
-SRC_URI += " \
-	file://0001-renesas-g2l-add-support-for-RZ-SBC-board.patch \
-"
-
 PLATFORM_rzpi = "g2l"
-EXTRA_FLAGS_rzpi = "BOARD=smarc_2"
+EXTRA_FLAGS_rzpi = "BOARD=sbc_1"
 PMIC_EXTRA_FLAGS_rzpi = "BOARD=smarc_pmic_2"
 FLASH_ADDRESS_BL2_BP_rzpi = "00000"
 FLASH_ADDRESS_FIP_rzpi = "1D200"
