@@ -64,3 +64,9 @@ IMAGE_INSTALL_append = " \
 IMAGE_INSTALL_append = " \
 	${@oe.utils.conditional("IS_RT_BSP", "1", " rt-tests ", " ",d)} \
 "
+
+# Additional configurations for RZ SBC
+IMAGE_INSTALL_append = " \
+    uenv \
+"
+
