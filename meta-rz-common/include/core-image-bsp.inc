@@ -68,6 +68,7 @@ IMAGE_INSTALL_append = " \
 # Additional configurations for RZ SBC
 IMAGE_INSTALL_append = " \
     uenv \
+    spitools \
 "
 
 add_overlays_rootfs() {
