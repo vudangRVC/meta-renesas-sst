@@ -70,3 +70,11 @@ IMAGE_INSTALL_append = " \
     uenv \
 "
 
+add_overlays_rootfs() {
+    install -d ${IMAGE_ROOTFS}/boot/overlays
+    cp ${DEPLOY_DIR_IMAGE}/overlays/* ${IMAGE_ROOTFS}/boot/overlays
+}
+
+DEPENDS += " linux-renesas"
+ROOTFS_POSTPROCESS_COMMAND += " add_overlays_rootfs;"
+
