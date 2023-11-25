@@ -69,6 +69,8 @@ IMAGE_INSTALL_append = " \
 IMAGE_INSTALL_append = " \
     uenv \
     spitools \
+    python3-smbus \
+    python3-smbus2 \
 "
 
 add_overlays_rootfs() {
