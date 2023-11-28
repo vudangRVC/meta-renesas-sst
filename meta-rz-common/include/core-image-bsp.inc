@@ -78,6 +78,16 @@ add_overlays_rootfs() {
     cp ${DEPLOY_DIR_IMAGE}/overlays/* ${IMAGE_ROOTFS}/boot/overlays
 }
 
-DEPENDS += " linux-renesas"
-ROOTFS_POSTPROCESS_COMMAND += " add_overlays_rootfs;"
+deploy_package() {
+    rm -f ${DEPLOY_DIR_IMAGE}/*rzpi.bin
+    rm -f ${DEPLOY_DIR_IMAGE}/*pmic*
+    rm -f ${DEPLOY_DIR_IMAGE}/*PMIC*
+    rm -f ${DEPLOY_DIR_IMAGE}/*.elf
+    rm -f ${DEPLOY_DIR_IMAGE}/Image-rzpi*
+    rm -f ${DEPLOY_DIR_IMAGE}/rzpi-rzpi*
+    rm -f ${DEPLOY_DIR_IMAGE}/modules*
+    rm -f ${DEPLOY_DIR_IMAGE}/u-boot*
+}
 
+DEPENDS += " linux-renesas"
+ROOTFS_POSTPROCESS_COMMAND += " add_overlays_rootfs; deploy_package;"
