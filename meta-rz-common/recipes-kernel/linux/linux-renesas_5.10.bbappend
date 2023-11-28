@@ -10,6 +10,7 @@ SRCREV = "${AUTOREV}"
 SRC_URI = "${KERNEL_URL};protocol=ssh;nocheckout=1;branch=${BRANCH}"
 
 SRC_URI_append = "\
-  file://sii.cfg \
+	file://sii.cfg \
+	file://laird.cfg \
 "
 
