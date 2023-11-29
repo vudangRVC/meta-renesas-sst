@@ -344,3 +344,5 @@ PREFERRED_RPROVIDER_wpa-supplicant-cli = "summit-supplicant-lwb"
 PREFERRED_RPROVIDER_wpa-supplicant-passphrase = "summit-supplicant-lwb"
 PREFERRED_RPROVIDER_wireless-regdb-static = "wireless-regdb"
 
+# Remove unused rootfs types
+IMAGE_FSTYPES_remove = " tar.gz ext4 "
