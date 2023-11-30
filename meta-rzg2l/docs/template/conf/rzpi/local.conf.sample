@@ -348,4 +348,10 @@ PREFERRED_RPROVIDER_wireless-regdb-static = "wireless-regdb"
 IMAGE_FSTYPES_remove = " tar.gz ext4 "
 
 # SD Card flashing utility
-EXTRA_IMAGEDEPENDS += " sdflash-util"
+EXTRA_IMAGEDEPENDS += " sdflash-util "
+
+# Linux bootloader flashing utility
+EXTRA_IMAGEDEPENDS += " bootloaderflash-linux-util "
+
+# Windows bootloader flashing utility
+EXTRA_IMAGEDEPENDS += " bootloaderflash-win-util "
