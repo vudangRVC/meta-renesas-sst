@@ -87,6 +87,8 @@ deploy_package() {
     rm -f ${DEPLOY_DIR_IMAGE}/rzpi-rzpi*
     rm -f ${DEPLOY_DIR_IMAGE}/modules*
     rm -f ${DEPLOY_DIR_IMAGE}/u-boot*
+    rm -f ${DEPLOY_DIR_IMAGE}/*.gz
+    rm -f ${DEPLOY_DIR_IMAGE}/*.ext4
 }
 
 DEPENDS += " linux-renesas"
