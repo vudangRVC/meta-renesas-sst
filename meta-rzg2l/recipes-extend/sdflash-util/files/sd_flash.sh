@@ -16,7 +16,7 @@ if [ $# -eq 0 ]
     chelp
     exit 0
 fi
-if [ $# -lt 2 ]
+if [ $# -lt 1 ]
   then
     echo "Missing arguments."
     chelp
@@ -24,7 +24,6 @@ if [ $# -lt 2 ]
 fi
 
 sd_dev=$1
-yhome=$2
 # double quotes are necessary as the return string can contain spaces which will trigger Too many arguements error with if test - if [].
 parted_present=$(dpkg-query -s parted | sed -n "2p")
 dpkg_present="Status: install ok installed"
@@ -86,10 +85,10 @@ then
 		sleep 1
 	
 		# Formatting is not needed as parted will create a formatted partition
-		#echo "Formatting partitions"
-		#mkfs -t vfat ${sd_dev}1
-		#mkfs -t ext4 ${sd_dev}2
-		#echo "-----------------------------------------------------------------------------"
+		echo "Formatting partitions"
+		mkfs -t vfat ${sd_dev}1
+		mkfs -t ext4 ${sd_dev}2
+		echo "-----------------------------------------------------------------------------"
 
 		echo "Mounting sd card"
 		mkdir -p /tmp/rz_sdm1
@@ -97,6 +96,8 @@ then
 
 		mount ${sd_dev}1 /tmp/rz_sdm1
 		mount ${sd_dev}2 /tmp/rz_sdm2
+
+		sleep 2
 
 		if [[ -z $(df -hT | grep ${sd_dev}) ]]; then
 			echo "Device not mounted"
@@ -106,28 +107,24 @@ then
 		fi
 
 		echo "-----------------------------------------------------------------------------"
-		echo $yhome
-		if [ -d ${yhome}/build ]; then
-			echo "Copying files..."
-			cd ${yhome}/build/tmp/deploy/images/rzpi
-			echo "Changing to ${PWD}"
-			echo "Listing rootfs partition:"
-			ls -l
-			tar -xvjf core-image-qt-rzpi-*.rootfs.tar.bz2 -C /tmp/rz_sdm2/
-			#cp rzpi.dtb /tmp/rz_sdm2/boot/
-			#ls -l /tmp/rz_sdm2/
-			cd /tmp/rz_sdm2/boot
-			#gzip -k Image-*
-			#mv Image-*.gz Image.gz
-			echo "Listing boot directory:"
-			ls -l
-			echo "Syncing fs"
-			sync /tmp/rz_sdm1
-			sync /tmp/rz_sdm2
-			sync ${sd_dev}1
-			sync ${sd_dev}2
-			echo "Successfully copied"
-		fi
+		echo "Copying files..."
+		echo "Changing to ${PWD}"
+		echo "Listing rootfs partition:"
+		ls -l
+		tar -xvjf core-image-qt-rzpi-*.rootfs.tar.bz2 -C /tmp/rz_sdm2/
+		#cp rzpi.dtb /tmp/rz_sdm2/boot/
+		#ls -l /tmp/rz_sdm2/
+		cd /tmp/rz_sdm2/boot
+		#gzip -k Image-*
+		#mv Image-*.gz Image.gz
+		echo "Listing boot directory:"
+		ls -l
+		echo "Syncing fs"
+		sync /tmp/rz_sdm1
+		sync /tmp/rz_sdm2
+		sync ${sd_dev}1
+		sync ${sd_dev}2
+		echo "Successfully copied"
 		cd -
 		echo "Unmounting device."
 		umount /tmp/rz_sdm1
