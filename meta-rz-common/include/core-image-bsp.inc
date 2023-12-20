@@ -73,6 +73,14 @@ IMAGE_INSTALL_append = " \
     python3-smbus2 \
 "
 
+WKS_FILE = "rzg2l-sbc-image-bootpart-mmc0.wks"
+
+# Rootfs partition space created in Kbytes
+IMAGE_ROOTFS_EXTRA_SPACE = "1048576"
+
+# The alignment of the root filesystem image in kilobytes
+IMAGE_ROOTFS_ALIGNMENT = "16"
+
 add_overlays_rootfs() {
     install -d ${IMAGE_ROOTFS}/boot/overlays
     cp ${DEPLOY_DIR_IMAGE}/overlays/* ${IMAGE_ROOTFS}/boot/overlays
