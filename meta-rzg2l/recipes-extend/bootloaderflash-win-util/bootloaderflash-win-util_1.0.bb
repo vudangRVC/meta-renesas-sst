@@ -25,7 +25,7 @@ addtask deploy after do_install
 do_deploy () {
     install -m 0755 ${D}/util/bootloader-windows-script.zip ${DEPLOYDIR}
     cd ${DEPLOYDIR}
-    unzip bootloader-windows-script.zip
+    unzip -o bootloader-windows-script.zip
     cp ${DEPLOY_DIR_IMAGE}/Flash_Writer_SCIF_rzpi.mot bootloader-windows-script/images
     cp ${DEPLOY_DIR_IMAGE}/bl2_bp-rzpi.srec bootloader-windows-script/images
     cp ${DEPLOY_DIR_IMAGE}/fip-rzpi.srec bootloader-windows-script/images
