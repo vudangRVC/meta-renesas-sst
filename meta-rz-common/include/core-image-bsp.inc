@@ -90,8 +90,6 @@ add_overlays_rootfs() {
 add_bootloader_rootfs() {
     install -d ${IMAGE_ROOTFS}/boot/uload-bootloader
     cp ${DEPLOY_DIR_IMAGE}/uload-bootloader/* ${IMAGE_ROOTFS}/boot/uload-bootloader
-    mv ${DEPLOY_DIR_IMAGE}/uload-readme.txt ${DEPLOY_DIR_IMAGE}/uload-bootloader/readme.txt
-    cp ${DEPLOY_DIR_IMAGE}/uload-bootloader/readme.txt ${IMAGE_ROOTFS}/boot/uload-bootloader/readme.txt
 }
 
 deploy_package() {
@@ -104,9 +102,14 @@ deploy_package() {
     rm -f ${DEPLOY_DIR_IMAGE}/rzpi-rzpi*
     rm -f ${DEPLOY_DIR_IMAGE}/modules*
     rm -f ${DEPLOY_DIR_IMAGE}/u-boot*
-    rm -f ${DEPLOY_DIR_IMAGE}/*.gz
-    rm -f ${DEPLOY_DIR_IMAGE}/*.ext4
 }
+
+# Package the wic file for filesystem flashing on Windows
+do_release() {
+    cp ${DEPLOY_DIR_IMAGE}/*.rootfs.wic ${DEPLOY_DIR_IMAGE}/filesystem-windows-script/images/core-image-qt-rzpi.wic
+}
+
+addtask release after do_image_complete before do_populate_lic_deploy
 
 DEPENDS += " firmware-pack linux-renesas"
 ROOTFS_POSTPROCESS_COMMAND += " add_overlays_rootfs; add_bootloader_rootfs; deploy_package;"

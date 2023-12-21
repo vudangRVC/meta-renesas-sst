@@ -23,7 +23,10 @@ inherit deploy
 addtask deploy after do_install
 
 do_deploy () {
-    install -m 0644 ${D}/util/uload-readme.txt ${DEPLOYDIR}/
+    install -d ${DEPLOYDIR}/uload-bootloader
+    install -m 0644 ${D}/util/uload-readme.txt ${DEPLOYDIR}/uload-bootloader
+    install -m 0644 ${DEPLOY_DIR_IMAGE}/bl2_bp-rzpi.bin ${DEPLOYDIR}/uload-bootloader
+    install -m 0644 ${DEPLOY_DIR_IMAGE}/fip-rzpi.bin ${DEPLOYDIR}/uload-bootloader
 }
 
 COMPATIBLE_MACHINE = "(rzpi)"

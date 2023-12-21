@@ -68,10 +68,4 @@ do_deploy () {
 	fi
 }
 
-do_deploy_append(){
-	install -d ${DEPLOYDIR}/uload-bootloader
-	install -m 0644 ${S}/bl2_bp.bin ${DEPLOYDIR}/uload-bootloader/bl2_bp-${MACHINE}.bin
-	install -m 0644 ${S}/fip.bin ${DEPLOYDIR}/uload-bootloader/fip-${MACHINE}.bin
-}
-
 addtask deploy before do_build after do_compile
