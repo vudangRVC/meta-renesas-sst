@@ -84,7 +84,7 @@ SRC_URI = " \
         git://git@github.com/preetam-reddy/rz-atf.git;branch=${BRANCH};protocol=ssh \
         git://github.com/ARMmbed/mbedtls.git;branch=${BRANCH_mbedtls};name=mbedtls;destsuffix=mbedtls \
 "
-BRANCH = "v2.9/rz-sbc-release1"
+BRANCH = "v2.9/rz-sbc-release2"
 SRCREV = "${AUTOREV}"
 PV = "v2.9+git"
 
