@@ -68,6 +68,7 @@ IMAGE_INSTALL_append = " \
 # Additional configurations for RZ SBC
 IMAGE_INSTALL_append = " \
     uenv \
+    uload-bootloader \
     spitools \
     python3-smbus \
     python3-smbus2 \
@@ -86,8 +87,16 @@ add_overlays_rootfs() {
     cp ${DEPLOY_DIR_IMAGE}/overlays/* ${IMAGE_ROOTFS}/boot/overlays
 }
 
+add_bootloader_rootfs() {
+    install -d ${IMAGE_ROOTFS}/boot/uload-bootloader
+    cp ${DEPLOY_DIR_IMAGE}/uload-bootloader/* ${IMAGE_ROOTFS}/boot/uload-bootloader
+    mv ${DEPLOY_DIR_IMAGE}/uload-readme.txt ${DEPLOY_DIR_IMAGE}/uload-bootloader/readme.txt
+    cp ${DEPLOY_DIR_IMAGE}/uload-bootloader/readme.txt ${IMAGE_ROOTFS}/boot/uload-bootloader/readme.txt
+}
+
 deploy_package() {
-    rm -f ${DEPLOY_DIR_IMAGE}/*rzpi.bin
+    rm -f ${DEPLOY_DIR_IMAGE}/bl31*
+    rm -f ${DEPLOY_DIR_IMAGE}/*_esd-*
     rm -f ${DEPLOY_DIR_IMAGE}/*pmic*
     rm -f ${DEPLOY_DIR_IMAGE}/*PMIC*
     rm -f ${DEPLOY_DIR_IMAGE}/*.elf
@@ -99,5 +108,5 @@ deploy_package() {
     rm -f ${DEPLOY_DIR_IMAGE}/*.ext4
 }
 
-DEPENDS += " linux-renesas"
-ROOTFS_POSTPROCESS_COMMAND += " add_overlays_rootfs; deploy_package;"
+DEPENDS += " firmware-pack linux-renesas"
+ROOTFS_POSTPROCESS_COMMAND += " add_overlays_rootfs; add_bootloader_rootfs; deploy_package;"
