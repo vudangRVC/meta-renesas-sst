@@ -359,5 +359,8 @@ EXTRA_IMAGEDEPENDS += " bootloaderflash-linux-util "
 # Windows bootloader flashing utility
 EXTRA_IMAGEDEPENDS += " bootloaderflash-win-util "
 
+# Windows bootloader flashing utility
+EXTRA_IMAGEDEPENDS += " filesystemflash-win-util "
+
 # Readme documentation
 EXTRA_IMAGEDEPENDS += " readme "
