@@ -6,3 +6,4 @@ patch patches/0004-ARM-dts-iwg23s-sbc-Disable-usb2_phy1-to-workaround-.patch
 patch patches/0005-pinctrl-renesas-r8a77470-Rotate-VIN0-B-and-VIN0-G-pins.patch
 patch patches/0006-ARM-dts-r8a7742-Fix-DU-cannot-be-probed.patch
 patch patches/0007-ARM-dts-r8a7742-Correct-vpc1-unit-name.patch
+patch patches/0008-dma-swiotlb-IO-TLB-cannot-alloc-default-64MB-on-G1M.patch
