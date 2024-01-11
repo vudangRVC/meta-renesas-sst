@@ -12,10 +12,18 @@ This release provides the following features:
  - Graphic and Codec libraries supported with QT demo applications.
  - 40 IO expansion interface supported
  - On-board Wireless Modules enabled (only support for Wi-Fi)
- - External Audio supported
+ - On-board Audio Codec with Stereo Jack Analog Audio IO
+ - MIPI DSI enabled
+ - MIPI CSI-2 enabled
  - Bootloader with U-Boot Fastboot UDP enabled.
 
-## Building 
+Known issues:
+
+ - Only support for 48 Khz audio sampling rate family.
+ - Audio capture does not work properly.
+ - MIPI DSI interface is enabled without any display panel testing.
+
+## Building
 Step 1: Prepare environment for building package
 
 Linux Ubuntu 20.04 is recommended for Yocto build.
@@ -120,8 +128,10 @@ rzpi
 ├── Image--5.10.184-cip36+gitAUTOINC+a090a5a9e4-r1-rzpi-20231221134812.bin
 ├── overlays
 │   ├── rzpi-can.dtbo
+│   ├── rzpi-dsi.dtbo
 │   ├── rzpi-ext-i2c.dtbo
-│   └── rzpi-ext-spi.dtbo
+│   ├── rzpi-ext-spi.dtbo
+│   └── rzpi-ov5640.dtbo
 ├── README.md                                      <---- This document
 ├── readme.txt
 ├── rzpi--5.10.184-cip36+gitAUTOINC+a090a5a9e4-r1-rzpi-20231221134812.dtb
@@ -279,6 +289,65 @@ root@rzpi:~# ifconfig eth0 down
 root@rzpi:~# ifconfig eth1 down
 ```
 
-### External Audio configurations
+### On-board Audio Codec with Stereo Jack Analog Audio IO configurations
 
-T.B.D
+Currently, we can only play audio files on RZG2L-SBC.
+
+Before playing an audio file, connect an audio device such as 3.5mm headset to J8.
+
+Run the following commands to play an audio file:
+
+```
+root@rzpi:~# aplay /home/root/audios/04_16KH_2ch_bgm_maoudamashii_healing01.wav
+root@rzpi:~# gst-play-1.0 /home/root/audios/COMMON6_MPEG2_L3_24KHZ_160_2.mp3
+```
+
+`aplay` command supports `wav` format audio files
+
+`gst-play-1.0` command supports `wav`, `mp3` and `aac` formats
+
+### MIPI DSI with display panels
+
+Currently, the MIPI DSI interface on RZG2L-SBC can be enabled based on FDT overlays feature. Howewer, we have not tested it with any display panel.
+
+You should edit `uEnv.txt` as follows to enable MIPI DSI interface:
+
+```
+enable_overlay_dsi=1
+```
+
+**Please note that selecting the MIPI DSI display will case the HDMI display be disabled.**
+
+### MIPI CSI2 with Arducam 5MP MIPI Camera
+
+RZG2L-SBC supports MIPI CSI-2 camera interface and the Arducam 5MP MIPI Camera (OV5640 image sensor) is enabled and tested.
+
+You should edit `uEnv.txt` as follows to enable MIPI CSI-2 interface with the camera supported:
+
+```
+enable_overlay_csi_ov5640=1
+```
+
+To use the camera, we need to enable the CSI-2 module. Run the following commands:
+
+```
+root@rzpi:~# cd /home/root/
+root@rzpi:~# ./v4l2-init.sh
+Link CRU/CSI2 to ov5640 1-003c with format UYVY8_2X8 and resolution 1280x960
+root@rzpi:~#
+```
+
+The `v4l2-init.sh` script helps to enable the CSI-2 module and select supported display resolution for the camera as well.
+
+```
+# Available resolution of OV5640.
+# Please choose one of a following resolution then comment out the rest.
+ov5640_res=1280x960
+#ov5640_res=1920x1080
+```
+
+Run the following to open Camera and preview the video on the screen.
+
+```
+root@rzpi:~# gst-launch-1.0 v4l2src device=/dev/video0 ! videoconvert ! waylandsink
+```
