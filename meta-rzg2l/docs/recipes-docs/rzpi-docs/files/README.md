@@ -133,15 +133,29 @@ rzpi
 │   ├── rzpi-ext-spi.dtbo
 │   └── rzpi-ov5640.dtbo
 ├── README.md                                      <---- This document
-├── readme.txt
 ├── rzpi--5.10.184-cip36+gitAUTOINC+a090a5a9e4-r1-rzpi-20231221134812.dtb
 ├── rzpi.dtb -> rzpi--5.10.184-cip36+gitAUTOINC+a090a5a9e4-r1-rzpi-20231221134812.dtb
 ├── sd_flash.sh                                    <---- SD card flashing script on Linux
 ├── uEnv.txt
-└── uload-bootloader                               <---- U-Boot Bootloader flashing package folder
+└── uload-bootloader                               <---- Bootloader flashing from U-Boot console package folder
     ├── bl2_bp-rzpi.bin
     ├── fip-rzpi.bin
-    └── uload-readme.txt                           <---- U-Boot Bootloader flashing guideline
+    ├── uload_bootloader_flash.py                  <---- Bootloader flashing from U-Boot console script on Linux
+    ├── uload-bootloader-windows-script            <---- Bootloader flashing from U-Boot console script package on Linux
+    │   ├── config.ini
+    │   ├── Readme.txt                             <---- Bootloader flashing from U-Boot console guideline on Windows
+    │   ├── tools
+    │   │   ├── cygterm.cfg
+    │   │   ├── TERATERM.INI
+    │   │   ├── ttermpro.exe
+    │   │   ├── ttpcmn.dll
+    │   │   ├── ttpfile.dll
+    │   │   ├── ttpmacro.exe
+    │   │   ├── ttpset.dll
+    │   │   ├── ttxssh.dll
+    │   │   └── uload-flash_bootloader.ttl
+    │   └── uload-flash_bootloader.bat             <---- Bootloader flashing from U-Boot console script on Windows
+    └── uload-readme.txt                           <---- This document
 ```
 
 ## Programming/Flashing images for RZG2L-SBC
@@ -241,9 +255,187 @@ By default, I2C channel 0 and SCIF channel 0 are enabled. Users can configure to
 
 We support an FDT overlays appoach to easily reconfigure for this Expansion Interface.
 
-Please refer to the `readme.txt` file in `/boot` folder to know how to use the FDT overlays on RZG2L-SBC.
+The specific description is as follows:
+
+```
+## For RZ SBC U-Boot Env
+/------------------------------|--------------|------------------------------
+|       Config                 | Value if set |     To be loading
+|------------------------------|--------------|------------------------------
+| enable_overlay_i2c           | '1' or 'yes' |  rzpi-ext-i2c.dtbo
+|------------------------------|--------------|------------------------------
+| enable_overlay_spi           | '1' or 'yes' |  rzpi-ext-spi.dtbo
+|------------------------------|--------------|------------------------------
+| enable_overlay_can           | '1' or 'yes' |  rzpi-can.dtbo
+|------------------------------|--------------|------------------------------
+| enable_overlay_dsi           | '1' or 'yes' |  rzpi-dsi.dtbo
+|------------------------------|--------------|------------------------------
+| enable_overlay_csi_ov5640    | '1' or 'yes' |  rzpi-ov5640.dtbo
+|----------------------------------------------------------------------------
+| fdtfile   : is a base dtb file, should be set rzpi.dtb
+|----------------------------------------------------------------------------
+| uboot env : you could set U-Boot's environment variables here, such as 'console=' 'bootargs='
+\---------------------------------------------------------------------------
+
+default settings:
+    fdtfile=rzpi.dtb
+    #enable_overlay_i2c=1
+    #enable_overlay_spi=1
+    #enable_overlay_can=1
+    #enable_overlay_dsi=1
+    #enable_overlay_csi_ov5640=1
+```
+
+You can refer to the `readme.txt` file in `/boot` folder for the FDT overlays information.
 
 After changing the value of overlays options, we need to run `sync` to ensure that the changes are affected. Then, execute `reboot` to apply the changes.
+
+The below section shows how to configure for each GPIO function:
+
+#### GPIO
+
+System uses /sys/class/gpio to control the GPIO pin, please refer to the following table:
+
+```
+/-----------|---------------|-------|-----|-----------|-----|-------|---------------|-------------\
+|   pinum   |   Function    | group | pin |   J3 PIN  | pin | group |   Function    |   pinum     |
+|-----------|---------------|-------|-----|-----------|-----|-------|---------------|-------------|
+|           |   3.3V        |       |     |   1   2   |     |       |   5V          |             |
+|   490     |   RIIC3 SDA   |   46  |  2  |   3   4   |     |       |   5V          |             |
+|   491     |   RIIC3 SCL   |   46  |  3  |   5   6   |     |       |   GND         |             |
+|   304     |   GPIO        |   23  |  0  |   7   8   |  0  |   38  |   SCIF0 TX    |   424       |
+|           |   GND         |       |     |   9   10  |  1  |   38  |   SCIF0 RX    |   425       |
+|   456     |   GPIO        |   42  |  0  |   11  12  |  2  |   7   |   GPIO        |   178       |
+|   336     |   GPIO        |   27  |  0  |   13  14  |     |       |   GND         |             |
+|   345     |   GPIO        |   28  |  1  |   15  16  |  0  |   8   |   GPIO        |   184       |
+|           |   3.3V        |       |     |   17  18  |  0  |   15  |   GPIO        |   240       |
+|   465     |   RSPI0 MOSI  |   43  |  1  |   19  20  |     |       |   GND         |             |
+|   466     |   RSPI0 MISO  |   43  |  2  |   21  22  |  1  |   14  |   GPIO        |   233       |
+|   464     |   RSPI0 CK    |   43  |  0  |   23  24  |  3  |   43  |   RSPI0 SSL   |   467       |
+|           |   GND         |       |     |   25  26  |  1  |   11  |   GPIO        |   209       |
+|           |   RIIC0 SDA   |       |     |   27  28  |     |       |   RIIC0 SCL   |             |
+|   152     |   GPIO        |   4   |  0  |   29  30  |     |       |   GND         |             |
+|   153     |   GPIO        |   4   |  1  |   31  32  |  0  |   32  |   GPIO        |   376       |
+|   297     |   GPIO        |   22  |  1  |   33  34  |     |       |   GND         |             |
+|   457     |   CAN0 TX     |   42  |  1  |   35  36  |  1  |   23  |   GPIO        |   305       |
+|   208     |   CAN0 RX     |   11  |  0  |   37  38  |  0  |   46  |   CAN1 TX     |   488       |
+|           |   GND         |       |     |   39  40  |  1  |   46  |   CAN1 RX     |   489       |
+\-----------|---------------|-------|-----|-----------|-----|-------|---------------|-------------/
+```
+
+pinum = $group * $groupin + $pin + $pinbase (where pinbase=120, groupin=8)
+
+Example for J3 PIN 7:
+                              23*8 + 0 + 120 = 304 = pinum
+
+To set GPIO pin, move to GPIO sysfs directory and set values as shown below:
+
+```
+root@rzpi:~# cd /sys/class/gpio/
+root@rzpi:~# echo 304 > export
+root@rzpi:~# echo out > P23_0/direction
+root@rzpi:~# echo 1 > P23_0/value
+root@rzpi:~# echo 0 > P23_0/value
+```
+
+#### I2C function (channel 3 - RIIC3)
+
+You should edit `uEnv.txt` as follows to enable I2C channel 3 on 40 IO expansion interface:
+
+```
+enable_overlay_i2c=1
+```
+
+To check the I2C channel 3 is enabled or not, run the following command and check the result:
+
+```
+root@rzpi:~# i2cdetect -l
+i2c-3   i2c             Renesas RIIC adapter                    I2C adapter
+i2c-1   i2c             Renesas RIIC adapter                    I2C adapter
+i2c-4   i2c             i2c-1-mux (chan_id 0)                   I2C adapter
+i2c-0   i2c             Renesas RIIC adapter                    I2C adapter
+root@rzpi:~#
+```
+
+You can also check devices existance on I2C bus by running the following command:
+
+```
+root@rzpi:~# i2cdetect -y -r 3
+     0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
+00:          -- -- -- -- -- -- -- -- -- -- -- -- --
+10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+30: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+40: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+50: 50 -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+70: -- -- -- -- -- -- -- --
+```
+
+#### SPI function (channel 0 - RSPI0)
+
+You should edit `uEnv.txt` as follows to enable SPI channel 0 on 40 IO expansion interface:
+
+```
+enable_overlay_spi=1
+#enable_overlay_dsi=1
+```
+
+Run the following command to config the SPI:
+
+```
+root@rzpi:~# spi-config -d /dev/spidev0.0 -q
+/dev/spidev0.0: mode=0, lsb=0, bits=8, speed=2000000, spiready=0
+```
+
+Connect Pin 19 (RSPI0 MOSI) to Pin 21 (RSPI0 MISO), then run the below command and check the result:
+
+```
+root@rzpi:~# echo -n -e "1234567890" | spi-pipe -d /dev/spidev0.0 -s 10000000 | hexdump
+0000000 3231 3433 3635 3837 3039
+000000a
+```
+
+#### CAN function (channel 0,1 - CAN0, CAN1)
+
+You should edit `uEnv.txt` as follows to enable CAN channel 0,1 on 40 IO expansion interface:
+
+```
+enable_overlay_can=1
+```
+
+To check the CAN channels are enabled or not, run the following command and check the result:
+
+```
+root@rzpi:~# ip a | grep can
+3: can0: <NOARP,ECHO> mtu 16 qdisc noop state DOWN group default qlen 10
+    link/can
+4: can1: <NOARP,ECHO> mtu 16 qdisc noop state DOWN group default qlen 10
+    link/can
+root@rzpi:~#
+```
+
+Then set up for CAN devices. Now you can up/down or send data from CAN channels.
+
+The below shows the communication between two CAN channels.
+```
+root@rzpi:~# ip link set can0 down
+root@rzpi:~# ip link set can0 type can bitrate 500000
+root@rzpi:~# ip link set can0 up
+[   48.120419] IPv6: ADDRCONF(NETDEV_CHANGE): can0: link becomes ready
+root@rzpi:~# ip link set can1 down
+root@rzpi:~# ip link set can1 type can bitrate 500000
+root@rzpi:~# ip link set can1 up
+[   69.906039] IPv6: ADDRCONF(NETDEV_CHANGE): can1: link becomes ready
+root@rzpi:~# candump can0 & cansend can1 123#01020304050607
+[1] 271
+  can0  123   [7]  01 02 03 04 05 06 07
+root@rzpi:~# candump can1 & cansend can0 123#01020304050607
+[2] 273
+  can0  123   [7]  01 02 03 04 05 06 07
+  can1  123   [7]  01 02 03 04 05 06 07
+root@rzpi:~#
+```
 
 ### On-board Wi-Fi Modules configurations
 
@@ -313,6 +505,7 @@ Currently, the MIPI DSI interface on RZG2L-SBC can be enabled based on FDT overl
 You should edit `uEnv.txt` as follows to enable MIPI DSI interface:
 
 ```
+#enable_overlay_spi=1
 enable_overlay_dsi=1
 ```
 

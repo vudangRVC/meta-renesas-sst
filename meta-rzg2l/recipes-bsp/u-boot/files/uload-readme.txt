@@ -1,37 +1,40 @@
-# How to program IPL from U-Boot console
+# Program IPL from U-Boot console
 
-In case users want to program IPL directly from U-Boot, following the below steps:
-- Step 1: probe the QSPI NOR flash on RZG2L SBC board.
+In case users want to program IPL directly from U-Boot, we prepare some scripts to automate the flashing process.
+
+The scripts support on both Linux and Windows OS.
+
+## Outline of the folder
 ```
-=> sf probe
-```
-
-- Step 2: erase the current IPL 
-
-**Warning: this step will erase all data on QSPI NOR flash. If step 3 and step 4 are not proceed next, you will not be able to boot RZG2L SBC board.**
-```
-=> sf erase 0 100000
-```
-
-- Step 3: load bl2 bootloader into DRAM and then write to QSPI NOR flash.
-
-(This example supposes the bl2 bootloader `bl2_bp-rzpi.bin` is located in partition 1 of SD card at root folder `/`.)
-
-```
-=> fatload mmc 0:1 0x48000000 bl2_bp-rzpi.bin
-=> sf write 0x48000000 0 $filesize
-```
-
-- Step 4: load fip file into DRAM and then write to QSPI NOR flash.
-
-(This example supposes the fip file `fip-rzpi.bin` is located in partition 1 of SD card at root folder `/`.)
-
-```
-=> fatload mmc 0:1 0x48000000 fip-rzpi.bin
-=> sf write 0x48000000 1d200 $filesize
+uload-bootloader
+├── bl2_bp-rzpi.bin
+├── fip-rzpi.bin
+├── uload_bootloader_flash.py                    <---- Bootloader flashing script on Linux
+├── uload-bootloader-windows-script              <---- Bootloader flashing script package on Linux
+│   ├── config.ini
+│   ├── Readme.txt                               <---- Bootloader flashing guideline on Windows
+│   ├── tools
+│   │   ├── cygterm.cfg
+│   │   ├── TERATERM.INI
+│   │   ├── ttermpro.exe
+│   │   ├── ttpcmn.dll
+│   │   ├── ttpfile.dll
+│   │   ├── ttpmacro.exe
+│   │   ├── ttpset.dll
+│   │   ├── ttxssh.dll
+│   │   └── uload-flash_bootloader.ttl
+│   └── uload-flash_bootloader.bat               <---- Bootloader flashing script on Windows
+└── uload-readme.txt                             <---- This document
 ```
 
-Please note that, we use `bin` files (`bl2_bp-rzpi.bin`, `fip-rzpi.bin`) for programming IPL from U-Boot. 
-It is a different format from the `srec` format when using with Flash Writer (`bl2_bp-rzpi.srec`, `fip-rzpi.srec`).
+## On Linux
 
-Pre-built IPL binaries for each release will be located at: `/boot/uload-bootloader` on Root filesystem.
+Please run the follow command to know how to use the script:
+
+```
+./uload_bootloader_flash.py -h
+```
+
+## On Windows
+
+Please refer to `Readme.txt` file inside `uload-bootloader-windows-script` to know how to use the scripts.

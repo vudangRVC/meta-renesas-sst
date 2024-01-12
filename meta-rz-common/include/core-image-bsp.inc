@@ -89,7 +89,7 @@ add_overlays_rootfs() {
 
 add_bootloader_rootfs() {
     install -d ${IMAGE_ROOTFS}/boot/uload-bootloader
-    cp ${DEPLOY_DIR_IMAGE}/uload-bootloader/* ${IMAGE_ROOTFS}/boot/uload-bootloader
+    cp -rf ${DEPLOY_DIR_IMAGE}/uload-bootloader/* ${IMAGE_ROOTFS}/boot/uload-bootloader
 }
 
 deploy_package() {
@@ -102,11 +102,14 @@ deploy_package() {
     rm -f ${DEPLOY_DIR_IMAGE}/rzpi-rzpi*
     rm -f ${DEPLOY_DIR_IMAGE}/modules*
     rm -f ${DEPLOY_DIR_IMAGE}/u-boot*
+
+    # Remove overlays document readme.txt from output folder
+    rm -f ${DEPLOY_DIR_IMAGE}/readme.txt
 }
 
 # Package the wic file for filesystem flashing on Windows
 do_release() {
-    cp ${DEPLOY_DIR_IMAGE}/*.rootfs.wic ${DEPLOY_DIR_IMAGE}/filesystem-windows-script/images/core-image-qt-rzpi.wic
+    cp -rf ${DEPLOY_DIR_IMAGE}/*.rootfs.wic ${DEPLOY_DIR_IMAGE}/filesystem-windows-script/images/core-image-qt-rzpi.wic
 }
 
 addtask release after do_image_complete before do_populate_lic_deploy
