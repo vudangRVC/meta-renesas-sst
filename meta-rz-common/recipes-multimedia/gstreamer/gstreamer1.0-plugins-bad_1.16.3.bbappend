@@ -10,6 +10,7 @@ SRC_URI_append = " \
     file://0004-waylandsink-Add-mising-code-for-scale-feature.patch \
     file://0005-gstreamer-waylandsink-disable-subsurface-in-fullscre.patch \
     file://0006-waylandsink-Add-support-for-I420-in-dmabuf.patch \
+    file://0007-New-libbayersink-Bayer-to-RAW-converter-and-display-.patch \
 "
 
 SRC_URI_append_rzg2l = " \
@@ -18,7 +19,7 @@ SRC_URI_append_rzg2l = " \
 
 SRCREV_base = "3ef17d3c57e12f9d7536e464656b871a8949fa5b"
 
-DEPENDS += "weston"
+DEPENDS += "weston bayer2raw"
 
 S = "${WORKDIR}/git"
 
@@ -27,5 +28,7 @@ do_configure_prepend() {
     ./autogen.sh --noconfigure
     cd ${B}
 }
+
+RDEPENDS_gstreamer1.0-plugins-bad-bayersink += "bayer2raw"
 
 PACKAGECONFIG_append = " faac faad"
