@@ -6,7 +6,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}/:"
 
 KERNEL_URL = "git://git@github.com/preetam-reddy/linux-rz-dev.git"
 BRANCH = "rz-sbc-release3-5.10-cip36"
-SRCREV = "${AUTOREV}"
+SRCREV = "bd334f8cea81e68f650142f0534bbbb861bffa54"
 SRC_URI = "${KERNEL_URL};protocol=ssh;nocheckout=1;branch=${BRANCH}"
 
 SRC_URI_append = "\

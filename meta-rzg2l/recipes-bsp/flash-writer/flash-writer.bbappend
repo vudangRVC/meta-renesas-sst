@@ -8,7 +8,7 @@ DEPENDS_append = " \
 FLASH_WRITER_URL = "git://git@github.com/preetam-reddy/flash_writer.git"
 BRANCH = "rz_g2l-dev-sbc"
 SRC_URI = "${FLASH_WRITER_URL};protocol=ssh;branch=${BRANCH}"
-SRCREV = "${AUTOREV}"
+SRCREV = "ed335aebf06c8d66f42785c0760bd45b0089fd33"
 
 BUILD_TBB_DIR = "${S}/build_tbb"
 PMIC_BUILD_TBB_DIR = "${S}/build_pmic_tbb"

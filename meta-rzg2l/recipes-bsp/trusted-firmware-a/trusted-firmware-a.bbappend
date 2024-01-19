@@ -85,7 +85,7 @@ SRC_URI = " \
         git://github.com/ARMmbed/mbedtls.git;branch=${BRANCH_mbedtls};name=mbedtls;destsuffix=mbedtls \
 "
 BRANCH = "v2.9/rz-sbc-release3"
-SRCREV = "${AUTOREV}"
+SRCREV = "e3496376057cdfb0c828849ac522ffe53d9564d5"
 PV = "v2.9+git"
 
 COMPATIBLE_MACHINE_rzg2l = "(smarc-rzg2l|rzg2l-dev|smarc-rzg2lc|rzg2lc-dev|smarc-rzg2ul|rzg2ul-dev|smarc-rzv2l|rzv2l-dev|rzpi)"
