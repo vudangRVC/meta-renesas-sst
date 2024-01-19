@@ -11,6 +11,7 @@ SRC_URI_append = " \
     file://0005-gstreamer-waylandsink-disable-subsurface-in-fullscre.patch \
     file://0006-waylandsink-Add-support-for-I420-in-dmabuf.patch \
     file://0007-New-libbayersink-Bayer-to-RAW-converter-and-display-.patch \
+    file://0008-ext-bayerconvert-add-bayerconvert-plugin.patch \
 "
 
 SRC_URI_append_rzg2l = " \
@@ -19,7 +20,7 @@ SRC_URI_append_rzg2l = " \
 
 SRCREV_base = "3ef17d3c57e12f9d7536e464656b871a8949fa5b"
 
-DEPENDS += "weston bayer2raw"
+DEPENDS += "weston bayer2raw virtual/libgles2 mmngr-user-module mmngrbuf-user-module"
 
 S = "${WORKDIR}/git"
 
@@ -30,5 +31,6 @@ do_configure_prepend() {
 }
 
 RDEPENDS_gstreamer1.0-plugins-bad-bayersink += "bayer2raw"
+RDEPENDS_gstreamer1.0-plugins-bad-bayerconvert += "bayer2raw"
 
 PACKAGECONFIG_append = " faac faad"
