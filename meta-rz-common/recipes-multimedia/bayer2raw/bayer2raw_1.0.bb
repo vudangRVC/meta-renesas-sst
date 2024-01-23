@@ -11,6 +11,10 @@ SRC_URI = " \
         file://0003-bayer2raw-Correct-condition-for-first-draw-data-to-t.patch \
 "
 
+SRC_URI_append_rzg2l = " \
+    file://0001-Support-bayer2raw-while-using-mali.patch \
+"
+
 inherit pkgconfig
 
 DEPENDS = "virtual/libgles2"
