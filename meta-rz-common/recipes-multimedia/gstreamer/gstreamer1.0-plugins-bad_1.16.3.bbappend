@@ -15,7 +15,8 @@ SRC_URI_append = " \
 "
 
 SRC_URI_append_rzg2l = " \
-    file://0007-gstreamer-waylandsink-Add-stride-restriction-to-buff.patch \
+    file://0001-gstreamer-waylandsink-Add-stride-restriction-to-buff.patch \
+    file://0002-ext-bayersink-Remove-EGL_PIXMAP_BIT-while-using-mali.patch \
 "
 
 SRCREV_base = "3ef17d3c57e12f9d7536e464656b871a8949fa5b"
