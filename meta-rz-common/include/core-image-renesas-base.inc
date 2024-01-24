@@ -107,6 +107,15 @@ update_issue() {
       BSP_SOC="RZG1C"
       BSP_BOARD="iWave RZ/G1C-PF Development Kit"
       ;;
+    rzg3s-dev)
+      BSP_SOC="RZG3S"
+      BSP_BOARD="RZG3S-DEV"
+      ;;
+    smarc-rzg3s)
+      BSP_SOC="RZG3S"
+      BSP_BOARD="RZG3S-SMARC-EVK"
+      ;;
+
     esac
 
     # Make issue file
