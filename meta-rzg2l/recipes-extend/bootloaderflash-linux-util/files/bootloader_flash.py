@@ -10,6 +10,7 @@ import subprocess
 from subprocess import Popen, PIPE, CalledProcessError
 from sys import platform
 import glob
+import shlex
 
 class FlashUtil:
 	def __init__(self):
@@ -39,14 +40,14 @@ class FlashUtil:
 	# Setup Serial Port
 	def __setupSerialPort(self):
 		try:
-			self.__serialPort = serial.Serial(port=self.__args.serialPort, baudrate = self.__args.baudRate)
+			self.__serialPort = serial.Serial(port=self.__args.serialPort, baudrate = self.__args.baudRate, timeout=15)
 		except:
 			die(msg='Unable to open serial port.')
 
 	# Setup Serial Port SUP
 	def __setupSerialPort_SUP(self):
 		try:
-			self.__serialPort = serial.Serial(port=self.__args.serialPort, baudrate = 921600)
+			self.__serialPort = serial.Serial(port=self.__args.serialPort, baudrate = 921600, timeout=15)
 		except:
 			die(msg='Unable to open serial port 921600 bps.')
 
@@ -54,57 +55,135 @@ class FlashUtil:
 	def __writeBootloader(self):
 		start_time = time.time()
 
+		# Check file exists
+		if not os.path.exists(self.__args.flashWriterImage):
+			print(f"The file {self.__args.flashWriterImage} does not exist.")
+			exit()
+		if not os.path.exists(self.__args.bl2Image):
+			print(f"The file {self.__args.bl2Image} does not exist.")
+			exit()
+		if not os.path.exists(self.__args.fipImage):
+			print(f"The file {self.__args.fipImage} does not exist.")
+			exit()
+
 		# Wait for device to be ready to receive image.
-		print('Please power on board. Make sure you changed switches to SCIF download mode.')
-		self.__serialPort.read_until('please send !'.encode())
+		print("Please power on board. Make sure you changed switches to SCIF download mode.")
+		buf = self.__serialPort.read_until('please send !'.encode())
+		if not buf:
+			print("Returned value is not the expectation. Exiting.")
+			exit()
+		print(f'{buf.decode()}')
 
 		# Write flash writer application
-		print('Writing Flash Writer application...')
+		time1 = time.time()
+		print("Writing Flash Writer application...")
 		self.__writeFileToSerial(self.__args.flashWriterImage)
-		print('Write Flash Writer application - OK')
+		buf = self.__serialPort.read_until('>'.encode())
+		if not buf:
+			print("Returned value is not the expectation. Exiting.")
+			exit()
+		print(f'{buf.decode()}')
 
-		print('Changing speed to 921600 bps..')
-		self.__serialPort.write('\rSUP\r'.encode())
-		time.sleep(2)
+		time2 = time.time()
+		elapsed_time = time2 - time1
+		print(f"Elapsed time: Flash Writer: {elapsed_time:.6f} seconds")
+		# Changing speed to 921600 bps.
+		self.__serialPort.write('true\r'.encode())
+		buf = self.__serialPort.read_until('>'.encode())
+		if not buf:
+			print("Returned value is not the expectation. Exiting.")
+			exit()
+		print(f'{buf.decode()}')
+
+		self.__serialPort.write('SUP\r'.encode())
+		buf = self.__serialPort.read_until('the terminal.'.encode())
+		if not buf:
+			print("Returned value is not the expectation. Exiting.")
+			exit()
+		print(f'{buf.decode()}')
 
 		self.__setupSerialPort_SUP()
-		print('Change speed to 921600 bps - OK')
-
-		# TODO: Wait for '>' instead of just time based.
 		time.sleep(1)
+		self.__serialPort.write('\r\r'.encode())
+		buf = self.__serialPort.read_until('>'.encode())
+		if not buf:
+			print("Returned value is not the expectation. Exiting.")
+			exit()
+		print(f'{buf.decode()}')
+
+		# Write BL2
 		self.__serialPort.write('\rXLS2\r'.encode())
+		buf = self.__serialPort.read_until('Please Input : H'.encode())
+		if not buf:
+			print("Returned value is not the expectation. Exiting.")
+			exit()
+		print(f'{buf.decode()}')
 
-		time.sleep(1)
 		self.__serialPort.write('11E00\r'.encode())
+		buf = self.__serialPort.read_until('Please Input : H'.encode())
+		if not buf:
+			print("Returned value is not the expectation. Exiting.")
+			exit()
+		print(f'{buf.decode()}')
 
-		time.sleep(1)
 		self.__serialPort.write('\r00000\r'.encode())
+		buf = self.__serialPort.read_until('please send !'.encode())
+		if not buf:
+			print("Returned value is not the expectation. Exiting.")
+			exit()
+		print(f'{buf.decode()}')
 
-		time.sleep(2)
-		print('Writing bl2 image...')
+		print("Writing BL2...")
 		self.__writeFileToSerial(self.__args.bl2Image)
-		self.__serialPort.read_until('Clear OK'.encode())
-		self.__serialPort.write('\ry\r'.encode())
-		self.__serialPort.read_until('>'.encode())
-		print('Write bl2 image - OK')
+		buf = self.__serialPort.read_until('Clear OK'.encode())
+		if not buf:
+			print("Returned value is not the expectation. Exiting.")
+			exit()
+		print(f'{buf.decode()}')
 
-		time.sleep(1)
+		self.__serialPort.write('\ry\r'.encode())
+		buf = self.__serialPort.read_until('>'.encode())
+		if not buf:
+			print("Returned value is not the expectation. Exiting.")
+			exit()
+		print(f'{buf.decode()}')
+
+		# Write FIP
 		self.__serialPort.write('XLS2\r'.encode())
+		buf = self.__serialPort.read_until('Please Input : H'.encode())
+		if not buf:
+			print("Returned value is not the expectation. Exiting.")
+			exit()
+		print(f'{buf.decode()}')
 
-		time.sleep(1)
 		self.__serialPort.write('00000\r'.encode())
+		buf = self.__serialPort.read_until('Please Input : H'.encode())
+		if not buf:
+			print("Returned value is not the expectation. Exiting.")
+			exit()
+		print(f'{buf.decode()}')
 
-		time.sleep(1)
 		self.__serialPort.write('1D200\r'.encode())
+		buf = self.__serialPort.read_until('please send !'.encode())
+		if not buf:
+			print("Returned value is not the expectation. Exiting.")
+			exit()
+		print(f'{buf.decode()}')
 
-		time.sleep(2)
-		print('Writing FIP image...')
+		print("Writing fip ...")
 		self.__writeFileToSerial(self.__args.fipImage)
+		buf = self.__serialPort.read_until('Clear OK'.encode())
+		if not buf:
+			print("Returned value is not the expectation. Exiting.")
+			exit()
+		print(f'{buf.decode()}')
 
-		self.__serialPort.read_until('Clear OK'.encode())
 		self.__serialPort.write('\ry\r'.encode())
-		self.__serialPort.read_until('>'.encode())
-		print('Write FIP image - OK')
+		buf = self.__serialPort.read_until('>'.encode())
+		if not buf:
+			print("Returned value is not the expectation. Exiting.")
+			exit()
+		print(f'{buf.decode()}')
 
 		print("Closed serial port.")
 		self.__serialPort.close()
@@ -139,3 +218,4 @@ def main():
 
 if __name__ == '__main__':
 	main()
+
