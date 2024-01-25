@@ -141,7 +141,7 @@ rzpi
     ├── bl2_bp-rzpi.bin
     ├── fip-rzpi.bin
     ├── uload_bootloader_flash.py                  <---- Bootloader flashing from U-Boot console script on Linux
-    ├── uload-bootloader-windows-script            <---- Bootloader flashing from U-Boot console script package on Linux
+    ├── uload-bootloader-windows-script            <---- Bootloader flashing from U-Boot console script package on Windows
     │   ├── config.ini
     │   ├── Readme.txt                             <---- Bootloader flashing from U-Boot console guideline on Windows
     │   ├── tools
@@ -170,6 +170,7 @@ Please run the follow command to know how to use the script:
 $ ./bootloader_flash.py -h
 ```
 
+**Before performing a flashing, make sure the board is powered off, connect the debug serial (SCIF0 - TXD,RXD,GND) to your Linux PC and change switches to enter SCIF download mode**
 
 ### Flash Bootloader on Windows
 
