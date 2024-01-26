@@ -510,7 +510,7 @@ You should edit `uEnv.txt` as follows to enable MIPI DSI interface:
 enable_overlay_dsi=1
 ```
 
-**Please note that selecting the MIPI DSI display will case the HDMI display be disabled.**
+**Please note that selecting the MIPI DSI display will cause the HDMI display be disabled.**
 
 ### MIPI CSI2 with Arducam 5MP MIPI Camera
 

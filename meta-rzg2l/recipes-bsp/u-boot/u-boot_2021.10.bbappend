@@ -42,4 +42,4 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda
 UBOOT_URL = "git://git@github.com/preetam-reddy/uboot-rz-cip-dev.git"
 SRC_URI = "${UBOOT_URL};protocol=ssh;branch=${BRANCH}"
 BRANCH = "v2021.10/rz-sbc-release3"
-SRCREV = "192a6ee8a53847a87db851e9b304a426b4e4afff"
+SRCREV = "66c29125b0c5001ca8b970fde8b7da9b8a5fce4e"
