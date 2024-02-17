@@ -1,8 +1,13 @@
 # meta-renesas
 
-This is a Yocto build layer(version:dunfell) that provides support for the RZ/G1 Group of 32bit Arm-based MPUs, RZ/G2 Group of 64bit Arm-based MPUs and RZ/Five 64bit RISC-V based MPU from Renesas Electronics.
+This is a Yocto build layer(version:dunfell) that provides support for the RZ/G1 Group of 32bit Arm-based MPUs; RZ/G2, RZ/G3 Groups of 64bit Arm-based MPUs and RZ/Five 64bit RISC-V based MPU from Renesas Electronics.
 Currently the following boards and MPUs are supported:
 
+- Board: iWave RZ/G1H-PF Qseven Development Platform R2.1 / MPU: R8A7742 (RZ/G1H)
+- Board: iWave RZ/G1M-PF Qseven Development Platform R2.0 / MPU: R8A7743 (RZ/G1M)
+- Board: iWave RZ/G1N-PF Qseven Development Platform R3.4 / MPU: R8A7744 (RZ/G1N)
+- Board: iWave RZ/G1E-PF SODIMM Development Platform R3.1 / MPU: R8A7745 (RZ/G1E)
+- Board: iWave RZ/G1C-PF Pi SBC Development Platform R2.0 / MPU: R8A77470 (RZ/G1C)
 - Board: EK874 / MPU: R8A774C0 (RZ/G2E)
 - Board: HIHOPE-RZG2M / MPU: R8A774A1 (RZ/G2M v1.3) and R8A774A3 (RZ/G2M v3.0)
 - Board: HIHOPE-RZG2N / MPU: R8A774B1 (RZG2N)
@@ -19,11 +24,8 @@ Currently the following boards and MPUs are supported:
 - Board: Shimafuji Electric RZV2MA Evaluation Board Kit / MPU: R9A09G055MA3GBG (RZ/V2MA)
 - Board: RZFive SMARC Evaluation Kit / MPU: R9A07G043F (RZ/Five)
 - Board: RZFive SMARC Evaluation Kit / MPU: R9A07G043F (RZ/Five)
-- Board: iWave RZ/G1H-PF Qseven Development Platform R2.1 / MPU: R8A7742 (RZ/G1H)
-- Board: iWave RZ/G1M-PF Qseven Development Platform R2.0 / MPU: R8A7743 (RZ/G1M)
-- Board: iWave RZ/G1N-PF Qseven Development Platform R3.4 / MPU: R8A7744 (RZ/G1N)
-- Board: iWave RZ/G1E-PF SODIMM Development Platform R3.1 / MPU: R8A7745 (RZ/G1E)
-- Board: iWave RZ/G1C-PF Pi SBC Development Platform R2.0 / MPU: R8A77470 (RZ/G1C)
+- Board: RZG3S SMARC Evaluation Kit / MPU: R9A08G045 (RZ/G3S)
+- Board: RZG3S Development Evaluation Kit / MPU: R9A08G045 (RZ/G3S)
 
 ## Patches
 
@@ -36,20 +38,20 @@ This layer depends on:
     URI: git://git.yoctoproject.org/poky
     layers: meta, meta-poky, meta-yocto-bsp
     branch: dunfell
-    revision: bab87089ad998afc980adb45c11ae356bc35a460
-    (tag: dunfell-23.0.26)
+    revision: a9e3cc3b9eab7a83c715bb8440454e8fea852c2a
+    (tag: dunfell-23.0.31)
 
     URI: git://git.openembedded.org/meta-openembedded
     layers: meta-oe, meta-python, meta-multimedia
     branch: dunfell
-    revision: 6334241447e461f849035c47f071fa4a2125fee1
+    revision: daa4619fe3fbf8c28f342c4a7163a84a330f7653
     
     URI: https://git.yoctoproject.org/meta-gplv2
     layers: meta-gplv2
     branch: dunfell
     revision: 60b251c25ba87e946a0ca4cdc8d17b1cb09292ac
 
-    core-image-qt: Optional (unsupported for RZ/V2M and RZ/V2MA)
+    core-image-qt: Optional (unsupported for RZ/V2M, RZ/V2MA and RZ/G3S)
     URI: https://github.com/meta-qt5/meta-qt5.git
     layers: meta-qt5
     revision: c1b0c9f546289b1592d7a895640de103723a0305
@@ -110,12 +112,12 @@ You can get all Yocto build environment from Renesas, or download all Yocto rela
 ```bash
     $ git clone https://git.yoctoproject.org/git/poky
     $ cd poky
-    $ git checkout dunfell-23.0.26
+    $ git checkout dunfell-23.0.31
     $ cd ..
     $     
     $ git clone https://github.com/openembedded/meta-openembedded
     $ cd meta-openembedded
-    $ git checkout 6334241447e461f849035c47f071fa4a2125fee1
+    $ git checkout daa4619fe3fbf8c28f342c4a7163a84a330f7653
     $ cd ..
     $    
     $ git clone https://git.yoctoproject.org/git/meta-gplv2
@@ -194,8 +196,9 @@ Currently, there are 2 types of build procedure supported in below description:
 |RZ/V2M     |rzv2m     |rzv2m                   |
 |RZ/V2MA    |rzv2m     |rzv2ma                  |
 |RZ/Five    |rzfive    |smarc-rzfive, rzfive-dev|
+|RZ/G3S     |rzg3      |smarc-rzg3s, rzg3s-dev  |
 
-**2. Build procedure for legacy users (common procedure) (unsupported for RZ/G1 Series, RZ/V2M and RZ/V2MA):**
+**2. Build procedure for legacy users (common procedure) (unsupported for RZ/G1 Series, RZ/V2M, RZ/V2MA and RZ/G3S):**
 - Initialize a build using the 'oe-init-build-env' script in Poky. e.g.:
     ```bash
     $ source poky/oe-init-build-env
@@ -224,7 +227,7 @@ Currently, there are 2 types of build procedure supported in below description:
    ```
 
 \<target\> for these built types:
-* RZ/Five, RZ/V2M, RZ/V2MA: bsp
+* RZ/Five, RZ/V2M, RZ/V2MA, RZ/G3S: bsp
 * Others: bsp, weston, qt
 
 After completing the images for the target machine will be available in the output
