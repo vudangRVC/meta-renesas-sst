@@ -170,6 +170,11 @@ IMAGE_INSTALL_remove_rzg1 = " \
   lttng-ust \
 "
 
+EXTRA_IMAGE_FEATURES += " \
+	package-management \
+	ssh-server-dropbear \
+"
+
 # Environment setup, support building kernel modules with kernel src in SDK
 export KERNELSRC="$SDKTARGETSYSROOT/usr/src/kernel"
 export KERNELDIR="$SDKTARGETSYSROOT/usr/src/kernel"
