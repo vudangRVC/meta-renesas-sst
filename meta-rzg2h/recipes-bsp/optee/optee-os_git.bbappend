@@ -1,22 +1,6 @@
-DESCRIPTION = "OP-TEE OS"
-
-LICENSE = "BSD-2-Clause & BSD-3-Clause"
-LIC_FILES_CHKSUM = " \
-    file://LICENSE;md5=c1f21c4f72f372ef38a5a4aee55ec173 \
-"
-
-PACKAGE_ARCH = "${MACHINE_ARCH}"
+require include/rzg2h-optee-config.inc
 inherit deploy python3native
 
-PV = "3.19.0+git${SRCPV}"
-BRANCH = "3.19.0/rz"
-SRCREV = "7c48d905fd57009c2974f247289c84f6d05c384e"
-
-SRC_URI = " \
-	git://github.com/renesas-rz/rzg_optee-os.git;branch=${BRANCH} \
-"
-
-COMPATIBLE_MACHINE = "(ek874|hihope-rzg2m|hihope-rzg2n|hihope-rzg2h)"
 PLATFORM = "rzg"
 PLATFORM_FLAVOR = "${@d.getVar("MACHINE", False).replace("-", "_")}"
 
