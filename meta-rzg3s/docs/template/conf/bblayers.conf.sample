@@ -11,7 +11,7 @@ BBLAYERS ?= " \
   ${TOPDIR}/../poky/meta-poky \
   ${TOPDIR}/../poky/meta-yocto-bsp \
   ${TOPDIR}/../meta-renesas/meta-rz-common \
-  ${TOPDIR}/../meta-renesas/meta-rzg3 \
+  ${TOPDIR}/../meta-renesas/meta-rzg3s \
   ${TOPDIR}/../meta-openembedded/meta-oe \
   ${TOPDIR}/../meta-openembedded/meta-python \
   ${TOPDIR}/../meta-openembedded/meta-multimedia \

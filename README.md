@@ -196,7 +196,7 @@ Currently, there are 2 types of build procedure supported in below description:
 |RZ/V2M     |rzv2m     |rzv2m                   |
 |RZ/V2MA    |rzv2m     |rzv2ma                  |
 |RZ/Five    |rzfive    |smarc-rzfive, rzfive-dev|
-|RZ/G3S     |rzg3      |smarc-rzg3s, rzg3s-dev  |
+|RZ/G3S     |rzg3s     |smarc-rzg3s, rzg3s-dev  |
 
 **2. Build procedure for legacy users (common procedure) (unsupported for RZ/G1 Series, RZ/V2M, RZ/V2MA and RZ/G3S):**
 - Initialize a build using the 'oe-init-build-env' script in Poky. e.g.:
