@@ -21,7 +21,6 @@ Known issues:
 
  - Only support for 48 Khz audio sampling rate family.
  - Audio capture does not work properly.
- - MIPI DSI interface is enabled without any display panel testing.
 
 ## Building
 Step 1: Prepare environment for building package
@@ -379,7 +378,6 @@ You should edit `uEnv.txt` as follows to enable SPI channel 0 on 40 IO expansion
 
 ```
 enable_overlay_spi=1
-#enable_overlay_dsi=1
 ```
 
 Run the following command to config the SPI:
@@ -501,12 +499,11 @@ root@rzpi:~# gst-play-1.0 /home/root/audios/COMMON6_MPEG2_L3_24KHZ_160_2.mp3
 
 ### MIPI DSI with display panels
 
-Currently, the MIPI DSI interface on RZG2L-SBC can be enabled based on FDT overlays feature. Howewer, we have not tested it with any display panel.
+RZG2L-SBC supports the MIPI DSI interface and the Waveshare 5 inch Touchscreen Monitor MIPI-DSI LCD is enabled and tested.
 
-You should edit `uEnv.txt` as follows to enable MIPI DSI interface:
+You should edit `uEnv.txt` as follows to enable MIPI DSI interface with the panel supported:
 
 ```
-#enable_overlay_spi=1
 enable_overlay_dsi=1
 ```
 
@@ -514,7 +511,7 @@ enable_overlay_dsi=1
 
 ### MIPI CSI2 with Arducam 5MP MIPI Camera
 
-RZG2L-SBC supports MIPI CSI-2 camera interface and the Arducam 5MP MIPI Camera (OV5640 image sensor) is enabled and tested.
+RZG2L-SBC supports the MIPI CSI-2 camera interface and the Arducam 5MP MIPI Camera (OV5640 image sensor) is enabled and tested.
 
 You should edit `uEnv.txt` as follows to enable MIPI CSI-2 interface with the camera supported:
 
