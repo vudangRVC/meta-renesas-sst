@@ -5,8 +5,8 @@ BB_STRICT_CHEKSUM:forcevariable = "0"
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}/:"
 
 KERNEL_URL = "git://git@github.com/preetam-reddy/linux-rz-dev.git"
-BRANCH = "rz-sbc-release3-5.10-cip36"
-SRCREV = "bd334f8cea81e68f650142f0534bbbb861bffa54"
+BRANCH = "rz-sbc-release4-5.10-cip36"
+SRCREV = "5cf70d0c963320be539a51c3deae1f6729654d33"
 SRC_URI = "${KERNEL_URL};protocol=ssh;nocheckout=1;branch=${BRANCH}"
 
 SRC_URI_append = "\
