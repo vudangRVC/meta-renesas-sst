@@ -23,8 +23,7 @@ DISTRO_FEATURES_remove += "${@bb.utils.contains("INCOMPATIBLE_LICENSE", "GPLv3",
 # Match version between native and target sysroot in meta-gplv2 when not using GPLv3.
 PREFERRED_VERSION_gdbm-native ?= "${@bb.utils.contains("INCOMPATIBLE_LICENSE", "GPLv3", "1.8.3", "",d)}"
 
-BBMASK_append = " optee-client trusted-firmware-a optee-test"
-IMAGE_INSTALL_remove += "optee-client"
+BBMASK_append = " trusted-firmware-a "
 
 # Avoid using these recipes in meta-rz-common, use rzg1 recipes instead
 BBMASK_append = " meta-rz-common/recipes-multimedia/mmngr-module meta-rz-common/recipes-multimedia/vspmif-module"

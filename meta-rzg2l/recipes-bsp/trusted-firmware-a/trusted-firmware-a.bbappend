@@ -1,5 +1,3 @@
-require include/rzg2l-optee-config.inc
-
 # For RZ/G2L Series
 PLATFORM_smarc-rzg2l = "g2l"
 EXTRA_FLAGS_smarc-rzg2l = "BOARD=smarc_2"
@@ -31,13 +29,6 @@ PMIC_BUILD_DIR = "${S}/build_pmic"
 
 FILES_${PN} = "/boot "
 SYSROOT_DIRS += "/boot"
-
-SEC_FLAGS = " \
-	${@oe.utils.conditional("ENABLE_SPD_OPTEE", "1", " SPD=opteed", "",d)} \
-"
-
-EXTRA_FLAGS_append += "${SEC_FLAGS}"
-PMIC_EXTRA_FLAGS_append += "${SEC_FLAGS}"
 
 FILESEXTRAPATHS_append := "${THISDIR}/files"
 SRC_URI += " \

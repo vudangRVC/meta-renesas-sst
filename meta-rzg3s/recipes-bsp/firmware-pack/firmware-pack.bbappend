@@ -1,6 +1,5 @@
 DEPENDS = " \
 	trusted-firmware-a u-boot \
-	${@oe.utils.conditional("ENABLE_SPD_OPTEE", "1", " optee-os", "",d)} \
 "
 DEPENDS_append = " bptool-native fiptool-native"
 
@@ -15,10 +14,6 @@ do_compile () {
 
 	# Create fip.bin
 	fiptool create --align 16 --soc-fw ${RECIPE_SYSROOT}/boot/bl31-${MACHINE}.bin --nt-fw ${RECIPE_SYSROOT}/boot/u-boot.bin ${S}/fip.bin
-
-	if [ "${ENABLE_SPD_OPTEE}" = "1" ]; then
-		fiptool update --align 16 --tos-fw ${RECIPE_SYSROOT}/boot/tee-${MACHINE}.bin ${S}/fip.bin
-	fi
 
 	# Convert to srec
 	objcopy -I binary -O srec --adjust-vma=0xA1E00 --srec-forceS3 ${S}/bl2_bp_spi.bin ${S}/bl2_bp_spi.srec

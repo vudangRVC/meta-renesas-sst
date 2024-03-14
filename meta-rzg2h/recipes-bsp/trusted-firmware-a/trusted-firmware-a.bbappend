@@ -1,5 +1,3 @@
-require include/rzg2h-optee-config.inc
-
 # For RZ/G2H/M/N/E
 ATFW_OPT_r8a774c0 = "LSI=G2E RCAR_SA0_SIZE=0 RCAR_DRAM_DDR3L_MEMCONF=1 RCAR_DRAM_DDR3L_MEMDUAL=1 SPD="none""
 ATFW_OPT_r8a774a1 = "LSI=G2M RCAR_DRAM_SPLIT=2 SPD="none""
@@ -17,14 +15,6 @@ ATFW_OPT_append_r8a774e1 = "${@oe.utils.conditional("USE_ECC", "1", " LIFEC_DBSC
 ATFW_OPT_append += " RZG_DRAM_ECC_FULL=${ECC_FULL} "
 
 ATFW_OPT_append += " RCAR_RPC_HYPERFLASH_LOCKED=0 "
-
-ATFW_OPT_append += " \
-    ${@oe.utils.conditional("ENABLE_SPD_OPTEE", "1", " SPD=opteed", "",d)} \
-"
-
-DEPENDS += " \
-    ${@oe.utils.conditional("ENABLE_SPD_OPTEE", "1", " optee-os", "",d)} \
-"
 
 do_compile() {
     oe_runmake distclean

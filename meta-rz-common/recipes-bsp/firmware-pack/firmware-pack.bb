@@ -3,14 +3,12 @@ SUMMARY = "Firmware Packaging"
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/BSD-3-Clause;md5=550794465ba0ec5312d6919e203a55f9"
 
-require include/rzg2l-optee-config.inc
 inherit deploy
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 DEPENDS = " \
 	trusted-firmware-a u-boot \
-	${@oe.utils.conditional("ENABLE_SPD_OPTEE", "1", " optee-os", "",d)} \
 "
 DEPENDS += " bootparameter-native fiptool-native"
 
@@ -43,16 +41,6 @@ do_compile () {
 		fiptool create --align 16 --soc-fw ${RECIPE_SYSROOT}/boot/bl31-${MACHINE}_pmic.bin --nt-fw ${RECIPE_SYSROOT}/boot/u-boot.bin fip_pmic.bin
 		objcopy -O srec --adjust-vma=0x00011E00 --srec-forceS3 -I binary bl2_bp_pmic.bin bl2_bp_pmic.srec
 		objcopy -I binary -O srec --adjust-vma=0x0000 --srec-forceS3 fip_pmic.bin fip_pmic.srec
-	fi
-
-	if [ "${ENABLE_SPD_OPTEE}" = "1" ]; then
-		fiptool update --align 16 --tos-fw ${STAGING_DIR_HOST}/boot/tee-${MACHINE}.bin fip.bin
-		objcopy -I binary -O srec --adjust-vma=0x0000 --srec-forceS3 fip.bin fip.srec
-
-		if [ "${PMIC_SUPPORT}" = "1" ]; then
-			fiptool update --align 16 --tos-fw ${STAGING_DIR_HOST}/boot/tee-${MACHINE}.bin fip_pmic.bin
-			objcopy -I binary -O srec --adjust-vma=0x0000 --srec-forceS3 fip_pmic.bin fip_pmic.srec
-		fi
 	fi
 }
 

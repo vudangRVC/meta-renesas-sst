@@ -28,7 +28,7 @@ PREFERRED_VERSION_gdbm-native ?= "${@bb.utils.contains("INCOMPATIBLE_LICENSE", "
 PREFERRED_VERSION_u-boot = "v2021.10%"
 EXTRA_IMAGEDEPENDS += " u-boot"
 
-PACKAGE_INSTALL_remove += " optee-client v4l2-init "
+PACKAGE_INSTALL_remove += " v4l2-init "
 
 DISTRO_FEATURES_append = " docker"
 
