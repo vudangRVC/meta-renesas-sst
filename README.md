@@ -40,6 +40,8 @@ This layer depends on:
     branch: dunfell
     revision: a9e3cc3b9eab7a83c715bb8440454e8fea852c2a
     (tag: dunfell-23.0.31)
+    For Docker build:
+    cherry-pick commit eb0915c699fbe86488de172d529f073a30d05b6a
 
     URI: git://git.openembedded.org/meta-openembedded
     layers: meta-oe, meta-python, meta-multimedia
@@ -113,6 +115,7 @@ You can get all Yocto build environment from Renesas, or download all Yocto rela
     $ git clone https://git.yoctoproject.org/git/poky
     $ cd poky
     $ git checkout dunfell-23.0.31
+    $ git cherry-pick eb0915c699fbe86488de172d529f073a30d05b6a
     $ cd ..
     $     
     $ git clone https://github.com/openembedded/meta-openembedded
