@@ -94,6 +94,7 @@ Below is the combination of Codec/Graphics library with BSP released versions:
 |3.0.0 - 3.0.2|1.0|1.0|
 |3.0.3|1.0.1|1.0.1|
 |3.0.5|1.0.1|1.0.2|
+|3.0.6|1.2.1|1.0.2|
 
 **2. RZ/G2{L,LC,UL} and RZ/V2L:**
 
@@ -106,6 +107,7 @@ Below is the combination of Codec/Graphics library with BSP released versions:
 |3.0.4|1.1.0|1.1.0(\*1)|
 |3.0.5|1.1.0|1.1.0|
 |3.0.5-update2|1.2.0|1.2.0|
+|3.0.6|1.2.1|1.2.2|
 
 (\*1) Please note that the naming rule of version is changed from the release.
 v1.0.5 is newer version of v1.4.
