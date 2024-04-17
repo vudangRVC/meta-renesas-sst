@@ -6,3 +6,5 @@ require include/ecc-control.inc
 EXTRA_IMAGEDEPENDS += " firmware-pack"
 
 MACHINEOVERRIDES =. "rzg2l:"
+
+MACHINE_FEATURES_append = " bayer2raw"

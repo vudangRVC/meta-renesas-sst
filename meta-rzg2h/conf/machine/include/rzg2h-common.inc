@@ -3,4 +3,4 @@ require include/ecc-control.inc
 
 MACHINEOVERRIDES =. "rzg2h:"
 
-MACHINE_FEATURES_append = " opengles hwh264dec hwh264enc hwh265dec "
+MACHINE_FEATURES_append = " opengles hwh264dec hwh264enc hwh265dec bayer2raw"
