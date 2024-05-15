@@ -39,7 +39,7 @@ do_deploy_append() {
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
 
-UBOOT_URL = "git://git@github.com/preetam-reddy/uboot-rz-cip-dev.git"
+UBOOT_URL = "git://git@github.com/Renesas-SST/u-boot.git"
 SRC_URI = "${UBOOT_URL};protocol=ssh;branch=${BRANCH}"
 BRANCH = "v2021.10/rz-sbc-release4"
 SRCREV = "66c29125b0c5001ca8b970fde8b7da9b8a5fce4e"
