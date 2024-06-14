@@ -301,7 +301,7 @@ It is possible to change some build configs as below:
   ```
   QT_DEMO = "1"
   ```
-* Realtime Linux (unsupported for RZ/V2M and RZ/V2MA): choose realtime characteristic of Linux kernel to build with. You can enable this feature by setting the value "1" to IS_RT_BSP variable in local.conf:
+* Realtime Linux (unsupported for RZ/Five, RZ/V2M and RZ/V2MA): choose realtime characteristic of Linux kernel to build with. You can enable this feature by setting the value "1" to IS_RT_BSP variable in local.conf:
   ```
   IS_RT_BSP = "1"
   ```
