@@ -10,19 +10,19 @@ SRC_URI_append = " \
     file://0004-waylandsink-Add-mising-code-for-scale-feature.patch \
     file://0005-gstreamer-waylandsink-disable-subsurface-in-fullscre.patch \
     file://0006-waylandsink-Add-support-for-I420-in-dmabuf.patch \
-    ${@bb.utils.contains('MACHINE_FEATURES', 'bayer2raw', 'file://0007-New-libbayersink-Bayer-to-RAW-converter-and-display-.patch', '', d)} \
-    ${@bb.utils.contains('MACHINE_FEATURES', 'bayer2raw', 'file://0008-ext-bayerconvert-add-bayerconvert-plugin.patch', '', d)} \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'bayer2raw', bb.utils.contains('BBFILE_COLLECTIONS', 'rz-graphics', 'file://0007-New-libbayersink-Bayer-to-RAW-converter-and-display-.patch', '', d), '', d)} \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'bayer2raw', bb.utils.contains('BBFILE_COLLECTIONS', 'rz-graphics', 'file://0008-ext-bayerconvert-add-bayerconvert-plugin.patch', '', d), '', d)} \
  "
 
 SRC_URI_append_rzg2l = " \
     file://0001-gstreamer-waylandsink-Add-stride-restriction-to-buff.patch \
-    file://0002-ext-bayersink-Remove-EGL_PIXMAP_BIT-while-using-mali.patch \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'bayer2raw', bb.utils.contains('BBFILE_COLLECTIONS', 'rz-graphics', 'file://0002-ext-bayersink-Remove-EGL_PIXMAP_BIT-while-using-mali.patch', '', d), '', d)} \
 "
 
 SRCREV_base = "3ef17d3c57e12f9d7536e464656b871a8949fa5b"
 
 DEPENDS += "weston virtual/libgles2 mmngr-user-module mmngrbuf-user-module"
-DEPENDS += "${@bb.utils.contains('MACHINE_FEATURES', 'bayer2raw', 'bayer2raw', '', d)}"
+DEPENDS += "${@bb.utils.contains('MACHINE_FEATURES', 'bayer2raw', bb.utils.contains('BBFILE_COLLECTIONS', 'rz-graphics', 'bayer2raw', '', d), '', d)}"
 
 
 S = "${WORKDIR}/git"
