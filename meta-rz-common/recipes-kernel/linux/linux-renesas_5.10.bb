@@ -14,7 +14,7 @@ COMPATIBLE_MACHINE_rzg3s = "(rzg3s-dev|smarc-rzg3s)"
 KERNEL_URL = " \
     git://github.com/renesas-rz/rz_linux-cip.git"
 BRANCH = "${@oe.utils.conditional("IS_RT_BSP", "1", "rz-5.10-cip41-rt17", "rz-5.10-cip41",d)}"
-SRCREV = "${@oe.utils.conditional("IS_RT_BSP", "1", "592e85c9cfbd8074b37460c127d9481df805b703", "0260066d7d9f78abddca8f193c0598d0533d48c2",d)}"
+SRCREV = "${@oe.utils.conditional("IS_RT_BSP", "1", "fa9c20fae317380a56644d4f27643cf869e52985", "8172c716f3bbd5431ca5983d63e9ae86152db40c",d)}"
 
 SRC_URI = "${KERNEL_URL};protocol=https;nocheckout=1;branch=${BRANCH}"
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
