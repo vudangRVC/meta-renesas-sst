@@ -17,7 +17,10 @@ KBRANCH:rzg2l-sbc  = "dunfell/rz-sbc"
 # Use the following to specify an in-tree defconfig.
 KBUILD_DEFCONFIG:rzg2l-sbc = "defconfig"
 
-SRCREV_machine:rzg2l-sbc ?= "${AUTOREV}"
+# Override KCONFIG_MODE to '--alldefconfig' from the default '--allnoconfig'
+KCONFIG_MODE:rzg2l-sbc = "alldefconfig"
+
+SRCREV:rzg2l-sbc ?= "${AUTOREV}"
 
 LINUX_VERSION:rzg2l-sbc = "5.10.184"
 #LINUX_VERSION_EXTENSION:append = "-custom"
@@ -33,11 +36,6 @@ KERNEL_DEVICETREE_OVERLAY = " \
         renesas/overlays/rzpi-dsi.dtbo \
         renesas/overlays/rzpi-ov5640.dtbo \
 "
-
-do_configure:prepend() {
-    # Copy the custom config to the build directory
-    cp ${WORKDIR}/defconfig ${B}/.config
-}
 
 IMAGE_BOOT_FILES = " Image rzpi.dtb"
 
