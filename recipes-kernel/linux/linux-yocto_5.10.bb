@@ -6,8 +6,13 @@ COMPATIBLE_MACHINE:rzg2l-sbc = "(rzg2l-sbc)"
 
 SRC_URI:rzg2l-sbc = "git://github.com/Renesas-SST/linux-rz.git;name=machine;branch=${KBRANCH};protocol=https"
 
+# Tell the kernel class to install the DTBs in the same directory structure as the kernel.
+KERNEL_DTBDEST = "${KERNEL_IMAGEDEST}/dtb"
+KERNEL_DTBVENDORED = "1"
+
 # Kernel is 5.10
 inherit kernel
+inherit kernel-devicetree
 require recipes-kernel/linux/linux-yocto.inc
 
 KBRANCH:rzg2l-sbc  = "dunfell/rz-sbc"
@@ -26,10 +31,11 @@ LINUX_VERSION:rzg2l-sbc = "5.10.184"
 #LINUX_VERSION_EXTENSION:append = "-custom"
 
 # Supported device tree and device tree overlays
-KERNEL_DEVICETREE = " \
+KERNEL_DEVICETREE:rzg2l-sbc = " \
         renesas/rzpi.dtb \
 "
-KERNEL_DEVICETREE_OVERLAY = " \
+
+KERNEL_DEVICETREE:append:rzg2l-sbc = " \
         renesas/overlays/rzpi-can.dtbo \
         renesas/overlays/rzpi-ext-i2c.dtbo \
         renesas/overlays/rzpi-ext-spi.dtbo \
@@ -37,10 +43,17 @@ KERNEL_DEVICETREE_OVERLAY = " \
         renesas/overlays/rzpi-ov5640.dtbo \
 "
 
-IMAGE_BOOT_FILES = " Image rzpi.dtb"
+# Install overlays folder and kernel images to target/images in build folder
+do_deploy:append:rzg2l-sbc(){
+    install -d ${DEPLOYDIR}/target/images/dtbs/overlays
+    install -m 0644 ${B}/arch/arm64/boot/dts/renesas/overlays/* ${DEPLOYDIR}/target/images/dtbs/overlays
 
-# Support DTB Overlay files
-IMAGE_BOOT_FILES += " overlays/*;overlays/"
+    install -m 0644 ${B}/arch/arm64/boot/Image ${DEPLOYDIR}/target/images/${base_name}.bin
+    ln -sf ${base_name}.bin ${DEPLOYDIR}/target/images/Image
+
+    install -m 0644 ${B}/arch/arm64/boot/dts/renesas/rzpi.dtb ${DEPLOYDIR}/target/images/dtbs/$dtb_base_name-${KERNEL_DTB_NAME}.$dtb_ext
+    ln -sf $dtb_base_name-${KERNEL_DTB_NAME}.$dtb_ext ${DEPLOYDIR}/target/images/dtbs/rzpi.dtb
+}
 
 PV = "${LINUX_VERSION}+git"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
