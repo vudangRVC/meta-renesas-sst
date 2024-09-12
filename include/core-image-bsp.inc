@@ -1,3 +1,15 @@
+# Basic packages/tools for RZ/G2L-SBC
+IMAGE_INSTALL:append = " \
+    can-utils \
+    i2c-tools \
+    spitools \
+    python3-smbus \
+    python3-smbus2 \
+    ethtool \
+    iproute2 \
+    iperf3 \
+"
+
 # Install overlays folder to root filesystem
 add_overlays_rootfs() {
     install -d ${IMAGE_ROOTFS}/boot/overlays
@@ -12,4 +24,4 @@ add_dtb_rootfs() {
 
 ROOTFS_POSTPROCESS_COMMAND += " add_overlays_rootfs; add_dtb_rootfs"
 
-DEPENDS += " linux-yocto"
+do_rootfs[depends] += "linux-yocto:do_deploy"
