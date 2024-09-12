@@ -1,3 +1,12 @@
+# Basic packages/tools for RZ/G2L-SBC
+IMAGE_INSTALL:append = " \
+    i2c-tools \
+    ethtool \
+    spitools \
+    python3-smbus \
+    python3-smbus2 \
+"
+
 # Install overlays folder to root filesystem
 add_overlays_rootfs() {
     install -d ${IMAGE_ROOTFS}/boot/overlays
