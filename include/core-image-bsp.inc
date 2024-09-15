@@ -21,4 +21,4 @@ add_dtb_rootfs() {
 
 ROOTFS_POSTPROCESS_COMMAND += " add_overlays_rootfs; add_dtb_rootfs"
 
-DEPENDS += " linux-yocto"
+do_rootfs[depends] += "linux-yocto:do_deploy"
