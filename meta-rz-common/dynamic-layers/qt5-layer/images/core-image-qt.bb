@@ -59,3 +59,10 @@ setup_qt_env () {
         fi
 }
 ROOTFS_POSTPROCESS_COMMAND += 'setup_qt_env;'
+# Chromium web browser
+IMAGE_INSTALL_append = " chromium-ozone-wayland"
+IMAGE_INSTALL_append = " ntp"
+IMAGE_INSTALL_append = " ttf-sazanami-gothic ttf-sazanami-mincho "
+PREFERRED_VERSION_nodejs-native = "14.%"
+DISTRO_FEATURES_append = " h264enc_lib"
+PACKAGECONFIG_pn-chromium-ozone-wayland =" proprietary-codecs"
