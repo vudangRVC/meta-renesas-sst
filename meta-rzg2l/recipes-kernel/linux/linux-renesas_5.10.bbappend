@@ -44,3 +44,4 @@ do_populate_sysroot () {
 
 COMPATIBLE_MACHINE = "(rzpi)"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
+
