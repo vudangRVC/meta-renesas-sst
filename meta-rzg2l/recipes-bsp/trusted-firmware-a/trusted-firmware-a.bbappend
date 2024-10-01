@@ -1,3 +1,5 @@
+require include/rzg2l-optee-config.inc
+
 # For RZ/G2L Series
 PLATFORM_smarc-rzg2l = "g2l"
 EXTRA_FLAGS_smarc-rzg2l = "BOARD=smarc_2"
@@ -30,9 +32,16 @@ PMIC_BUILD_DIR = "${S}/build_pmic"
 FILES_${PN} = "/boot "
 SYSROOT_DIRS += "/boot"
 
+SEC_FLAGS = " \
+        ${@oe.utils.conditional("ENABLE_SPD_OPTEE", "1", " SPD=opteed", "",d)} \
+"
+
+EXTRA_FLAGS_append += "${SEC_FLAGS}"
+PMIC_EXTRA_FLAGS_append += "${SEC_FLAGS}"
+
 FILESEXTRAPATHS_append := "${THISDIR}/files"
 SRC_URI += " \
-	file://0001-plat-renesas-rz-Disable-unused-CRYPTO_SUPPORT.patch \
+        file://0001-plat-renesas-rz-Disable-unused-CRYPTO_SUPPORT.patch \
 "
 
 ECC_FLAGS = " DDR_ECC_ENABLE=1 "
@@ -42,32 +51,32 @@ EXTRA_FLAGS_append = "${@oe.utils.conditional("USE_ECC", "1", " ${ECC_FLAGS} ", 
 PMIC_EXTRA_FLAGS_append = "${@oe.utils.conditional("USE_ECC", "1", " ${ECC_FLAGS} ", "",d)}"
 
 do_compile() {
-	oe_runmake PLAT=${PLATFORM} ${EXTRA_FLAGS} bl2 bl31
+        oe_runmake PLAT=${PLATFORM} ${EXTRA_FLAGS} bl2 bl31
 
-	if [ "${PMIC_SUPPORT}" = "1" ]; then
-		oe_runmake PLAT=${PLATFORM} ${PMIC_EXTRA_FLAGS} BUILD_PLAT=${PMIC_BUILD_DIR} bl2 bl31
-	fi
+        if [ "${PMIC_SUPPORT}" = "1" ]; then
+                oe_runmake PLAT=${PLATFORM} ${PMIC_EXTRA_FLAGS} BUILD_PLAT=${PMIC_BUILD_DIR} bl2 bl31
+        fi
 }
 
 do_install() {
-	install -d ${D}/boot
-	install -m 644 ${S}/build/${PLATFORM}/release/bl2.bin ${D}/boot/bl2-${MACHINE}.bin
-	install -m 644 ${S}/build/${PLATFORM}/release/bl31.bin ${D}/boot/bl31-${MACHINE}.bin
+        install -d ${D}/boot
+        install -m 644 ${S}/build/${PLATFORM}/release/bl2.bin ${D}/boot/bl2-${MACHINE}.bin
+        install -m 644 ${S}/build/${PLATFORM}/release/bl31.bin ${D}/boot/bl31-${MACHINE}.bin
 
-	if [ "${PMIC_SUPPORT}" = "1" ]; then
-		install -m 0644 ${PMIC_BUILD_DIR}/bl2.bin ${D}/boot/bl2-${MACHINE}_pmic.bin
-		install -m 0644 ${PMIC_BUILD_DIR}/bl31.bin ${D}/boot/bl31-${MACHINE}_pmic.bin
-	fi
+        if [ "${PMIC_SUPPORT}" = "1" ]; then
+                install -m 0644 ${PMIC_BUILD_DIR}/bl2.bin ${D}/boot/bl2-${MACHINE}_pmic.bin
+                install -m 0644 ${PMIC_BUILD_DIR}/bl31.bin ${D}/boot/bl31-${MACHINE}_pmic.bin
+        fi
 }
 
 do_deploy_append() {
-	install -d ${DEPLOYDIR}/target/images
-	install -m 0644 ${D}/boot/bl2-${MACHINE}.bin ${DEPLOYDIR}/target/images/bl2-${MACHINE}.bin
+        install -d ${DEPLOYDIR}/target/images
+        install -m 0644 ${D}/boot/bl2-${MACHINE}.bin ${DEPLOYDIR}/target/images/bl2-${MACHINE}.bin
 
-	if [ "${PMIC_SUPPORT}" = "1" ]; then
-		install -m 0644 ${PMIC_BUILD_DIR}/bl2.bin ${DEPLOYDIR}/bl2-${MACHINE}_pmic.bin
-		install -m 0644 ${PMIC_BUILD_DIR}/bl31.bin ${DEPLOYDIR}/bl31-${MACHINE}_pmic.bin
-	fi
+        if [ "${PMIC_SUPPORT}" = "1" ]; then
+                install -m 0644 ${PMIC_BUILD_DIR}/bl2.bin ${DEPLOYDIR}/bl2-${MACHINE}_pmic.bin
+                install -m 0644 ${PMIC_BUILD_DIR}/bl31.bin ${DEPLOYDIR}/bl31-${MACHINE}_pmic.bin
+        fi
 }
 
 # Support for RZ SBC board
@@ -85,8 +94,8 @@ PV = "v2.9+git"
 COMPATIBLE_MACHINE_rzg2l = "(smarc-rzg2l|rzg2l-dev|smarc-rzg2lc|rzg2lc-dev|smarc-rzg2ul|rzg2ul-dev|smarc-rzv2l|rzv2l-dev|rzpi)"
 
 SRC_URI_remove = " \
-	file://0001-plat-renesas-rz-Disable-unused-CRYPTO_SUPPORT.patch \
-	git://github.com/ARMmbed/mbedtls.git;branch=mbedtls-2.28;name=mbedtls;destsuffix=mbedtls \
+        file://0001-plat-renesas-rz-Disable-unused-CRYPTO_SUPPORT.patch \
+        git://github.com/ARMmbed/mbedtls.git;branch=mbedtls-2.28;name=mbedtls;destsuffix=mbedtls \
 "
 
 PLATFORM_rzpi = "g2l"
@@ -94,4 +103,6 @@ EXTRA_FLAGS_rzpi = "BOARD=sbc_1"
 PMIC_EXTRA_FLAGS_rzpi = "BOARD=smarc_pmic_2"
 FLASH_ADDRESS_BL2_BP_rzpi = "00000"
 FLASH_ADDRESS_FIP_rzpi = "1D200"
+
+
 
