@@ -75,10 +75,9 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
 
 SRC_URI = " \
-        git://github.com/Renesas-SST/rz-atf.git;branch=${BRANCH};protocol=https \
-        git://github.com/ARMmbed/mbedtls.git;branch=${BRANCH_mbedtls};name=mbedtls;destsuffix=mbedtls \
+        git://github.com/vudangRVC/rz-atf-sst.git;branch=${BRANCH};protocol=https \
 "
-BRANCH = "dunfell/rz-sbc"
+BRANCH = "dunfell/rz-sbc-rebase-vlp-3.0.6"
 SRCREV = "${AUTOREV}"
 PV = "v2.9+git"
 
@@ -86,7 +85,6 @@ COMPATIBLE_MACHINE_rzg2l = "(smarc-rzg2l|rzg2l-dev|smarc-rzg2lc|rzg2lc-dev|smarc
 
 SRC_URI_remove = " \
 	file://0001-plat-renesas-rz-Disable-unused-CRYPTO_SUPPORT.patch \
-	git://github.com/ARMmbed/mbedtls.git;branch=mbedtls-2.28;name=mbedtls;destsuffix=mbedtls \
 "
 
 PLATFORM_rzpi = "g2l"
