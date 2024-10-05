@@ -23,6 +23,8 @@ LINUX_VERSION ?= "${@oe.utils.conditional("IS_RT_BSP", "1", "5.10.201-cip41-rt17
 PV = "${LINUX_VERSION}+git${SRCPV}"
 PR = "r1"
 
+# KERNEL_VERSION_SANITY_SKIP="1"
+
 SRC_URI_append = "\
   file://touch.cfg \
 "
