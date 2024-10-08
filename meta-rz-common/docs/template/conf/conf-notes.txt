@@ -7,3 +7,4 @@ Targets are:
     core-image-bsp
     core-image-weston
     core-image-qt
+    renesas-core-image-minimal
