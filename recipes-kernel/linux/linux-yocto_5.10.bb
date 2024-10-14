@@ -53,6 +53,12 @@ do_deploy:append:rzg2l-sbc(){
 
     install -m 0644 ${B}/arch/arm64/boot/dts/renesas/rzpi.dtb ${DEPLOYDIR}/target/images/dtbs/$dtb_base_name-${KERNEL_DTB_NAME}.$dtb_ext
     ln -sf $dtb_base_name-${KERNEL_DTB_NAME}.$dtb_ext ${DEPLOYDIR}/target/images/dtbs/rzpi.dtb
+
+    # Copy boot-related files to the boot folder in the deploy directory.
+    # #These files will be prepared for installation to the partition 1
+    install -m 755 -d ${DEPLOYDIR}/boot
+    install -m 0644 ${D}/boot/Image* ${DEPLOYDIR}/boot/Image
+    cp -rf ${D}/boot/dtb ${DEPLOYDIR}/boot
 }
 
 PV = "${LINUX_VERSION}+git"
