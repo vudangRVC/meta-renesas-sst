@@ -294,6 +294,3 @@ OLDEST_KERNEL = "5.10"
 
 # Disable secure EFI boot
 KERNEL_DANGLING_FEATURES_WARN_ONLY = "1"
-
-# Temporary remove flash-writer
-EXTRA_IMAGEDEPENDS:remove:rzg2l-sbc += "flash-writer"
