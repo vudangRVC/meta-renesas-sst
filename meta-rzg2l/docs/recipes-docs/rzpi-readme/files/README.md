@@ -22,6 +22,8 @@ Known issues:
  - Only support for 48 Khz audio sampling rate family.
 
 ## Building
+
+### Core-image
 Step 1: Prepare environment for building package
 
 Linux Ubuntu 20.04 is recommended for Yocto build.
@@ -195,6 +197,45 @@ rzpi/
     └── Readme.md
 
 28 directories, 92 files
+```
+
+### eSDK
+
+The extensible SDK makes it easy to add new applications and libraries to an image, modify the source for an existing component, test changes on RZ/G2L-SBC, and ease integration into the rest of the OpenEmbedded Build System.
+
+The eSDK build generates an installer, which you will use to install the eSDK on the same PC where your Yocto environment is set up.
+
+Running the build script with the following option to build eSDK:
+
+```shell
+$ ./rzsbc_yocto.sh build-sdk
+```
+
+The resulting eSDK installer will be located in `~/Yocto/yocto_rzsbc_board/build/tmp/deploy/sdk`.
+The eSDK installer will have the extension “.sh”.
+
+```shell
+$ ls
+poky-glibc-x86_64-core-image-qt-aarch64-rzpi-toolchain-ext-3.1.26.sh
+poky-glibc-x86_64-core-image-qt-aarch64-rzpi-toolchain-ext-3.1.26.host.manifest
+poky-glibc-x86_64-core-image-qt-aarch64-rzpi-toolchain-ext-3.1.26.testdata.json
+poky-glibc-x86_64-core-image-qt-aarch64-rzpi-toolchain-ext-3.1.26.target.manifest
+```
+
+**The SDK build may fail depending on the build environment. At that time, please run the build again after a period of time**
+
+#### Install eSDK on your host machine
+
+The eSDK allows you to develop and test custom applications for RZG2L-SBC on different systems. This section covers setting up your development environment and with the setup, you can develop your applications that run on RZG2L-SBC.
+
+```shell
+$ sh ./build/tmp/deploy/sdk/poky-glibc-x86_64-core-image-qt-aarch64-rzpi-toolchain-ext-3.1.26.sh
+```
+
+Everytime you want to build your applications, run the environment setup script first (`~/esdk/3.1.26` is the location that the eSDK is installed):
+
+```shell
+$ source ~/esdk/3.1.26/environment-setup-aarch64-poky-linux
 ```
 
 ## Programming/Flashing images for RZG2L-SBC
@@ -747,3 +788,913 @@ After installing a package using dpkg, if you need to resolve dependency issues,
 ```
 root@rzpi:~# apt-get install -f
 ```
+
+### Network Boot and TFTP
+This section outlines the process for network booting using TFTP (Trivial File Transfer Protocol). It includes configuration steps and commands necessary for a successful setup.
+
+Network booting allows devices to boot from an image stored on a network server, rather than relying on local storage.
+
+#### TFTP server setup
+This subsection covers the setup of a TFTP server, which is necessary for the device to retrieve the boot images over the network.
+
+- Step 1: Install a TFTP server using the following command:
+
+  ```shell
+  $ sudo apt update
+  $ sudo apt install tftpd-hpa
+  ```
+
+- Step 2: Create a TFTP directory and set the appropriate permissions.
+
+  ```shell
+  $ sudo mkdir /tftpboot
+  $ sudo chmod 755 /tftpboot
+  ```
+
+- Step 3: Edit the TFTP configuration file (typically found at /etc/default/tftpd-hpa) and set it up as follows:
+
+  ```shell
+  # /etc/default/tftpd-hpa
+  TFTP_USERNAME="<tftp_name>"
+  TFTP_DIRECTORY="</path/to/your/tftp_folder"
+  TFTP_ADDRESS="0.0.0.0:69"
+  TFTP_OPTIONS="--secure"
+  ```
+
+  For example:
+  ```shell
+  # /etc/default/tftpd-hpa
+  TFTP_USERNAME="tftp"
+  TFTP_DIRECTORY="/tftpboot"
+  TFTP_ADDRESS="0.0.0.0:69"
+  TFTP_OPTIONS="--secure"
+  ```
+
+- Step 4: Restart the TFTP service to apply the changes.
+
+  ```shell
+  $ sudo systemctl restart tftpd-hpa
+  ```
+
+  Make sure the tftpd-hpa service is running:
+
+  ```shell
+  $ sudo systemctl status tftpd-hpa
+  ```
+
+#### NFS server setup
+
+NFS (Network File System) is a protocol that allows clients to access files over a network as if they were local. It enables multiple clients to share files from a central server, simplifying file management across machines.
+
+In this setup, NFS will share the root filesystem (rootfs) with clients booting over the network. This allows client devices to dynamically retrieve their operating system files and configurations, making it ideal for embedded systems that require consistent file access without local storage.
+
+- Step 1: Install NFS server and NFS client package if it's not already installed on your host PC:
+  ```shell
+  $ sudo apt update
+  $ sudo apt install nfs-kernel-server nfs-common
+  ```
+
+- Step 2: Edit the `/etc/exports` file to specify the directories to be shared and their access permissions.
+  ```shell
+  $ vi /etc/exports
+  ```
+
+  For example, to share the `/tftpboot` directory, add the following line:
+
+  ```shell
+  /tftpboot *(rw,no_root_squash,async)
+  ```
+
+  Here, * allows access from any client. Consider replacing it with specific client IP addresses for better security.
+
+- Step 3: After editing `/etc/exports`, run the following command to export the directories:
+
+  ```shell
+  $ sudo exportfs -a
+  ```
+
+- Step 4: Start the NFS server and enable it to run at boot:
+  ```shell
+  $ sudo systemctl start nfs-kernel-server
+  $ sudo systemctl enable nfs-kernel-server
+  ```
+
+#### U-Boot DHCP IP Configuration
+
+In this subsection, the U-Boot environment will be configured for network settings, including the specification of the Ethernet device and the configuration of the server and device IP addresses.
+
+- Step 1: Enter the U-Boot interactive command prompt for configuration by pressing any key when prompted with `Hit any key to stop autoboot`:
+
+
+  ```shell
+  U-Boot 2021.10 (May 24 2024 - 07:26:08 +0000)
+
+  CPU:   Renesas Electronics CPU rev 1.0
+  Model: RZpi
+  DRAM:  896 MiB
+  MMC:   sd@11c00000: 0
+  Loading Environment from SPIFlash... SF: Detected is25wp256 with page size 256 Bytes, erase size 4 KiB, total 32 MiB
+
+  In:    serial@1004b800
+  Out:   serial@1004b800
+  Err:   serial@1004b800
+  Net:   eth0: ethernet@11c20000, eth1: ethernet@11c30000
+  Hit any key to stop autoboot:  0
+  =>
+  =>
+  ```
+
+- Step 2: Enter Specify the Ethernet device (eth1) to use for the network connection. For example,
+
+  ```shell
+  => setenv ethact ethernet@11c30000
+  ```
+
+- Step 3: Configure server and device IPs:
+
+  ```shell
+  => setenv serverip <server_ip>
+  => setenv ipaddr <device_ip>
+  ```
+
+  For example:
+  ```shell
+  => setenv serverip 192.168.5.86
+  => setenv ipaddr 192.168.5.30
+  ```
+
+##### TFTP Boot
+
+In this subsection, the boot arguments and commands for U-Boot will be configured to load the kernel image and device tree from the TFTP server.
+
+Step 1: After setting up the TFTP server, you need to ensure that the necessary boot images, including the kernel image, device tree blob (DTB), device tree overlay (DTBO), and root file system, are placed in the TFTP directory.
+
+```shell
+renesas@builder-pc:/tftpboot/rzsbc/$ tree -L 2
+.
+├── Image
+├── overlays
+│   ├── rzpi-can.dtbo
+│   ├── rzpi-dsi.dtbo
+│   ├── rzpi-ext-i2c.dtbo
+│   ├── rzpi-ext-spi.dtbo
+│   └── rzpi-ov5640.dtbo
+├── rootfs
+│   ├── bin -> usr/bin
+│   ├── boot
+│   ├── dev
+│   ├── etc
+│   ├── home
+│   ├── lib -> usr/lib
+│   ├── media
+│   ├── mnt
+│   ├── opt
+│   ├── proc
+│   ├── root
+│   ├── run
+│   ├── sbin -> usr/sbin
+│   ├── snap
+│   ├── srv
+│   ├── sys
+│   ├── tmp
+│   ├── usr
+│   └── var
+└── rzpi.dtb
+```
+- Step 2: Define the boot arguments to specify the network and root file system settings:
+
+  ```shell
+  => setenv bootargs 'consoleblank=0 strict-devmem=0 ip=<device_ip>:<server_ip>::::<eth_device> root=/dev/nfs rw nfsroot=<server_ip>:</path/to/your/rootfs>,v3,tcp' 
+  ```
+
+  For example: 
+  ```shell
+  => setenv bootargs 'consoleblank=0 strict-devmem=0 ip=192.168.5.30:192.168.5.86::::eth1 root=/dev/nfs rw nfsroot=192.168.5.86:/tftpboot/rzsbc/rootfs,v3,tcp'
+  ```
+
+- Step 3: Configure the boot command to load the kernel image and device tree files.
+
+  ```shell
+  => setenv bootcmd 'tftp <load_address_kernel> <path/to/kernel_image>; tftp <load_address_dtb> <path/to/device_tree_blob>; tftp <load_address_dtbo> <path/to/dtbo file>; booti <load_address_kernel> - <load_address_dtb> - <load_address_dtbo>'
+  ```
+
+  For example load `Image`, `rzpi.dtb` and `rzpi-ext-spi.dtbo` files.
+  ```shell
+  => setenv bootcmd 'tftp 0x48080000 rzsbc/Image; tftp 0x48000000 rzsbc/rzpi.dtb; tftp 0x48010000 rzsbc/overlays/rzpi-ext-spi.dtbo; booti 0x48080000 - 0x48000000 - 0x48010000'
+  ```
+
+- Step 4: Save the changes to the environment variables so they persist across reboots:
+
+  ```shell
+  => saveenv
+  ```
+
+- Step 5: Initiate the boot progress by running bootcmd:
+
+  ```shell
+  run bootcmd
+  ```
+
+  If everything is set up correctly, the images will be booted from the network.
+
+  ```
+  => run bootcmd
+  Using ethernet@11c30000 device
+  TFTP from server 192.168.5.86; our IP address is 192.168.5.30
+  Filename rzsbc/Image'.
+  Load address: 0x48080000
+  Loading: #################################################################
+          #################################################################
+          #################################################################
+          19.6 MiB/s
+  done
+  Bytes transferred = 18035200 (1133200 hex)
+  Using ethernet@11c30000 device
+  TFTP from server 192.168.5.86; our IP address is 192.168.5.30
+  Filename 'rzsbc/rzpi.dtb'.
+  Load address: 0x48000000
+  Loading: ####
+          8.6 MiB/s
+  done
+  Bytes transferred = 44855 (af37 hex)
+  Using ethernet@11c30000 device
+  TFTP from server 192.168.5.86; our IP address is 192.168.5.30
+  Filename 'rzsbc/overlays/rzpi-ext-spi.dtbo'.
+  Load address: 0x48010000
+  Loading: #
+          455.1 KiB/s
+  done
+  Bytes transferred = 932 (3a4 hex)
+  Moving Image from 0x48080000 to 0x48200000, end=493a0000
+  ## Flattened Device Tree blob at 48000000
+    Booting using the fdt blob at 0x48000000
+    Loading Device Tree to 000000007bf1a000, end 000000007bf27f36 ... OK
+
+  Starting kernel ...
+  ```
+
+### Using SSH and SCP for Remote Access and File Transfers
+
+This section explains how to use SSH (Secure Shell) for secure remote access to the RZ/G2L-SBC and how to utilize SCP (Secure Copy Protocol) for file transfers. By default, OpenSSH is employed as it is a feature-rich and widely used SSH implementation that offers advanced capabilities for secure communication. While OpenSSH serves as the default option, Dropbear SSH can be considered for lightweight, resource-constrained environments making it particularly suitable for embedded systems.
+
+#### Differences Between Dropbear and OpenSSH
+- **Resource Usage**: Dropbear is optimized for lower resource usage, making it ideal for embedded systems.
+- **Feature Set**: OpenSSH has a more extensive feature set, including advanced options for authentication and configuration.
+- **Key Authentication**: OpenSSH requires the use of SSH keys for authentication, while Dropbear can operate with both keys and passwords.
+
+#### Using OpenSSH
+
+OpenSSH is a widely-used, full-featured SSH implementation that provides encrypted communication between hosts. It supports advanced authentication methods and secure remote administration, making it ideal for robust network security.
+
+The RZ/G2L-SBC supports both password and key-based authentication methods. To enhance security by enforcing SSH key-based login, follow these steps to switch to key-based authentication:
+
+- Step 1: Generate an SSH key pair on your local machine, run the following command to generate a secure SSH key pair:
+
+  ```shell
+  $ ssh-keygen -t rsa -b 4096
+  ```
+
+  - Step 2: Copying an SSH public key to the board using SSH, transfer your public key to the board with this command:
+
+  ```shell
+  $ cat ~/.ssh/id_rsa.pub | ssh username@remote_host "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys"
+  ```
+  For example:
+
+  ```shell
+  $ cat ~/.ssh/id_rsa.pub | ssh root@192.168.5.30 "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys"
+  ```
+
+- Step 3: Authenticate using SSH keys:
+
+  ```shell
+  $ ssh root@192.168.5.30
+  ```
+
+  If this is the first time connecting to this host (as mentioned in the previous method), a message similar to the following may appear:
+
+  ```shell
+  $ The authenticity of host 192.169.5.30 (192.168.5.30)' can't be established.
+  ED25519 key fingerprint is SHA256:esQPI0Ip9HZH9A6dvTsA9+k7eLjT4sqzpiF7znl0tyw.
+  This key is not known by any other names
+  Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+  ```
+
+  This indicates that the local computer does not recognize the remote host. Type `yes` and press `ENTER` key to proceed.
+
+- Step 4: Disable password authentication. If login to your account using SSH is successful without a password, SSH key-based authentication has been correctly configured. However, password-based authentication remains active, which leaves the server vulnerable to brute-force attacks.
+
+  Once the SSH connection is established, open the SSH daemon's configuration file:
+
+  ```shell
+  $ vi /etc/ssh/sshd_config
+  ```
+
+  Inside the file, search for a directive called `PasswordAuthentication`. This may be commented out. Uncomment the line by removing any # at the beginning of the line, and set the value to `no`. This will disable your ability to log in through SSH using account passwords: /etc/ssh/sshd
+
+  ```shell
+  PasswordAuthentication no
+  ```
+
+- Step 5: Restart the SSH service to apply the changes:
+  ```shell
+  $ systemctl restart ssh
+  ```
+
+#### SSH Access
+
+After configuring the authentication key, access to the RZ/G2L-SBC via SSH can be achieved using various tools available on both Windows and Linux platforms.
+
+1. **SSH from Windows host**
+   - **Using Git Bash**:
+        - Install Git for Windows if you haven't already.
+        - Use the following command:
+            ```shell
+            $ ssh username@<device_ip>
+            ```
+            For example:
+            ```shell
+            $ ssh root@192.168.5.30
+            ```
+        - Type `yes` to confirm the host's authenticity when prompted.
+          ```shell
+          $ ssh root@192.168.5.30
+          The authenticity of host '192.168.5.30 (192.168.5.30)' can't be established.
+          RSA key fingerprint is SHA256:v39PhjNp4F7HcQpwJmfNOYcC+ZZ3Yw8i1ICsL2mXUgg.
+          This key is not known by any other names.
+          Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+          Warning: Permanently added '192.168.5.30' (RSA) to the list of known hosts.
+          ```
+
+   - **Using MobaXTerm**:
+        - Download and install MobaXterm.
+        - Select "Session" > "SSH" and enter the device's IP address.
+        - Confirm the host's authenticity if prompted.
+
+2. **SSH from Linux host**
+    - Open a terminal and run
+        ```shell
+        $ ssh username@<device_ip>
+        ```
+        For example:
+        ```shell
+        $ ssh root@192.168.5.30
+        ```
+    - Type `yes` to confirm the host's authenticity when prompted.
+
+#### SCP (Secure Copy)
+
+To securely transfer files between local and remote systems, SCP can be used on both Windows and Linux.
+
+1. **SCP from Windows host**
+   - **Using Git Bash**:
+     - Install Git for Windows if you haven't already.
+     - Use the following command:
+       ```shell
+       $ scp <local_file> username@<device_ip>:<remote_path>
+       ```
+       For example:
+       ```shell
+       $ scp hello-world root@192.168.5.30:home/root
+       ```
+     - Type `yes` to confirm the host's authenticity when prompted.
+
+   - **Using WinSCP**:
+     - Open WinSCP and select "New Session"
+     - Choose SCP as protocol then enter the remote device's IP address and the user name.
+     - Click "Login" and choose yes to confirm the host's authenticity when prompted.
+     - Drag and drop files between your local machine (Left) and the target board (Right) to transfer.
+
+2. **SCP from Linux host**
+   - Use the following command:
+      ```shell
+      $ scp <local_file> username@<device_ip>:<remote_path>
+      ```
+     For example:
+      ```shell
+      $ scp hello-world root@192.168.5.30:home/root
+      ```
+   - Type `yes` to confirm the host's authenticity when prompted.
+
+#### Switching from OpenSSH to Dropbear
+
+As mentioned, by default, RZ/G2L-SBC uses Open SSH. If you need to switch from OpenSSH to Dropbear, follow these steps to modify the local.conf:
+
+- Step 1: Edit the local.conf file in Yocto build configuration
+- Step 2: Comment the following lines in the `local.conf`
+
+  ```shell
+  IMAGE_FEATURES_remove = "ssh-server-dropbear" 
+  IMAGE_FEATURES_append = "ssh-server-openssh"
+  ```
+  This will remove OpenSSH and enable Dropbear for the board.
+
+- Step 3: Rebuild and deploy the image to apply the changes.
+
+### Remote debugging using GDBServer on RZG2L-SBC
+
+In this section, GDBServer will be utilized to facilitate remote debugging on the RZ/G2L-SBC. GDBServer enables the debugging process to run on the RZ/G2L-SBC (the target machine) while being controlled from a different system (the host machine) via a network connection.
+
+This setup is particularly beneficial for application development, as it allows the execution and debugging of programs on the RZ/G2L-SBC while providing the capability to view and control the process from the host machine.
+
+To ensure that all necessary tools and libraries for debugging are available, preparations must be made on both the host and target machines. With this preparation complete, the next step is to proceed with the remote debugging process.
+
+#### Prepare GDB on the host machine
+
+GGDB has two components to work with. One is the host side `gdb` debugger. The other is the target side `gdbserver`. The GDB (GNU debugger) is executed on the host side. It is executed on your host system to connect to the target system. It is always available within the eSDK. The eSDK installation as described in Section `Install eSDK on your host machine` is a prerequisite for this operation .
+
+To set up the environment that would use the GDB targeting the RZ/G2L-SBC from the eSDK, simply run the poky environment script as follows:
+
+```shell
+$ source ~/esdk/3.1.26/environment-setup-aarch64-poky-linux
+```
+
+To confirm GDB is ready to use, run the following command and check the result:
+```shell
+$ echo ${GDB}
+aarch64-poky-linux-gdb
+```
+
+#### Install GDBServer on RZG2L-SBC
+
+By default, GDBServer is not installed on the RZ/G2L-SBC. It is necessary to install it using APT.
+
+Execute the following command to install GDBServer:
+
+```shell
+root@rzpi:~# apt-get update
+root@rzpi:~# apt-get install gdbserver
+```
+**Please make sure you have internet access before running `apt-get update`.**
+
+This concludes the preparation of the basic host environment. The next section will discuss the remote debugging process.
+
+#### Remote Debugging Example on CLI
+
+CLI (Command Line Interface) is a text-based user interface used to interact with computer programs and operating systems. Unlike graphical user interfaces (GUIs), where users interact with visual elements (like buttons and icons), a CLI requires users to input commands in text form.
+
+Firstly, run GDBServer with a specific network port (`2000` is the assinged port in this case) and your program `hello-gdbserver` as a parameter on the target as follows:
+
+```shell
+root@rzpi:~# gdbserver localhost:2000 hello-gdbserver
+Process /home/root/hello-gdbserver created; pid = 358
+Listening on port 2000
+```
+
+The content before compiling of the `hello-gdbserver` program:
+```c
+#include <stdio.h>
+
+int main() {
+
+        int i;
+
+        printf("Program to demonstrate gdbserver debugging!\n");
+        printf("Print from 1 to 10\n");
+
+        for (i = 1;i <= 10;i++)
+                printf("%d\n", i);
+
+        printf("Program completed!\n");
+
+        return 0;
+}
+```
+
+The target's IP address is required for use on the host later. In this example, `169.254.43.30` is the IP address that will be used.
+
+```shell
+root@rzpi:~# ifconfig eth1
+eth1: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500  metric 1
+        inet 169.254.43.30  netmask 255.255.0.0  broadcast 169.254.255.255
+        inet6 fe80::1ea0:d3ff:fe20:119b  prefixlen 64  scopeid 0x20<link>
+        ether 1c:a0:d3:20:11:9b  txqueuelen 1000  (Ethernet)
+        RX packets 34497  bytes 2657706 (2.5 MiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 68954  bytes 97379412 (92.8 MiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+        device interrupt 133
+```
+
+Next, launch GDB on the host:
+
+```shell
+$ aarch64-poky-linux-gdb
+GNU gdb (GDB) 9.1
+Copyright (C) 2020 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+Type "show copying" and "show warranty" for details.
+This GDB was configured as "--host=x86_64-pokysdk-linux --target=aarch64-poky-linux".
+Type "show configuration" for configuration details.
+For bug reporting instructions, please see:
+<http://www.gnu.org/software/gdb/bugs/>.
+Find the GDB manual and other documentation resources online at:
+    <http://www.gnu.org/software/gdb/documentation/>.
+
+For help, type "help".
+Type "apropos word" to search for commands related to "word".
+(gdb)
+```
+
+Use `target remote` with the IP address and the assigned network port to connect to the target.
+
+```shell
+(gdb) target remote 169.254.43.30:2000
+Remote debugging using 169.254.43.30:2000
+Reading /home/root/hello-gdbserver from remote target...
+warning: File transfers from remote targets can be slow. Use "set sysroot" to access files locally instead.
+Reading /home/root/hello-gdbserver from remote target...
+Reading symbols from target:/home/root/hello-gdbserver...
+Reading /lib64/ld-linux-aarch64.so.1 from remote target...
+Reading /lib64/ld-linux-aarch64.so.1 from remote target...
+Reading symbols from target:/lib64/ld-linux-aarch64.so.1...
+Reading /lib64/ld-2.31.so from remote target...
+Reading /lib64/.debug/ld-2.31.so from remote target...
+Reading /lib64/.debug/ld-2.31.so from remote target...
+Reading symbols from target:/lib64/.debug/ld-2.31.so...
+0x0000fffff7fcd0c0 in _start () from target:/lib64/ld-linux-aarch64.so.1
+```
+
+Then, add a break point at `main` function to stop the program at that function in the next step:
+
+```shell
+(gdb) b main
+Breakpoint 1 at 0xaaaaaaaa07cc: file hello-gdbserver.c, line 7.
+```
+
+Now, you can use `continue` to jump to the main function:
+
+```shell
+(gdb) continue
+Continuing.
+Reading /lib64/libc.so.6 from remote target...
+Reading /lib64/libc-2.31.so from remote target...
+Reading /lib64/.debug/libc-2.31.so from remote target...
+Reading /lib64/.debug/libc-2.31.so from remote target...
+
+Breakpoint 1, main () at hello-gdbserver.c:7
+warning: Source file is more recent than executable.
+7               printf("Program to demonstrate gdbserver debugging!\n");
+```
+
+Then, you can type `continue` to run the rest of the program:
+
+```shell
+(gdb) continue
+Continuing.
+[Inferior 1 (process 342) exited normally]
+```
+
+Eventually, run `quit` to exit GDB and stop the debugging section.
+
+```shell
+(gdb) quit
+```
+
+In parallel, the output can be monitored on the target device.
+
+```shell
+Remote debugging from host ::ffff:169.254.43.86, port 40666
+Program to demonstrate gdbserver debugging!
+Print from 1 to 10
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+Program completed!
+
+Child exited with status 0
+root@rzpi:~#
+```
+
+#### Remote Debugging Example on Visual Studio Code
+
+In the previous subsection, remote debugging using the command line was discussed, specifically with GDB and GDBServer. While this method is effective, it can be complex and challenging, particularly for developers who may not be familiar with command-line operations.
+
+This section describes how to set up and use Visual Studio Code (VSCode) for remote debugging with the GDB. Using VSCode simplifies the debugging process by providing a user-friendly graphical interface that streamlines the workflow, making it easier to troubleshoot and test C/C++ applications running on RZ-G2L/SBC.
+
+Here's how to get started:
+
+Step 1: Install the C/C++ Extension (If have not installed yet):
+-	Open VSCode.
+-	Go to the Extensions tab on the left side (or press Ctrl + Shift + X).
+-	Search for C/C++.
+-	Click Install to add the extension.
+
+Step 2: Create a Workspace:
+-	Create a new workspace (you can name it `remote-debugging`).
+-	Create a folder within this workspace and place your program file, `hello-gdbserver.c` in it.
+-	Build the execution file using eSDK, we assume that you have source the environment.
+
+```shell
+renesas@builder-pc:~/remote-debugging/program$ $CC $CFLAGS hello-gdbserver.c -o hello-gdbserver
+```
+
+Step 3: Set Up Debug Configuration:
+-	Open the Run and Debug view in VSCode (or press Ctrl + Shift + D)
+-	Click on create a `launch.json` file to configure the debugger.
+-	Select the C++ (GDB) option and customize the configuration as needed.
+-	Place the content as below:
+
+  ```shell
+  {
+      "version": "0.2.0",
+      "configurations": [
+          {
+              "name": "gdb",
+              "type": "cppdbg",
+              "request": "launch",
+              "program": "</local/path/to/the/executable>",
+              "cwd": "${workspaceFolder}",
+              "stopAtEntry": true,
+              "stopAtConnect": true,
+              "MIMode": "gdb",
+              "miDebuggerPath": "</path/to/gdb>",
+              "miDebuggerServerAddress": "<target_addr>:<port>",
+              "setupCommands": [
+                  {
+                      "description": "Enable pretty-printing for gdb",
+                      "text": "enable-pretty-printing",
+                      "ignoreFailures": true
+                  }
+              ]
+          }
+      ]
+  }
+  ```
+
+  For example:
+
+  ```shell
+  {
+      "version": "0.2.0",
+      "configurations": [
+          {
+              "name": "gdb",
+              "type": "cppdbg",
+              "request": "launch",
+              "program": "/home/renesas/remote-debugging/program/hello-gdbserver",
+              "cwd": "${workspaceFolder}",
+              "stopAtEntry": true,
+              "stopAtConnect": true,
+              "MIMode": "gdb",
+              "miDebuggerPath": "/home/renesas/esdk/3.1.26/tmp/sysroots/x86_64/usr/bin/aarch64-poky-linux/aarch64-poky-linux-gdb",
+              "miDebuggerServerAddress": "169.254.43.30:2000",
+              "setupCommands": [
+                  {
+                      "description": "Enable pretty-printing for gdb",
+                      "text": "enable-pretty-printing",
+                      "ignoreFailures": true
+                  }
+              ]
+          }
+      ]
+  }
+  ```
+
+- Ensure your workspace appears as follows:
+
+```shell
+renesas@builder-pc:~/remote-debugging$ tree -a
+.
+├── program
+│   ├── hello-gdbserver
+│   └── hello-gdbserver.c
+└── .vscode
+    └── launch.json
+
+2 directories, 4 files
+```
+ 
+Step 4: Connect to the Remote Target:
+  
+- As with the CLI section, start the GDBServer on the remote device and specify the target application.
+
+```shell
+root@rzpi:~# gdbserver localhost:2000 hello-gdbserver
+Process /home/root/hello-gdbserver created; pid = 358
+Listening on port 2000 
+```
+
+Step 5: Start the debugging:
+-	Back in VSCode, select your launch configuration. 
+-	You can place breakpoint within `hello-gdbserver.c` file in VSCode.
+-	Click the Start Debugging button (green play icon) to begin the debugging session.
+-	You can press F5 to continue execution, F10 to step over the current line, and F11 to step into functions, etc.
+
+#### Remote Debugging Example on Eclipse IDE
+
+In the previous section, the use of VSCode for remote debugging with GDB and GDBServer was discussed. While VSCode offers a modern and user-friendly environment, many developers prefer Eclipse IDE for its comprehensive toolset and robust support for C/C++ development. This section explains how to set up and use Eclipse IDE for remote debugging with GDB.
+
+Step 1: Install the Eclipse IDE (if not already installed) by following the official instructions on the Eclipse website: https://www.eclipse.org/downloads/packages/installer
+
+Step 2: Create a C/C++ project:
+- Open Eclipse and navigate to File > New > C/C++ Project.
+- Create a new C/C++ file and paste the content from `hello-gdbserver.c`.
+
+Step 3: Configure the Cross Toolchain
+- Go to Project -> Properties.
+- In the left pane, select C/C++ Build > Settings.
+- Under the Tool Settings tab, configure the Cross Settings as follows:
+  - Prefix: `aarch64-poky-linux`
+  - Path: `/path/to/your/aarch64-poky-linux`
+
+  For example:
+  - Prefix: `aarch64-poky-linux`
+  - Path: `/home/renesas/esdk/3.1.26/tmp/sysroots/x86_64/usr/bin/aarch64-poky-linux`
+- In the Includes section, specify the include paths:
+  - Include paths: `/home/renesas/esdk/3.1.26/tmp/sysroots/rzpi/usr/include`
+
+- In the Cross GCC Linker section, go to Libraries and specify the library search path:
+  - Library search path: `/home/renesas/esdk/3.1.26/tmp/sysroots/x86_64/usr/lib`
+
+- In the Miscellaneous section, specify the linker flags:
+  - Linker flags: `--sysroot=/home/renesas/esdk/3.1.26/poky_sdk/tmp/sysroots/rzpi`
+
+Step 4: Configure Eclipse to connect to the GDB Server:
+- In Eclipse, go to the `Run` menu and select `Debug Configurations`.
+- Under the Debugger tab, select `C/C++ Remote Application`
+- In the `Main` tab, in `Connection Type`, select `Remote` and click `Edit`
+  - Host: Enter the IP address of RZ/G2L-SBC.
+  - User: Enter the user name of RZ/G2L-SBC (typically `root`).
+  - Authentication: Choose between key-based authentication or password-based authentication, depending on your preference.
+  - Finally, click Finish to complete the setup for the SSH session.
+- In the Remote Absolute File Path field, specify the location where Eclipse will copy the program on the RZ/G2L-SBC. Click Browse to connect via SSH and select the target location, or manually enter the path on the RZ/G2L-SBC.
+- In the Debugger tab:
+  - In GDB Debugger: Provide the path to your cross-compiled GDB (e.g., `/home/renesas/esdk/3.1.26/tmp/sysroots/x86_64/usr/bin/aarch64-poky-linux/aarch64-poky-linux-gdb`).
+
+Step 5: Start the Debugging Session: 
+- After configuring the debug settings, click Apply and then Debug. 
+- Eclipse will attempt to connect to the GDB server running on your target device.
+- If the connection is successful, it will be possible to set breakpoints, step through the code, and inspect variables just as in a local debugging session.
+
+**Note**: The path of the compiler may need to be adjusted to reflect the specific system configuration.
+
+### Postmortem Analysis Example
+
+This section provides an overview of postmortem analysis, a critical process for diagnosing application crashes by examining core dump files. It details how developers can analyze these core dumps to pinpoint the exact lines of code that led to an error, allowing for effective troubleshooting and resolution of issues.
+
+#### Postmortem Analysis Example on CLI
+
+This subsection describes how to perform postmortem analysis using the command-line interface (CLI). It emphasizes the steps for loading core dump files with CLI tools, enabling developers to navigate directly to the lines of code where errors occurred. The section highlights the efficiency of command-line tools for diagnosing issues quickly.
+
+Step 1: Create a simple C program that intentionally causes a segmentation fault. For example, the file name `segfault_example.c` has below content:
+ 
+ ```shell
+  #include <stdio.h>
+
+  int main() {
+          int *ptr = NULL;
+
+          printf("Attempting to dereference a NULL pointer...\r\n");
+
+          *ptr = 42;
+
+          return 0;
+  } 
+ ```
+Step 2: Source the environment and compile the `segfault_example.c` program
+
+ ```shell
+  renesas@builder-pc:~$ source ~/esdk/3.1.26/environment-setup-aarch64-poky-linux
+  SDK environment now set up; additionally you may now run devtool to perform development tasks.
+  Run devtool --help for further details.
+  renesas@builder-pc:~/remote-debugging/segfault_program$ $CC $CFLAGS segfault_example.c -o segfault_example
+ ```
+
+Step 3: Transfer the program to RZ/G2L-SBC
+
+ ```shell
+ renesas@builder-pc:~/remote-debugging/segfault_program$ scp segfault_example root@169.254.43.30:/home/root
+ ```
+
+Step 4: Ensure your system allows core dumps. You can set the core dump size to unlimited by running:
+ 
+ ```shell
+ root@rzpi:~# ulimit -c unlimited
+ ```
+Step 5: Run the program and get the core dump file
+ 
+ ```shell
+  root@rzpi:~# ./segfault_example
+
+  Attempting to dereference a NULL pointer...
+  Segmentation fault (core dumped)
+ ```
+When the segmentation fault occurs, a core dump file will be generated, usually named core or core.<pid>, for example core.880 in my case.
+
+ ```shell
+  root@rzpi:~# ls core*
+
+  core.880
+ ```
+
+Transfer the core dump file back to your host machine.
+
+Step 6: Using GDB to analyze the core dump file. Return to your remote machine and use the following command.
+ 
+ ```shell
+ renesas@builder-pc:~/remote-debugging/segfault_program$ aarch64-poky-linux-gdb </path/to/local_program> </path/to/core/dump/file>
+ ```
+For example:
+
+ ```shell
+  renesas@builder-pc:~/remote-debugging/segfault_program$ aarch64-poky-linux-gdb segfault_example core.810
+
+  GNU gdb (GDB) 9.1
+  Copyright (C) 2020 Free Software Foundation, Inc.
+  License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+  This is free software: you are free to change and redistribute it.
+  There is NO WARRANTY, to the extent permitted by law.
+  Type "show copying" and "show warranty" for details.
+  This GDB was configured as "--host=x86_64-linux --target=aarch64-poky-linux".
+  Type "show configuration" for configuration details.
+  For bug reporting instructions, please see:
+  <http://www.gnu.org/software/gdb/bugs/>.
+  Find the GDB manual and other documentation resources online at:
+    <http://www.gnu.org/software/gdb/documentation/>.
+
+  For help, type "help".
+  Type "apropos word" to search for commands related to "word".
+  Reading symbols from segfault...
+  [New LWP 810]
+
+  warning: Could not load shared library symbols for 2 libraries, e.g. /lib64/libc.so.6.
+  Use the "info sharedlibrary" command to see the complete listing.
+  Do you need "set solib-search-path" or "set sysroot"?
+  Core was generated by `./segfault.
+  Program terminated with signal SIGSEGV, Segmentation fault.
+  #0  0x0000aaaae3340794 in main () at segfault_example.c:8
+  --Type <RET> for more, q to quit, c to continue without paging--
+  8               *ptr = 42;
+  (gdb)
+  (gdb) quit
+ ```
+The segmentation fault occurred because the program attempted to dereference a NULL pointer at line 8 in segfault_example.c, where it tried to assign 42 to *ptr, resulting in an invalid memory access.
+
+#### Postmortem analysis on Visual Studio Code
+
+In this subsection, the process of analyzing core dump files using Visual Studio Code (VSCode) is explored. It explains how to load core dumps and utilize VSCode's debugging features to automatically jump to the lines of code that caused the application to crash.
+If you've followed subsection `Remote debugging on Visual Studio Code`, you're almost ready to analyze the core dump file. Just one small addition remains: in the `launch.json`, include a line specifying the path to the core dump file for analysis. This simple tweak allows you to fully leverage VSCode's capabilities for inspecting the crash details.
+For example, in `launch.json`, you would add:
+ 
+ ```shell
+ "coreDumpPath": "</path/to/core/dump/file>,
+ ```
+
+Here's a complete example of a `launch.json` in this example
+ 
+ ```shell
+  {
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "gdb",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "/home/renesas/remote-debugging/program/segfault_example",
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": true,
+            "stopAtConnect": true,
+            "MIMode": "gdb",
+            "miDebuggerPath": "/home/renesas/esdk/3.1.26/tmp/sysroots/x86_64/usr/bin/aarch64-poky-linux/aarch64-poky-linux-gdb",
+            "miDebuggerServerAddress": "169.254.43.30:2000",
+            "coreDumpPath": "/home/renesas/remote-debugging/segfault/core.810",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        }
+    ]
+  }
+ ```
+
+After running the debugging session with the core dump file, the IDE (Visual Studio Code) will automatically point to the exact line in the source code where the crash occurred.
+ 
+#### Postmortem analysis on Eclipse
+
+This subsection describes postmortem analysis using Eclipse IDE. Similar with Visual Studio Code, Eclipse allows loading core dump to inspect the application's state at the time of a crash. 
+
+Step 1: Configure Eclipse to connect to the GDB Server:
+- In Eclipse, go to the `Run` menu and select `Debug Configurations`.
+- Under the Debugger tab, select `C/C++ Postmortem Debugger`
+- In the `Main` tab, in `Core file field`, click and specify where is core dump file.
+- In the Debugger tab:
+  - In GDB Debugger: Provide the path to your cross-compiled GDB (e.g., `/home/renesas/esdk/3.1.26/tmp/sysroots/x86_64/usr/bin/aarch64-poky-linux/aarch64-poky-linux-gdb`).
+
+Step 2: Start the Debugging Session: 
+- Once the debugging session starts, Eclipse will show the line of code that caused the segmentation fault, along with the call stack.
+- You can inspect the values of variables at that point in time by hovering over them or using the Variables view.
+- Utilize the Expressions view to evaluate any expressions or check the state of specific variables.
+- Navigate through the call stack to see the sequence of function calls leading to the crash. This can provide insight into how the program reached the faulting line.
