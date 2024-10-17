@@ -84,11 +84,11 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
 
 SRC_URI = " \
-        git://github.com/Renesas-SST/rz-atf.git;branch=${BRANCH};protocol=https \
+        git://github.com/vudangRVC/rz-atf-sst.git;branch=${BRANCH};protocol=https \
         git://github.com/ARMmbed/mbedtls.git;branch=${BRANCH_mbedtls};name=mbedtls;destsuffix=mbedtls \
 "
-BRANCH = "dunfell/rz-sbc"
-SRCREV = "${AUTOREV}"
+BRANCH = "dev-quick-boot"
+SRCREV = "5556cfbe3be980668e9379791877ae15236ff913"
 PV = "v2.9+git"
 
 COMPATIBLE_MACHINE_rzg2l = "(smarc-rzg2l|rzg2l-dev|smarc-rzg2lc|rzg2lc-dev|smarc-rzg2ul|rzg2ul-dev|smarc-rzv2l|rzv2l-dev|rzpi)"
