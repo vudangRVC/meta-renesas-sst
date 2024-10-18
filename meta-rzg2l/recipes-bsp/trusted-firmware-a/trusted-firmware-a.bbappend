@@ -104,3 +104,5 @@ PMIC_EXTRA_FLAGS_rzpi = "BOARD=smarc_pmic_2"
 FLASH_ADDRESS_BL2_BP_rzpi = "00000"
 FLASH_ADDRESS_FIP_rzpi = "1D200"
 
+DEPENDS += "u-boot"
+
