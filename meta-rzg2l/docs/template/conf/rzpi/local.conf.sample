@@ -322,6 +322,9 @@ DISTRO_FEATURES_append = "${@oe.utils.conditional('VIRTUALIZATION_CHECK', 'True'
 # Remove dnf package which causes high CPU workload
 PACKAGE_INSTALL_remove = " dnf "
 
+# Optimized Linux Kernel Support (default: 1): Build with optimizations for the Linux kernel
+OPTIMIZE_KERN = "1"
+
 # Summit wireless framework provider
 PREFERRED_RPROVIDER_wpa-supplicant = "summit-supplicant-lwb"
 PREFERRED_RPROVIDER_wpa-supplicant-cli = "summit-supplicant-lwb"
