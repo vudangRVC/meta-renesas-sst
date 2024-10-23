@@ -13,13 +13,17 @@ FILESEXTRAPATHS:prepend := "${THISDIR}:"
 # Default use of yocto git repositories. Uncomment the following to overrride it to use renesas sst git repo.
 # SRC_URI:rzg2l-sbc = "git://github.com/Renesas-SST/linux-rz.git;name=machine;branch=${KBRANCH};protocol=https"
 
-SRC_URI:append:rzg2l-sbc =	"\
-					file://sii.cfg		\
-					file://laird.cfg	\
-					file://touch.cfg	\
-				"
+#SRC_URI:append:rzg2l-sbc =	"\
+#					file://sii.cfg		\
+#					file://laird.cfg	\
+#					file://touch.cfg	\
+#"
 
-KERNEL_FEATURES:append = " sii.cfg laird.cfg touch.cfg"
+SRC_URI:append:rzg2l-sbc = "\
+                file://serial.cfg \
+"
+
+KERNEL_FEATURES:append = " serial.cfg"
 KMACHINE:rzg2l-sbc ?= "genericarm64"
 
 KCONFIG_MODE:rzg2l-sbc = "alldefconfig"
@@ -31,6 +35,5 @@ KBUILD_DEFCONFIG:rzg2l-sbc ?= "defconfig"
 
 SRCREV_machine:rzg2l-sbc ?= "${AUTOREV}"
 
-
-LINUX_VERSION:rzg2l-sbc = "6.10.13"
+LINUX_VERSION:rzg2l-sbc = "6.10.14"
 
