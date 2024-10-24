@@ -16,6 +16,7 @@ This release provides the following features:
  - MIPI DSI enabled
  - MIPI CSI-2 enabled
  - Bootloader with U-Boot Fastboot UDP enabled.
+ - Bluetooth enabled
 
 Known issues:
 
@@ -64,6 +65,13 @@ Build the package by executing the following commands:
 $ cd ~/Yocto
 $ ./rzsbc_yocto.sh build
 ```
+**Supported images of RZG2L-SBC**
+| Image Name                   | Notes                                                                                                               |
+|------------------------------|---------------------------------------------------------------------------------------------------------------------|
+| renesas-core-image-cli        | An update of core-image-minimal with a set of components, Bluetooth support, and some useful tools                  |
+| renesas-core-image-weston     | An update of core-image-weston with a set of components, Bluetooth support, and some useful tools                   |
+| renesas-quickboot-cli         | An update of renesas-core-image-cli with a set of components, removing unused systemd and services                  |
+| renesas-quickboot-wayland     | An update of renesas-core-image-weston with a set of components, removing unused systemd and services but keeping graphics |
 
 **Please note that this build requires internet access and will take several hours.**
 
@@ -746,4 +754,84 @@ After installing a package using dpkg, if you need to resolve dependency issues,
 
 ```
 root@rzpi:~# apt-get install -f
+```
+#### Bluetooth function
+
+You should download the correct firmware for USB Bluetooth device:
+
+```
+root@rzpi: mkdir -p /lib/firmware/rtl_bt
+root@rzpi: curl -s https://raw.githubusercontent.com/Realtek-OpenSource/android_hardware_realtek/rtk1395/bt/rtkbt/Firmware/BT/rtl8761b_fw -o /lib/firmware/rtl_bt/rtl8761bu_fw.bin
+
+```
+Step 1: Check bluetooth modules are enabled or not, run the following command and check the result:
+
+```
+root@rzpi:~# lsmod
+Module                  Size  Used by
+btusb                  57344  0
+btrtl                  24576  1 btusb
+btbcm                  28672  1 btusb
+btmtk                  16384  1 btusb
+bluetooth             540672  13 btrtl,btmtk,btbcm,btusb
+brcmfmac              356352  0
+cfg80211              364544  1 brcmfmac
+brcmutil               16384  1 brcmfmac
+compat                 20480  4 bluetooth,brcmfmac,btusb,cfg80211
+uvcs_drv               40960  0
+mali_kbase            700416  0
+```
+Step 2: Check bluetooth information, run the following command and check the result:
+```
+root@rzpi:~# hciconfig -a
+hci0:   Type: Primary  Bus: USB
+        BD Address: 00:00:00:00:00:00  ACL MTU: 0:0  SCO MTU: 0:0
+        DOWN
+        RX bytes:21 acl:0 sco:0 events:2 errors:0
+        TX bytes:6 acl:0 sco:0 commands:2 errors:0
+        Features: 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
+        Packet type: DM1 DH1 HV1
+        Link policy:
+        Link mode: SLAVE ACCEPT
+```
+Step 3: Connect bluetooth devices, run the following command and check the result:
+```
+root@rzpi:~# bluetoothctl
+[bluetooth]# power on
+[bluetooth]# pairable on
+[bluetooth]# agent on
+[bluetooth]# default-agent
+[bluetooth]# discoverable on
+[bluetooth]# scan on
+[bluetooth]# scan off
+[bluetooth]# pair FC:02:96:A5:80:97
+[bluetooth]# trust FC:02:96:A5:80:97
+[bluetooth]# connect FC:02:96:A5:80:97
+[Mi Sports BT]# quit
+```
+Step 4: Send a file to the paired device before, run the following command and check the result:
+```
+root@rzpi:~# export $(dbus-launch)
+root@rzpi:~# /usr/libexec/bluetooth/obexd -r /home/root -a -d & obexctl
+[1] 595
+[NEW] Client /org/bluez/obex
+[obex]#
+[obex]# connect FC:02:96:A5:80:97
+Attempting to connect to FC:02:96:A5:80:97
+[NEW] Session /org/bluez/obex/client/session0 [default]
+[NEW] ObjectPush /org/bluez/obex/client/session0
+Connection successful
+[FC:02:96:A5:80:97]# send /boot/uEnv.txt
+Attempting to send /boot/uEnv.txt to /org/bluez/obex/client/session0
+[NEW] Transfer /org/bluez/obex/client/session0/transfer0
+Transfer /org/bluez/obex/client/session0/transfer0
+        Status: queued
+        Name: uEnv.txt
+        Size: 2069
+        Filename: /boot/uEnv.txt
+        Session: /org/bluez/obex/client/session0
+[CHG] Transfer /org/bluez/obex/client/session0/transfer0 Status: complete
+[DEL] Transfer /org/bluez/obex/client/session0/transfer0
+[FC:02:96:A5:80:97]# quit
+root@rzpi:~#
 ```
