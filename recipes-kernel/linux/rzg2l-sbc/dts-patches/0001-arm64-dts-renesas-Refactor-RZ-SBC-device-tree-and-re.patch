@@ -1,8 +1,8 @@
-From d63aaa66f31f3fb38d91a0a93a393ae15fbdc1e5 Mon Sep 17 00:00:00 2001
+From bd84f95a0e4b6540b9732464dc96ac01683d972c Mon Sep 17 00:00:00 2001
 From: Vu Dang <vu.dang.te@renesas.com>
 Date: Thu, 23 May 2024 21:14:33 +0700
-Subject: [PATCH] arm64: dts: renesas: Refactor RZ SBC device tree and related
- changes
+Subject: [PATCH 1/5] arm64: dts: renesas: Refactor RZ SBC device tree and
+ related changes
 
 This commit combines changes from multiple commits:
     - The RZ SBC device tree is refactored from Linux version 5.10.184.
