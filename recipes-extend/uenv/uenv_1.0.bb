@@ -27,7 +27,7 @@ addtask deploy after do_install
 do_deploy () {
     install -d ${DEPLOYDIR}/target/env
     install -m 0644 ${D}/boot/uEnv.txt ${DEPLOYDIR}/target/env
-    install -m 0644 ${D}/boot/Readme.md ${DEPLOYDIR}/target/env
+    install -m 0644 ${D}/boot/Readme.md ${DEPLOYDIR}
 }
 
 COMPATIBLE_MACHINE:rzg2l-sbc = "(rzg2l-sbc)"
