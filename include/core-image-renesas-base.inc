@@ -220,3 +220,4 @@ EXTRA_IMAGEDEPENDS += " target-readme "
 EXTRA_IMAGEDEPENDS += " rzg2l-sbc-readme "
 EXTRA_IMAGEDEPENDS += " rzg2l-sbc-docs "
 
+IMAGE_INSTALL:append = " kernel-modules"
