@@ -330,3 +330,5 @@ QT6_INSTALL_QMLDIR = "${libdir}/qml/qt6"
 IMAGE_INSTALL:append = " packagegroup-core-buildessential packagegroup-core-ssh-openssh openssh-sftp-server"
 EXTRA_IMAGE_FEATURES:append = " ssh-server-openssh"
 
+USE_OMX_COMMON = "0"
+USE_VIDEO_OMX = "0"
