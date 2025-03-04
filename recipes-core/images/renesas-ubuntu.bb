@@ -51,6 +51,12 @@ IMAGE_BOOT_FILES:rzg2l-sbc = " \
 
 DEPENDS += " linux-yocto uenv firmware-pack"
 
+######### bootloader clean up ##########
+add_overlays_rootfs() {
+    install -d ${IMAGE_ROOTFS}/boot/overlays
+    cp -r ${DEPLOY_DIR_IMAGE}/target/images/dtbs/* ${IMAGE_ROOTFS}/boot
+}
+
 add_bootloader_rootfs() {
     install -d ${IMAGE_ROOTFS}/boot/uload-bootloader
     cp -rf ${DEPLOY_DIR_IMAGE}/target/images/bl2_bp-rzg2l-sbc.bin ${IMAGE_ROOTFS}/boot/uload-bootloader
