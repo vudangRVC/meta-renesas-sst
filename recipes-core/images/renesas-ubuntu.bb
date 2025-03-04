@@ -89,6 +89,23 @@ addtask release_clean after do_image_complete before do_populate_lic_deploy
 
 ROOTFS_POSTPROCESS_COMMAND += " add_overlays_rootfs; add_bootloader_rootfs; deploy_package;"
 # Move tar file from deploy complete folder to target/images/rootfs directory
+
+CONVERSION_CMD:bz2:prepend() {
+    target_dir="${IMGDEPLOYDIR}/target/images"
+
+    # Create the target directory if it does not exist
+    mkdir -p "${target_dir}"
+
+    # Check if the build artifact for the wic image exists; if not, copy it to the build directory
+    if [ ! -f "${DEPLOY_DIR_IMAGE}/Image" ]; then
+        cp "${DEPLOY_DIR_IMAGE}/target/images/Image" "${DEPLOY_DIR_IMAGE}/"
+    fi
+
+    if [ ! -f "${DEPLOY_DIR_IMAGE}/rzpi.dtb" ]; then
+        cp "${DEPLOY_DIR_IMAGE}/target/images/dtbs/rzpi.dtb" "${DEPLOY_DIR_IMAGE}/"
+    fi
+}
+
 CONVERSION_CMD:bz2:append() {
     # Define the target directory and file path
     out="${IMGDEPLOYDIR}/${IMAGE_NAME}"
