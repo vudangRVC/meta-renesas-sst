@@ -330,3 +330,9 @@ QT6_INSTALL_QMLDIR = "${libdir}/qml/qt6"
 IMAGE_INSTALL:append = " packagegroup-core-buildessential packagegroup-core-ssh-openssh openssh-sftp-server"
 EXTRA_IMAGE_FEATURES:append = " ssh-server-openssh"
 
+# Uncomment the below configurations to enable Chromium web browser
+#IMAGE_INSTALL:append = " chromium-ozone-wayland"
+#IMAGE_INSTALL:append = " ntp"
+#IMAGE_INSTALL:append = " ttf-sazanami-gothic ttf-sazanami-mincho "
+#DISTRO_FEATURES:append = " h264enc_lib"
+#PACKAGECONFIG:pn-chromium-ozone-wayland =" proprietary-codecs"

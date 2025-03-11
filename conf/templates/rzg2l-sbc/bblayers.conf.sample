@@ -26,6 +26,8 @@ BBLAYERS ?= " \
   ##OEROOT##/../meta-openembedded/meta-multimedia \
   ##OEROOT##/../meta-openembedded/meta-networking \
   ##OEROOT##/../meta-summit-radio/meta-summit-radio \
+  ##OEROOT##/../meta-browser/meta-chromium \
+  ##OEROOT##/../meta-clang \
   ${@'##OEROOT##/../meta-qt5' if '${QT5_LAYER}' == 'True' else ''} \
   ${@'##OEROOT##/../meta-qt6' if '${QT6_LAYER}' == 'True' else ''} \
   ${@'##OEROOT##/../meta-rz-features/meta-rz-codecs' if '${RZ_FEATURE_CODEC}' == 'True' else ''} \
