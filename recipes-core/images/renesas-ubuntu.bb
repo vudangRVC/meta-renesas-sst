@@ -53,8 +53,8 @@ DEPENDS += " linux-yocto uenv firmware-pack"
 
 ######### bootloader clean up ##########
 add_overlays_rootfs() {
-	install -d ${IMAGE_ROOTFS}/boot/dtbs/renesas
-	cp -r ${DEPLOY_DIR_IMAGE}/target/images/dtbs/* ${IMAGE_ROOTFS}/boot/dtbs/renesas
+	install -d ${IMAGE_ROOTFS}/boot/dtb/renesas
+	cp -r ${DEPLOY_DIR_IMAGE}/target/images/dtbs/* ${IMAGE_ROOTFS}/boot/dtb/renesas
 }
 
 add_bootloader_rootfs() {
