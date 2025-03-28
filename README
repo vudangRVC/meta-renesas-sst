@@ -1,0 +1,43 @@
+This README file contains information on the contents of the meta-renesas layer.
+
+This particular layer in this branch is experimental integration of 6.10 kernel.  
+
+Please see the corresponding sections below for details.
+
+Dependencies
+============
+
+  URI: git://git.yoctoproject.org/poky
+  branch: styhead
+
+
+Patches
+=======
+
+Please submit any patches against the meta-renesas layer to the github through a pull request from a fork.
+Rest of the infrastructure is being put in place. 
+
+Maintainer: preetam reddy
+
+Table of Contents
+=================
+
+  I. Adding the meta-renesas layer to your build
+ II. Kernel
+
+
+I. Adding the meta-renesas layer to your build
+=================================================
+
+Run 'bitbake-layers add-layer meta-renesas'
+
+II. Kernel
+==========
+
+Recipes added for linux kernel 6.10.
+
+III. Known Issues:
+==================
+
+	- Kernel compilation starts but config is incomplete. Work in progress.
+
