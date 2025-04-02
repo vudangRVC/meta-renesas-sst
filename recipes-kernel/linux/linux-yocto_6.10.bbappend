@@ -12,8 +12,21 @@ FILESEXTRAPATHS:prepend := "${THISDIR}:"
 
 # Apply patches for RZV2H EVK ver1 board
 SRC_URI:append:rzv2h-evk-ver1 = "\
-                    file://dts-patches/0001-Add-support-for-RZ-V2H-EVK-Ver1.patch \
-                "
+    file://dts-patches/0001-rzg2l-sbc-Bring-compat_alloc_user_space-back.patch \
+    file://dts-patches/0001-Update-Add-support-for-RZ-V2H-EVK-Ver1.patch \
+    file://dts-patches/0002-Updated-Add-support-for-OSTM.patch \
+    file://dts-patches/0003-Updated-Add-dmac-and-icu-support.patch \
+    file://dts-patches/0004-Updated-Add-thermal-and-xspi-drivers.patch \
+    file://dts-patches/0005-Updated-Add-audio-and-hdmi-drivers.patch \
+    file://dts-patches/0006-Updated-Add-riic-driver.patch \
+    file://dts-patches/0007-Updated-Add-wdt-driver.patch \
+    file://dts-patches/0008-Updated-Add-RTC-and-CMT-drivers.patch \
+    file://dts-patches/0009-Updated-Add-CAN-driver.patch \
+    file://dts-patches/0010-Add-CRU-driver-for-rzv2h-evk.patch \
+    file://dts-patches/0011-Add-display-related-drivers.patch \
+    file://dts-patches/0012-Updated-Add-ISU-fcpcs-and-vdpb-nodes-for-RZ-V2H.patch \
+"
+
 SRC_URI:append:rzv2h-evk-ver1 = "\
                     file://touch.cfg \
                 "
