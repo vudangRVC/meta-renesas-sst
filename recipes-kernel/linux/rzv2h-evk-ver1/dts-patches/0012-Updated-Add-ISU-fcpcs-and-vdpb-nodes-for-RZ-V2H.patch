@@ -3,6 +3,8 @@ From: Cong Nguyen <cong.nguyen.zn@renesas.com>
 Date: Wed, 2 Apr 2025 02:00:06 +0000
 Subject: [PATCH 12/12] [Updated] Add ISU, fcpcs and vdpb nodes for RZ/V2H
 
+Upstream-Status: Pending
+
 Signed-off-by: Cong Nguyen <cong.nguyen.zn@renesas.com>
 ---
  arch/arm64/boot/dts/renesas/r9a09g057.dtsi | 42 ++++++++++++++++++++++

@@ -3,6 +3,8 @@ From: PoC <rvc-poc@renesas.com>
 Date: Thu, 27 Mar 2025 06:38:50 +0000
 Subject: [PATCH 08/12] [Updated] Add RTC and CMT drivers
 
+Upstream-Status: Pending
+
 Signed-off-by: PoC <rvc-poc@renesas.com>
 ---
  arch/arm64/boot/dts/renesas/r9a09g057.dtsi    |  89 ++

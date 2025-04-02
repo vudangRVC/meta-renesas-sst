@@ -3,6 +3,8 @@ From: Cong Nguyen <cong.nguyen.zn@renesas.com>
 Date: Tue, 1 Apr 2025 08:08:37 +0000
 Subject: [PATCH 11/12] Add display related drivers
 
+Upstream-Status: Pending
+
 Signed-off-by: Cong Nguyen <cong.nguyen.zn@renesas.com>
 ---
  arch/arm64/boot/dts/renesas/r9a09g057.dtsi    | 149 +++-

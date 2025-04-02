@@ -5,6 +5,8 @@ Subject: [PATCH 05/12] [Updated] Add audio and hdmi drivers
 
 Note: does not support rzv2h evk ver1 yet
 
+Upstream-Status: Pending
+
 Signed-off-by: PoC <rvc-poc@renesas.com>
 ---
  .../bindings/sound/renesas,rz-ssi.yaml        |   4 +

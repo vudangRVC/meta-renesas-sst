@@ -3,6 +3,8 @@ From: PoC <rvc-poc@renesas.com>
 Date: Wed, 26 Mar 2025 05:00:09 +0000
 Subject: [PATCH 03/12] [Updated] Add dmac and icu support
 
+Upstream-Status: Pending
+
 Signed-off-by: PoC <rvc-poc@renesas.com>
 ---
  arch/arm64/boot/dts/renesas/r9a09g057.dtsi |  229 ++

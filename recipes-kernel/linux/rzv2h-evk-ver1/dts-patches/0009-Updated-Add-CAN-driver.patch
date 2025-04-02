@@ -3,6 +3,8 @@ From: PoC <rvc-poc@renesas.com>
 Date: Thu, 27 Mar 2025 10:05:41 +0000
 Subject: [PATCH 09/12] [Updated] Add CAN driver
 
+Upstream-Status: Pending
+
 Signed-off-by: PoC <rvc-poc@renesas.com>
 ---
  .../bindings/net/can/renesas,rcar-canfd.yaml  |   2 +

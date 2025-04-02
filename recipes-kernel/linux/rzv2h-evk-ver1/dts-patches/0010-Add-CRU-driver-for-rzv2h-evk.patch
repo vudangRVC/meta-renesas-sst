@@ -3,6 +3,8 @@ From: Cong Nguyen <cong.nguyen.zn@renesas.com>
 Date: Mon, 31 Mar 2025 07:33:01 +0000
 Subject: [PATCH 10/12] Add CRU driver for rzv2h evk
 
+Upstream-Status: Pending
+
 Signed-off-by: Cong Nguyen <cong.nguyen.zn@renesas.com>
 ---
  arch/arm64/boot/dts/renesas/r9a09g057.dtsi    | 228 +++++++++

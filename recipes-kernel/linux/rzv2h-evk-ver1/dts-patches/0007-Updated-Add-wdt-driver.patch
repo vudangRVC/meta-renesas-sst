@@ -3,6 +3,8 @@ From: PoC <rvc-poc@renesas.com>
 Date: Thu, 27 Mar 2025 06:17:22 +0000
 Subject: [PATCH 07/12] [Updated] Add wdt driver
 
+Upstream-Status: Pending
+
 Signed-off-by: PoC <rvc-poc@renesas.com>
 ---
  arch/arm64/boot/dts/renesas/r9a09g057.dtsi    |  44 +++

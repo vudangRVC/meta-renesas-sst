@@ -5,6 +5,8 @@ Subject: [PATCH 01/12] [Update] Add support for RZ/V2H EVK Ver1
 
 Support minimal boot over SD card, TFTP and NFS boot for development
 
+Upstream-Status: Pending
+
 Signed-off-by: PoC <rvc-poc@renesas.com>
 ---
  .../bindings/clock/renesas,rzg2l-cpg.yaml     |    5 +-
