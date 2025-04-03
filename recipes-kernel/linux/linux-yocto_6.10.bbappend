@@ -27,6 +27,7 @@ SRC_URI:append:rzg2l-sbc =	"\
 					file://drm_panel.cfg \
 					file://ov5640.cfg \
 					file://panfrost.cfg \
+					file://wm8978.cfg \
 				"
 # Apply patches for novtech board
 SRC_URI:append:rzg2l-sbc = "\
@@ -41,7 +42,7 @@ SRC_URI:append:rzg2l-sbc = "\
                     file://dts-patches/0009-rzg2l-sbc-Support-more-fourcc-format-for-CRU.patch \
                 "
 
-KERNEL_FEATURES:append = " sii.cfg laird.cfg touch.cfg peripherals.cfg da7219.cfg drm_panel.cfg ov5640.cfg panfrost.cfg"
+KERNEL_FEATURES:append = " sii.cfg laird.cfg touch.cfg peripherals.cfg da7219.cfg drm_panel.cfg ov5640.cfg panfrost.cfg wm8978.cfg"
 
 KCONFIG_MODE:rzg2l-sbc = "alldefconfig"
 #KMACHINE:rzg2l-sbc ?= "rzg2l-sbc"
@@ -53,6 +54,7 @@ KBUILD_DEFCONFIG:rzg2l-sbc ?= "defconfig"
 # Supported device tree and device tree overlays
 KERNEL_DEVICETREE:rzg2l-sbc = " \
         renesas/rzpi.dtb \
+        renesas/r9a07g054l2-smarc.dtb \
 "
 
 KERNEL_DEVICETREE:append:rzg2l-sbc = " \
@@ -76,6 +78,9 @@ do_deploy:append:rzg2l-sbc(){
 
     install -m 0644 ${B}/arch/arm64/boot/dts/renesas/rzpi.dtb ${DEPLOYDIR}/target/images/dtbs/rzpi-${KERNEL_DTB_NAME}.$dtb_ext
     ln -sf rzpi-${KERNEL_DTB_NAME}.$dtb_ext ${DEPLOYDIR}/target/images/dtbs/rzpi.dtb
+
+    install -m 0644 ${B}/arch/arm64/boot/dts/renesas/r9a07g054l2-smarc.dtb ${DEPLOYDIR}/target/images/dtbs/smarc-${KERNEL_DTB_NAME}.$dtb_ext
+    ln -sf smarc-${KERNEL_DTB_NAME}.$dtb_ext ${DEPLOYDIR}/target/images/dtbs/r9a07g054l2-smarc.dtb
 }
 
 SRCREV_machine:rzg2l-sbc ?= "${AUTOREV}"
