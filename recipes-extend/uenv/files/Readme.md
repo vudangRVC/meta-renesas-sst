@@ -9,26 +9,24 @@ Refer to the following description for different loading options.
 
 
 ## For RZ SBC U-Boot Env
-/------------------------------|--------------|------------------------------
-|       Config                 | Value if set |     To be loading
-|------------------------------|--------------|------------------------------
-| enable_overlay_i2c           | '1' or 'yes' |  rzpi-ext-i2c.dtbo
-|------------------------------|--------------|------------------------------
-| enable_overlay_spi           | '1' or 'yes' |  rzpi-ext-spi.dtbo
-|------------------------------|--------------|------------------------------
-| enable_overlay_can           | '1' or 'yes' |  rzpi-can.dtbo
-|------------------------------|--------------|------------------------------
-| enable_overlay_dsi           | '1' or 'yes' |  rzpi-dsi.dtbo
-|------------------------------|--------------|------------------------------
-| enable_overlay_csi_ov5640    | '1' or 'yes' |  rzpi-ov5640.dtbo
-|----------------------------------------------------------------------------
-| fdtfile   : is a base dtb file, should be set rzpi.dtb
-|----------------------------------------------------------------------------
-| uboot env : you could set U-Boot's environment variables here, such as 'console=' 'bootargs='
-\---------------------------------------------------------------------------
+| Config                    | Value if set | To be loading       |
+|---------------------------|--------------|---------------------|
+| `enable_overlay_i2c`      | '1' or 'yes' | rzg2l-sbc-ext-i2c.dtbo   |
+| `enable_overlay_spi`      | '1' or 'yes' | rzg2l-sbc-ext-spi.dtbo   |
+| `enable_overlay_can`      | '1' or 'yes' | rzg2l-sbc-can.dtbo       |
+| `enable_overlay_dsi`      | '1' or 'yes' | rzg2l-sbc-dsi.dtbo       |
+| `enable_overlay_csi_ov5640` | '1' or 'yes' | rzg2l-sbc-ov5640.dtbo    |
+
+---
+**Note:**
+
+*   `fdtfile`: This is the base device tree blob (DTB) file. It should typically be set to `rzg2l-sbc.dtb`.
+*   `uboot env`: You can set other U-Boot environment variables here, such as `console=` or `bootargs=`.
+
+---
 
 default settings:
-    fdtfile=rzpi.dtb
+    fdtfile=rzg2l-sbc.dtb
     #enable_overlay_i2c=1
     #enable_overlay_spi=1
     #enable_overlay_can=1
