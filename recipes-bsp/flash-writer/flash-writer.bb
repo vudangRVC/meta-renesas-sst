@@ -10,7 +10,7 @@ ENABLE_SPD_OPTEE	?= '0'
 ENABLE_RZ_SCE		?= '0'
 
 FLASH_WRITER_URL = "git://github.com/Renesas-SST/flash-writer.git"
-BRANCH = "styhead/rz-cmn"
+BRANCH = "styhead/rz-cmn-3.1"
 SRC_URI = "${FLASH_WRITER_URL};protocol=https;branch=${BRANCH}"
 
 SRCREV = "${AUTOREV}"
@@ -39,6 +39,8 @@ do_compile() {
 				BOARD="RZV2H_DEV"
 		elif [ ${target} = "rzg2l-sbc" ]; then
 				BOARD="RZG2L_SBC"
+		elif [ ${target} = "rs-g2l100" ]; then
+				BOARD="RZG2L_15MMSQ_DEV"
 		elif [ ${target} = "rzg2l-evk" ]; then
 				BOARD="RZG2L_SMARC_PMIC"
 				PMIC_BOARD="RZG2L_SMARC_PMIC"
