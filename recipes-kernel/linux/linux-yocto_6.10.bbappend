@@ -69,6 +69,12 @@ SRC_URI:append:rz-cmn = "\
 	file://common/0007-dts-renesas-add-I3C_SEL-macro-to-switch-between-I2C2.patch \
 "
 
+# RZ/V2L-EVK specific config fragments
+SRC_URI:append:rz-cmn =	"\
+	file://rs-g2l100/0001-renesas-rz-cmn-Add-suport-Geniatech-board-rs-g2l100.patch \
+	file://rs-g2l100/0002-rz-cmn-rs-g2l100-Fix-error-emmc-init-on-rs-g2l100-bo.patch \
+"
+
 KERNEL_FEATURES:append = " sii.cfg laird.cfg touch.cfg peripherals.cfg da7219.cfg drm_panel.cfg ov5640.cfg panfrost.cfg kernel-common.cfg ${@oe.utils.conditional('OPTIMIZE_KERN', '1', ' optimize.cfg', '', d)}"
 
 KCONFIG_MODE:rz-cmn = "alldefconfig"
@@ -76,7 +82,7 @@ KMACHINE:rz-cmn ?= "renesas_defconfig"
 #KBUILD_DEFCONFIG:rz-cmn ?= "defconfig"
 
 # List of device tree names for rz-cmn
-DEVICETREE_NAME:rz-cmn = "rzg2l-sbc r9a07g044l2-smarc r9a07g044l2-smarc-cru-csi-ov5645 r9a07g054l2-smarc r9a07g054l2-smarc-cru-csi-ov5645 r9a09g057h4-evk-ver1"
+DEVICETREE_NAME:rz-cmn = "rs-g2l100 rzg2l-sbc r9a07g044l2-smarc r9a07g044l2-smarc-cru-csi-ov5645 r9a07g054l2-smarc r9a07g054l2-smarc-cru-csi-ov5645 r9a09g057h4-evk-ver1"
 
 # Supported device tree and device tree overlays
 KERNEL_DEVICETREE:rz-cmn = "${@' '.join(['renesas/%s.dtb' % devicetree_name for devicetree_name in d.getVar('DEVICETREE_NAME').split()])}"

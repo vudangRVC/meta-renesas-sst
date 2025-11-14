@@ -1,0 +1,31 @@
+From 4536e1090c12334f54141e38e6f1cebe708ab0c0 Mon Sep 17 00:00:00 2001
+From: Son Nguyen <son.nguyen.xg@bp.renesas.com>
+Date: Fri, 14 Nov 2025 12:14:18 +0700
+Subject: [PATCH 2/2] rz-cmn: rs-g2l100: Fix error emmc init on rs-g2l100
+ board.
+
+Change include:
+	- Fix error emmc init on rs-g2l100 board.
+
+Upstream-Status: Pending
+
+Signed-off-by: Son Nguyen <son.nguyen.xg@bp.renesas.com>
+---
+ arch/arm64/boot/dts/renesas/rs-g2l100.dts | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm64/boot/dts/renesas/rs-g2l100.dts b/arch/arm64/boot/dts/renesas/rs-g2l100.dts
+index aa9f15ccfe91..9eaa414f8b33 100644
+--- a/arch/arm64/boot/dts/renesas/rs-g2l100.dts
++++ b/arch/arm64/boot/dts/renesas/rs-g2l100.dts
+@@ -769,6 +769,7 @@ sd0_emmc_rst {
+ 
+ &sdhi0 {
+     pinctrl-0 = <&sdhi0_emmc_pins>;
++    pinctrl-1 = <&sdhi0_emmc_pins>;
+     pinctrl-names = "default", "state_uhs";
+ 
+     vmmc-supply = <&reg_3p3v>;
+-- 
+2.34.1
+
