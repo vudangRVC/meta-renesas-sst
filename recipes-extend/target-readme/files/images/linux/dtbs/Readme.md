@@ -34,6 +34,7 @@ dtbs/
 - **overlays**: Contains Device Tree Overlay files that allow additional hardware configurations to be applied on top of the base DTB for RZ/G2L-SBC.
 - ***.dtb**: The device tree blob file that defines the hardware configuration.
     - **rzg2l-sbc.dtb**: Device tree blob file for RZ/G2L-SBC.
-    - **r9a07g054l2-smarc.dtb**: Device tree blob file for RZ/G2L-EVK.
+    - **r9a07g044l2-smarc.dtb**: Device tree blob file for RZ/G2L-EVK.
+    - **rs-g2l100.dtb**: Device tree blob file for RS-G2L100.
     - **r9a07g054l2-smarc.dtb**: Device tree blob file for RZ/V2L-EVK.
     - **r9a09g057h4-evk-ver1.dtb**: Device tree blob file for RZ/V2H-EVK.

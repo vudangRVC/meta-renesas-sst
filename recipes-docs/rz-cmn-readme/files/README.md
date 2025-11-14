@@ -4,6 +4,7 @@ This guide provides a quick startup for all supported board in the current relea
 
 * **RZG2L-SBC** (RZ/G2L Single Board Computer)
 * **RZG2L-EVK** (RZ/G2L Evaluation Kit)
+* **RS-G2L100** (RS-G2L100 Geniatech Board)
 * **RZV2L-EVK** (RZ/V2L Evaluation Kit)
 * **RZV2H-EVK** (RZ/V2H Evaluation Kit)
 
@@ -880,12 +881,13 @@ Example of a sample board configuration in JSON:
 
 This table below lists the available options (and sensible defaults) for `ipl_flash_method` and `rootfs_flash_method` per board.
 
-| Board        | SoC | `ipl_flash_method` (options) | Default | `rootfs_flash_method` (options) | Default |
-|--------------|-----|------------------------------|---------|----------------------------------|---------|
-| **rzg2l-sbc** | g2l | `xspi`                | `xspi`  | `udp`              | `udp`   |
-| **rzg2l-evk** | g2l | `xspi`, `emmc`        | `xspi`  | `udp`, `otg`       | `otg`   |
-| **rzv2l-evk** | v2l | `xspi`, `emmc`        | `xspi`  | `udp`, `otg`       | `otg`   |
-| **rzv2h-evk** | v2h | `xspi`                | `xspi`  | `udp`, `otg`       | `otg`   |
+| Board         | SoC | `ipl_flash_method` (options) | Default | `rootfs_flash_method` (options)  | Default |
+|---------------|-----|------------------------------|---------|----------------------------------|---------|
+| **rzg2l-sbc** | g2l | `xspi`                       | `xspi`  | `udp`                            | `udp`   |
+| **rzg2l-evk** | g2l | `xspi`, `emmc`               | `xspi`  | `udp`, `otg`                     | `otg`   |
+| **rs-g2l100** | g2l | `xspi`, `emmc`               | `xspi`  | `udp`, `otg`                     | `otg`   |
+| **rzv2l-evk** | v2l | `xspi`, `emmc`               | `xspi`  | `udp`, `otg`                     | `otg`   |
+| **rzv2h-evk** | v2h | `xspi`                       | `xspi`  | `udp`, `otg`                     | `otg`   |
 
 **Notes:**
 - *IPL flash method*: `emmc` for `rzv2h-evk` is **not supported yet**.
