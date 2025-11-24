@@ -21,7 +21,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}:"
 SRC_URI:append:rz-cmn = " \
 	file://common/kernel-common.cfg \
 	file://common/renesas_defconfig \
-	file://common/panfrost.cfg \
+	${@oe.utils.conditional('RZ_FEATURE_PANFROST','1',' file://common/panfrost.cfg','', d)} \
 	file://common/usb-serial.cfg \
 	${@bb.utils.contains('DOCKER_SUPPORT', '1', 'file://common/docker.cfg', '', d)} \
 	${@bb.utils.contains('DISTRO', 'ubuntu-tiny', 'file://common/docker.cfg', '', d)} \
@@ -67,7 +67,7 @@ SRC_URI:append:rz-cmn = "\
 	file://common/0007-dts-renesas-add-I3C_SEL-macro-to-switch-between-I2C2.patch \
 "
 
-KERNEL_FEATURES:append = " sii.cfg laird.cfg touch.cfg peripherals.cfg da7219.cfg drm_panel.cfg ov5640.cfg panfrost.cfg kernel-common.cfg ${@oe.utils.conditional('OPTIMIZE_KERN', '1', ' optimize.cfg', '', d)}"
+KERNEL_FEATURES:append = " sii.cfg laird.cfg touch.cfg peripherals.cfg da7219.cfg drm_panel.cfg ov5640.cfg ${@oe.utils.conditional('RZ_FEATURE_PANFROST','1',' panfrost.cfg','', d)} kernel-common.cfg ${@oe.utils.conditional('OPTIMIZE_KERN', '1', ' optimize.cfg', '', d)}"
 
 KCONFIG_MODE:rz-cmn = "alldefconfig"
 KMACHINE:rz-cmn ?= "renesas_defconfig"

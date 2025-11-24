@@ -1,6 +1,6 @@
 SUMMARY = "Custom RZ UbuntuUbuntu Image"
 LICENSE = "MIT"
-require include/core-image-renesas-mmp.inc
+require ${@'include/core-image-renesas-mmp.inc' if d.getVar('RZ_FEATURE_CODEC') == 'True' else ''}
 require include/renesas-qt6-framework.inc
 require include/core-image-renesas-base.inc
 inherit core-image
