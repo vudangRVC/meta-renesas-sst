@@ -28,7 +28,6 @@ SRCREV_machine:qemuriscv32 ?= "b1ba5428513b52c2bd6acfd3ad0a910f699bc395"
 SRCREV_machine:qemux86 ?= "b1ba5428513b52c2bd6acfd3ad0a910f699bc395"
 SRCREV_machine:qemux86-64 ?= "b1ba5428513b52c2bd6acfd3ad0a910f699bc395"
 SRCREV_machine:qemumips64 ?= "9fb4ff0187c85426f21fd40d4c61b742800f65c4"
-SRCREV_machine ?= "b1ba5428513b52c2bd6acfd3ad0a910f699bc395"
 SRCREV_meta ?= "f94e250f9bd55d855b1a41e3cd72beebb3849ae3"
 
 # set your preferred provider of linux-yocto to 'linux-yocto-upstream', and you'll
