@@ -59,6 +59,9 @@ do_deploy() {
     done
 
     install -m 644 ${KCONFIG_CONFIG_ROOTDIR}/flash.bin ${DEPLOYDIR}/target/images/u-boot/
+
+    install -d ${DEPLOYDIR}/target/images/sparrowhawk/u-boot
+    install -m 644 ${KCONFIG_CONFIG_ROOTDIR}/flash.bin ${DEPLOYDIR}/target/images/sparrowhawk/u-boot/
 }
 
 addtask deploy after do_install
