@@ -10,7 +10,7 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda
 # u-boot source code repository
 UBOOT_URL = "git://github.com/vudangRVC/u-boot-sst.git"
 BRANCH = "styhead/rz-cmn-sparrowhawk"
-SRCREV = "09f8832fa2efccdb94bb7e93c5e6d7f2faaf7533"
+SRCREV = "c4473a7cd7d11ac9ab41e4ca9cc51c127516f46c"
 
 SRC_URI = "${UBOOT_URL};name=machine;protocol=https;branch=${BRANCH}"
 
