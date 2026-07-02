@@ -1,29 +1,40 @@
-DESCRIPTION = "Trusted Firmware-A for Renesas RZ"
+DESCRIPTION = "Trusted Firmware-A for Renesas RZ, including BL31 for the Sparrow-Hawk (V4H) companion SoC built alongside rz-cmn"
 
 require include/rz-optee-config.inc
 inherit deploy
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-LICENSE = "MIT"
+LICENSE = "MIT & BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302 \
+    file://${WORKDIR}/git/sparrowhawk/license.rst;md5=1dd070c98a281d18d9eefd938729b031 \
 "
 # Set S variable to folder that includes Makefile
-S = "${WORKDIR}/git"
+S = "${WORKDIR}/git/cmn"
 DEPENDS:append = " dtc-native xxd-native"
 
-# Trusted Firmware-A source code repository
+# Trusted Firmware-A source code repositories
 SRC_URI:rz-cmn = " \
-    git://github.com/Renesas-SST/rz-atf.git;name=machine;branch=${BRANCH};protocol=https \
+    git://github.com/Renesas-SST/rz-atf.git;name=machine;branch=${BRANCH};protocol=https;destsuffix=git/cmn \
+    git://github.com/renesas-sst/rz-atf.git;name=sparrowhawk;branch=${SPARROWHAWK_BRANCH};protocol=https;destsuffix=git/sparrowhawk \
 "
 BRANCH:rz-cmn = "styhead/rz-cmn"
+SPARROWHAWK_BRANCH = "styhead/rz-cmn-3.4-sparrowhawk"
 SRCREV_machine:rz-cmn = "${AUTOREV}"
+SRCREV_sparrowhawk = "7325a329a12228027d9a9d642e36751facd7aee2"
+SRCREV_FORMAT = "machine_sparrowhawk"
 PV = "v2.14+git"
+
+SPARROWHAWK_S = "${WORKDIR}/git/sparrowhawk"
 
 # Configuration for rz-cmn board
 PLATFORM:rz-cmn = "cmn"
 EXTRA_FLAGS:rz-cmn = "BOARD=rz_cmn"
 BL2_METHODS:rz-cmn = "esd xspi emmc"
+
+# Configuration for the Sparrow-Hawk (V4H) companion SoC
+SPARROWHAWK_PLATFORM = "rcar_gen4"
+SPARROWHAWK_OPT = "LSI=V4H CTX_INCLUDE_AARCH32_REGS=0 MBEDTLS_COMMON_MK=1 PTP_NONSECURE_ACCESS=1 LOG_LEVEL=20 DEBUG=0 ENABLE_ASSERTIONS=0 E=0"
 
 FILES:${PN} = "/boot "
 # Add the /boot directory to the target's sysroot
@@ -58,6 +69,17 @@ LD[unexport] = "1"
 #   - FCONF device trees (dtbs)
 EXTRA_OEMAKE = "PLAT=${PLATFORM} ${EXTRA_FLAGS} LD=${TARGET_PREFIX}ld.bfd bl2-all bl31 dtbs"
 
+do_compile() {
+    # Build BL2/BL31 for the primary rz-cmn platform
+    oe_runmake
+
+    # Build BL31 for the Sparrow-Hawk (V4H) companion SoC
+    cd ${SPARROWHAWK_S}
+    oe_runmake distclean
+    oe_runmake clean_srecord PLAT=${SPARROWHAWK_PLATFORM} SPD=none MBEDTLS_COMMON_MK=1 ${SPARROWHAWK_OPT}
+    oe_runmake bl31 rcar_srecord PLAT=${SPARROWHAWK_PLATFORM} SPD=none MBEDTLS_COMMON_MK=1 ${SPARROWHAWK_OPT}
+}
+
 # Install bl2.bin and bl31.bin to boot folder and rename
 do_install() {
     install -d ${D}/boot/fdts
@@ -80,6 +102,11 @@ do_deploy() {
     done
     install -m 0644 ${D}/boot/bl31-${MACHINE}.bin ${DEPLOYDIR}/target/images/atf/bl31-${MACHINE}.bin
     install -m 0644 ${D}/boot/fdts/*.dtb ${DEPLOYDIR}/target/images/atf/fdts
+
+    # Copy Sparrow-Hawk (V4H) BL31 images to deploy folder
+    install -m 0644 ${SPARROWHAWK_S}/build/${SPARROWHAWK_PLATFORM}/release/bl31/bl31.elf ${DEPLOYDIR}/target/images/atf/bl31-sparrowhawk.elf
+    install -m 0644 ${SPARROWHAWK_S}/build/${SPARROWHAWK_PLATFORM}/release/bl31.bin       ${DEPLOYDIR}/target/images/atf/bl31-sparrowhawk.bin
+    install -m 0644 ${SPARROWHAWK_S}/build/${SPARROWHAWK_PLATFORM}/release/bl31.srec      ${DEPLOYDIR}/target/images/atf/bl31-sparrowhawk.srec
 }
 
 addtask deploy after do_install
