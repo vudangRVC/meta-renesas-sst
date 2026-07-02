@@ -26,6 +26,7 @@ IMAGE_INSTALL:append = " \
     linux-firmware-sdiouartiw416 \
     firmwared \
 "
+IMAGE_INSTALL:append:rz-cmn = " linux-firmware-rcar-gen4-pcie"
 
 IMAGE_INSTALL:append:rz-cmn = " uenv"
 IMAGE_INSTALL:append:rz-cmn = " ${@oe.utils.conditional('ENABLE_SPD_OPTEE', '1', 'optee-client', '', d)}"

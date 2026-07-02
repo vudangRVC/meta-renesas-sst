@@ -22,8 +22,8 @@ SRC_URI:rz-cmn = " \
   git://github.com/vudangRVC/linux-rz-sst.git;branch=${KBRANCH};protocol=https; \
 "
 KBRANCH  = "styhead/rz-cmn-v6.18-support-v4h-sparrow"
-SRCREV = "3f41e79c36b97e4c460631f77cc54470d06285c4"
-SRCREV_machine:rz-cmn ?= "3f41e79c36b97e4c460631f77cc54470d06285c4"
+SRCREV = "5b319a29ba6f79b2029446e9064a4aabf040db9d"
+SRCREV_machine:rz-cmn ?= "5b319a29ba6f79b2029446e9064a4aabf040db9d"
 LINUX_VERSION:rz-cmn ?= "6.18.20"
 
 
