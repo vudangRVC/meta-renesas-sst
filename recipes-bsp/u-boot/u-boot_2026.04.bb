@@ -8,8 +8,8 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
 
 # u-boot source code repository
-UBOOT_URL = "git://github.com/vudangRVC/u-boot-sst.git"
-BRANCH = "styhead/rz-cmn-sparrowhawk"
+UBOOT_URL = "git://github.com/renesas-sst/u-boot.git"
+BRANCH = "styhead/rz-cmn-3.4-sparrowhawk"
 SRCREV = "c4473a7cd7d11ac9ab41e4ca9cc51c127516f46c"
 
 SRC_URI = "${UBOOT_URL};name=machine;protocol=https;branch=${BRANCH}"
