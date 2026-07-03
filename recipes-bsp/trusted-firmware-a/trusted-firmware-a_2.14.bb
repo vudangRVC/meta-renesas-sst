@@ -74,10 +74,13 @@ do_compile() {
     oe_runmake
 
     # Build BL31 for the Sparrow-Hawk (V4H) companion SoC
+    # Uses ${MAKE} directly (not oe_runmake) since oe_runmake always injects
+    # EXTRA_OEMAKE, which is set above for the cmn platform's PLAT/targets
+    # and would conflict with the sparrowhawk platform/targets here.
     cd ${SPARROWHAWK_S}
-    oe_runmake distclean
-    oe_runmake clean_srecord PLAT=${SPARROWHAWK_PLATFORM} SPD=none MBEDTLS_COMMON_MK=1 ${SPARROWHAWK_OPT}
-    oe_runmake bl31 rcar_srecord PLAT=${SPARROWHAWK_PLATFORM} SPD=none MBEDTLS_COMMON_MK=1 ${SPARROWHAWK_OPT}
+    ${MAKE} distclean
+    ${MAKE} clean_srecord PLAT=${SPARROWHAWK_PLATFORM} SPD=none MBEDTLS_COMMON_MK=1 ${SPARROWHAWK_OPT}
+    ${MAKE} bl31 rcar_srecord PLAT=${SPARROWHAWK_PLATFORM} SPD=none MBEDTLS_COMMON_MK=1 ${SPARROWHAWK_OPT}
 }
 
 # Install bl2.bin and bl31.bin to boot folder and rename
