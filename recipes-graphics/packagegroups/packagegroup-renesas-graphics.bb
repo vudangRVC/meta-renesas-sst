@@ -27,15 +27,15 @@ RDEPENDS:packagegroup-renesas-graphics = " \
 # scope: it's provided by the kernel (linux-yocto), not this layer.
 RDEPENDS:packagegroup-graphics-renesas-gles = " \
     gles-user-module \
+    pvr-libgbm \
+    pvr-wayland-kms \
+    pvr-wayland-wsegl \
 "
 
-DEPENDS:packagegroup-graphics-renesas-wayland = "libegl libgles2"
+DEPENDS:packagegroup-graphics-renesas-wayland = "virtual/egl virtual/libgles2 virtual/libgbm"
 
 RDEPENDS:packagegroup-graphics-renesas-wayland = " \
     libgbm \
-    libgbm-dev \
-    wayland-kms \
-    wayland-wsegl \
 "
 
 RDEPENDS:packagegroup-graphics-oss-wayland = " \

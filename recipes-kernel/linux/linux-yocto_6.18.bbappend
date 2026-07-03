@@ -18,7 +18,6 @@ SRC_URI:rz-cmn = " \
   git://github.com/Renesas-SST/linux-rz.git;name=nonrt;branch=${KBRANCH};protocol=https;destsuffix=git-nonrt \
   git://github.com/Renesas-SST/linux-rz.git;name=rt;branch=${KBRANCH_RT};protocol=https;destsuffix=git-rt \
 "
-
 # Common config fragments and patches
 SRC_URI:append:rz-cmn = " \
 	file://common/kernel-common.cfg \

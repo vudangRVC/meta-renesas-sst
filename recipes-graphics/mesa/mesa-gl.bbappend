@@ -3,7 +3,9 @@
 # virtual/libgbm. Two conflicts to resolve on this machine:
 #
 # 1. Both mesa-gl and gles-user-module ship ${includedir}/KHR/khrplatform.h,
-#    which aborts do_prepare_recipe_sysroot — drop it from mesa-gl.
+#    which conflicts in recipe sysroots and the target rootfs. On rz-cmn,
+#    EGL/GLES headers come from the proprietary PowerVR stack, so mesa-gl must
+#    not export KHR.
 # 2. mesa.inc always declares libgbm/libgbm-dev packages and (via the gbm
 #    PACKAGECONFIG) builds GBM, colliding with the Renesas libgbm recipe in
 #    do_packagedata ("files already exist ... manifest-...-libgbm"). Disable
