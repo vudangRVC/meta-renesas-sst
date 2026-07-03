@@ -24,3 +24,10 @@ do_install:append() {
 FILES_${PN}:append = " \
     ${sysconfdir}/profile.d/weston.sh \
 "
+
+# NOTE: no xwayland override here. The team's standard core-image-weston builds
+# with the poky default DISTRO_FEATURES, which includes x11 (and wayland +
+# vulkan), so the Xwayland binary IS built and the shared weston.ini's
+# xwayland=true is correct. (The earlier custom-image port dropped x11 and
+# needed xwayland=false; that no longer applies now the GPU libs ride the
+# standard image.)
