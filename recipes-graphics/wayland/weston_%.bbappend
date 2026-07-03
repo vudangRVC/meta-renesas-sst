@@ -2,7 +2,7 @@ FILESEXTRAPATHS:prepend:rz-cmn := "${THISDIR}/${PN}:"
 
 SRC_URI:append:rz-cmn = " file://drm-backend-remove-gbm-version-check.patch"
 
-DEPENDS:append:rz-cmn= " libgbm"
+DEPENDS:append:rz-cmn= " virtual/libgbm"
 
 RDEPENDS:${PN}:append:rz-cmn = " libgbm"
 

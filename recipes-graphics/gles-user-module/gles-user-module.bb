@@ -13,6 +13,9 @@ SRC_URI:rz-cmn = "${GFX_LIBRARY_URL};sha256sum=${GFX_LIBRARY_SHA256}"
 
 SRC_URI:append:rz-cmn = " \
     file://rc.pvr.service \
+    file://pvr-gfx-select \
+    file://pvr-gfx-select.service \
+    file://pvr-gfx.sh \
 "
 
 S = "${WORKDIR}/rogue"
@@ -21,7 +24,7 @@ inherit update-rc.d systemd
 
 INITSCRIPT_NAME = "pvrinit"
 INITSCRIPT_PARAMS = "start 7 5 2 . stop 62 0 1 6 ."
-SYSTEMD_SERVICE:${PN} = "rc.pvr.service"
+SYSTEMD_SERVICE:${PN} = "pvr-gfx-select.service rc.pvr.service"
 
 do_populate_lic[noexec] = "1"
 do_compile[noexec] = "1"
@@ -32,30 +35,57 @@ do_install() {
     cp -r ${S}/etc/* ${D}${sysconfdir}/
     install -m 755 ${S}/etc/init.d/rc.pvr ${D}${sysconfdir}/init.d/pvrinit
 
-    # Install header files except OpenCL standard header
-    install -d ${D}${includedir}/
-    cp -r ${S}/usr/include/* ${D}${includedir}/
-    rm -rf ${D}${includedir}/CL
+    # Keep PowerVR headers private. Mesa owns the generic EGL/GLES/KHR headers
+    # in the unified rz-cmn rootfs so non-V4H boards keep working.
+    install -d ${D}${includedir}/pvr
+    cp -r ${S}/usr/include/* ${D}${includedir}/pvr/
+    rm -rf ${D}${includedir}/pvr/CL
+    rm -rf ${D}${includedir}/pvr/vulkan ${D}${includedir}/pvr/vk_video
 
-    # Install pre-builded binaries
-    install -d ${D}${libdir}
-    install -m 755 ${S}/usr/lib/*.so ${D}${libdir}/
+    # Install pre-built binaries privately. Mesa owns the generic SONAMEs under
+    # ${libdir}; V4H selects these libraries with LD_LIBRARY_PATH at runtime.
+    install -d ${D}${libdir}/pvr
+    install -m 755 ${S}/usr/lib/*.so ${D}${libdir}/pvr/
     install -d ${D}/usr/local/bin
     install -m 755 ${S}/usr/local/bin/* ${D}/usr/local//bin/
     install -d ${D}${nonarch_base_libdir}/firmware
     install -m 644 ${S}/lib/firmware/* ${D}${nonarch_base_libdir}/firmware/
 
     # Remove conflict binary
-    rm -rf ${D}${libdir}/libOpenCL.so
+    rm -rf ${D}${libdir}/pvr/libOpenCL.so
+    rm -rf ${D}${libdir}/pvr/libvulkan.so*
 
-    # Install pkgconfig
-    install -d ${D}${libdir}/pkgconfig
-    install -m 644 ${S}/usr/lib/pkgconfig/*.pc ${D}${libdir}/pkgconfig/
+    # Do not publish PowerVR pkg-config files as the generic EGL/GLES provider.
+    install -d ${D}${libdir}/pvr/pkgconfig
+    install -m 644 ${S}/usr/lib/pkgconfig/*.pc ${D}${libdir}/pvr/pkgconfig/
+    rm -rf ${D}${libdir}/pvr/pkgconfig/vulkan.pc
 
     # Create symbolic link
-    cd ${D}${libdir}
+    cd ${D}${libdir}/pvr
     ln -s libEGL.so libEGL.so.1
     ln -s libGLESv2.so libGLESv2.so.2
+
+    # Keep OpenCL/Vulkan vendor files private so non-V4H boards do not see the
+    # PowerVR ICDs. pvr-gfx-select exposes them through environment variables
+    # only on V4H/Sparrow-Hawk.
+    install -d ${D}${datadir}/pvr
+    if [ -d ${D}${sysconfdir}/vulkan ]; then
+        install -d ${D}${datadir}/pvr/vulkan
+        mv ${D}${sysconfdir}/vulkan/* ${D}${datadir}/pvr/vulkan/
+        rm -rf ${D}${sysconfdir}/vulkan
+        if [ -f ${D}${datadir}/pvr/vulkan/icd.d/powervr_icd.json ]; then
+            sed -i 's#"library_path": "libVK_IMG.so"#"library_path": "/usr/lib/pvr/libVK_IMG.so"#' \
+                ${D}${datadir}/pvr/vulkan/icd.d/powervr_icd.json
+        fi
+    fi
+    if [ -d ${D}${sysconfdir}/OpenCL ]; then
+        install -d ${D}${datadir}/pvr/OpenCL
+        mv ${D}${sysconfdir}/OpenCL/* ${D}${datadir}/pvr/OpenCL/
+        rm -rf ${D}${sysconfdir}/OpenCL
+        if [ -f ${D}${datadir}/pvr/OpenCL/vendors/IMG.icd ]; then
+            echo "/usr/lib/pvr/libPVROCL.so" > ${D}${datadir}/pvr/OpenCL/vendors/IMG.icd
+        fi
+    fi
 
     # Install systemd service
     # NOTE: use UNPACKDIR (not WORKDIR) — on Yocto styhead, file:// SRC_URI
@@ -64,73 +94,59 @@ do_install() {
     # on both.
     install -d ${D}${systemd_system_unitdir}/
     install -m 644 ${UNPACKDIR}/rc.pvr.service ${D}${systemd_system_unitdir}/
+    install -m 644 ${UNPACKDIR}/pvr-gfx-select.service ${D}${systemd_system_unitdir}/
     install -d ${D}${exec_prefix}/bin
     install -m 755 ${S}/etc/init.d/rc.pvr ${D}${exec_prefix}/bin/pvrinit
+    install -m 755 ${UNPACKDIR}/pvr-gfx-select ${D}${exec_prefix}/bin/pvr-gfx-select
+    install -d ${D}${sysconfdir}/profile.d
+    install -m 755 ${UNPACKDIR}/pvr-gfx.sh ${D}${sysconfdir}/profile.d/pvr-gfx.sh
 }
 
 PACKAGES = "\
     ${PN} \
-    libegl-${PN} \
-    libgles2-${PN} \
     ${PN}-dev \
-    libegl-${PN}-dev \
-    libgles2-${PN}-dev \
 "
 
 FILES:${PN} = " \
     ${sysconfdir}/* \
-    ${libdir}/*.so* \
+    ${libdir}/pvr/*.so* \
     ${nonarch_base_libdir}/firmware/rgx.fw* \
     ${nonarch_base_libdir}/firmware/rgx.sh* \
+    ${datadir}/pvr/* \
     /usr/local/bin/* \
     ${exec_prefix}/bin/* \
+    ${systemd_system_unitdir}/pvr-gfx-select.service \
 "
 
 FILES:${PN}-dev = " \
-    ${includedir}/* \
-    ${libdir}/pkgconfig/* \
+    ${includedir}/pvr/* \
+    ${libdir}/pvr/pkgconfig/* \
 "
 
-FILES:libegl-${PN} = "${libdir}/libEGL.so*"
-FILES:libgles2-${PN} = "${libdir}/libGLESv2.so*"
-
-FILES:libegl-${PN}-dev = " \
-    ${libdir}/libEGL.* \
-    ${includedir}/EGL \
-    ${includedir}/KHR/khrplatform.h \
-    ${libdir}/pkgconfig/egl.pc \
-"
-FILES:libgles2-${PN}-dev = " \
-    ${libdir}/libGLESv2.* \
-    ${includedir}/GLES2 \
-    ${libdir}/pkgconfig/glesv2.pc \
-"
-FILES:libgles3-${PN}-dev = " \
-    ${includedir}/GLES3 \
+PROVIDES = "virtual/gles-user-module"
+PRIVATE_LIBS:${PN} = " \
+    libEGL.so.1 \
+    libGLESv2.so.2 \
+    libIMGegl.so \
+    libPVROCL.so \
+    libPVRScopeServices.so \
+    libVK_IMG.so \
+    libdlc_REL.so \
+    libpvrDRM_WSEGL.so \
+    libsrv_um.so \
+    libsutu_display.so \
+    libufwriter.so \
+    libusc.so \
 "
 
-# The PowerVR libGLESv2.so implements both OpenGL ES 2.x and ES 3.x (one lib,
-# like mesa's libGLESv2), so this module is the provider of virtual/libgles3
-# too. Declaring it is required by consumers such as kmscube that DEPEND on
-# virtual/libgles3 — otherwise mesa (normally the libgles3 provider) is skipped
-# here because virtual/libgl is redirected to mesa-gl.
-PROVIDES = "virtual/gles-user-module virtual/egl virtual/libgles2 virtual/libgles3"
-
-RPROVIDES:libegl-${PN} = "libegl"
-RPROVIDES:libegl-${PN}-dev = "libegl-dev"
-# libGLESv2.so serves both ES2 and ES3 at runtime, so this package also
-# provides the runtime libgles3 (mirrors mesa, where libgles3-mesa ships the
-# same libGLESv2.so.2).
-RPROVIDES:libgles2-${PN} = "libgles2 libgles3"
-RPROVIDES:libgles2-${PN}-dev = "libgles2-dev"
-RPROVIDES:libgles3-${PN}-dev = "libgles3-dev"
-
-# NOTE: the pvrsrvkm kernel module is out of scope here — it belongs to the
-# kernel (linux-yocto for rz-cmn), not to this userspace GPU library layer.
-# So this package does NOT RDEPEND on kernel-module-gles; the kernel is
-# expected to provide pvrsrvkm.ko for the PowerVR userspace libs to work.
+# kernel-module-gles (pvrsrvkm.ko) is kernel-side GPU enablement pulled into
+# this layer so a single-machine rz-cmn core-image-weston can drive the V4H
+# GPU end to end (see linux-yocto_6.18.bbappend for the matching DT node +
+# drm_file HACK patch). RDEPEND on it so pvrsrvkm actually lands in the
+# rootfs; without this, kernel-module-gles builds but the userspace PowerVR
+# stack has no driver to talk to (this was the GPU-fail root cause on board).
 RDEPENDS:${PN} = " \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'libgbm wayland-kms', '', d)} \
+    kernel-module-gles \
 "
 
 INSANE_SKIP:${PN} = "ldflags build-deps file-rdeps"
