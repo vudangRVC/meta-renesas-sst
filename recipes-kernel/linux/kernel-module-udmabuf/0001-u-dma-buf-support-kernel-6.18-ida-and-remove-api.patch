@@ -1,0 +1,122 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Quoc Trinh <quoctrinh@example.com>
+Date: Fri, 3 Jul 2026 00:00:00 +0000
+Subject: [PATCH] u-dma-buf: support kernel 6.18 ida and remove APIs
+
+Kernel 6.18 no longer exposes ida_simple_get/remove and platform_driver
+.remove is a void callback. Add small compatibility wrappers while keeping
+the old exclusive-end ida_simple_get semantics.
+
+Upstream-Status: Pending
+---
+ u-dma-buf.c | 43 +++++++++++++++++++++++++++++++++----------
+ 1 file changed, 33 insertions(+), 10 deletions(-)
+
+diff --git a/u-dma-buf.c b/u-dma-buf.c
+index 6f7c7dc..1111111 100644
+--- a/u-dma-buf.c
++++ b/u-dma-buf.c
+@@ -126,6 +126,16 @@ MODULE_LICENSE("Dual BSD/GPL");
+ #define U64_MAX ((u64)~0ULL)
+ #endif
+ 
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 13, 0))
++#define udmabuf_ida_simple_get(ida, start, end, gfp) \
++        ida_alloc_range((ida), (start), (end) - 1, (gfp))
++#define udmabuf_ida_simple_remove(ida, id) ida_free((ida), (id))
++#else
++#define udmabuf_ida_simple_get(ida, start, end, gfp) \
++        ida_simple_get((ida), (start), (end), (gfp))
++#define udmabuf_ida_simple_remove(ida, id) ida_simple_remove((ida), (id))
++#endif
++
+ /**
+  * DOC: Udmabuf Static Variables
+  *
+@@ -841,12 +851,12 @@ static struct udmabuf_device_data* udmabuf_device_create(const char* name, struc
+      */
+     {
+         if ((0 <= minor) && (minor < DEVICE_MAX_NUM)) {
+-            if (ida_simple_get(&udmabuf_device_ida, minor, minor+1, GFP_KERNEL) < 0) {
++            if (udmabuf_ida_simple_get(&udmabuf_device_ida, minor, minor+1, GFP_KERNEL) < 0) {
+                 printk(KERN_ERR "couldn't allocate minor number(=%d).\n", minor);
+                 goto failed;
+             }
+         } else if(minor < 0) {
+-            if ((minor = ida_simple_get(&udmabuf_device_ida, 0, DEVICE_MAX_NUM, GFP_KERNEL)) < 0) {
++            if ((minor = udmabuf_ida_simple_get(&udmabuf_device_ida, 0, DEVICE_MAX_NUM, GFP_KERNEL)) < 0) {
+                 printk(KERN_ERR "couldn't allocate new minor number. return=%d.\n", minor);
+                 goto failed;
+             }
+@@ -974,7 +984,7 @@ static struct udmabuf_device_data* udmabuf_device_create(const char* name, struc
+     if (done & DONE_SET_DMA_DEV  ) { put_device(this->dma_dev);}
+     if (done & DONE_CHRDEV_ADD   ) { cdev_del(&this->cdev); }
+     if (done & DONE_DEVICE_CREATE) { device_destroy(udmabuf_sys_class, this->device_number);}
+-    if (done & DONE_ALLOC_MINOR  ) { ida_simple_remove(&udmabuf_device_ida, minor);}
++    if (done & DONE_ALLOC_MINOR  ) { udmabuf_ida_simple_remove(&udmabuf_device_ida, minor);}
+     if (this != NULL)              { kfree(this); }
+     return NULL;
+ }
+@@ -1044,7 +1054,7 @@ static int udmabuf_device_destroy(struct udmabuf_device_data* this)
+     put_device(this->dma_dev);
+     cdev_del(&this->cdev);
+     device_destroy(udmabuf_sys_class, this->device_number);
+-    ida_simple_remove(&udmabuf_device_ida, MINOR(this->device_number));
++    udmabuf_ida_simple_remove(&udmabuf_device_ida, MINOR(this->device_number));
+     kfree(this);
+     return 0;
+ }
+@@ -1375,13 +1385,13 @@ static void udmabuf_platform_device_remove_all(void)
+ 
+ #define CALL_UDMABUF_STATIC_DEVICE_CREATE(__num)                         \
+     if (udmabuf ## __num != 0) {                                         \
+-        ida_simple_remove(&udmabuf_device_ida, __num);                   \
++        udmabuf_ida_simple_remove(&udmabuf_device_ida, __num);           \
+         udmabuf_platform_device_create(NULL, __num, udmabuf ## __num);   \
+     }
+ 
+ #define CALL_UDMABUF_STATIC_DEVICE_RESERVE_MINOR_NUMBER(__num)           \
+     if (udmabuf ## __num != 0) {                                         \
+-        ida_simple_get(&udmabuf_device_ida, __num, __num+1, GFP_KERNEL); \
++        udmabuf_ida_simple_get(&udmabuf_device_ida, __num, __num+1, GFP_KERNEL); \
+     }
+ 
+ DEFINE_UDMABUF_STATIC_DEVICE_PARAM(0);
+@@ -1732,21 +1742,34 @@ static int udmabuf_platform_driver_probe(struct platform_device *pdev)
+  *
+  * Unregister the device after releasing the resources.
+  */
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 11, 0))
++static void udmabuf_platform_driver_remove(struct platform_device *pdev)
++#else
+ static int udmabuf_platform_driver_remove(struct platform_device *pdev)
++#endif
+ {
+     struct udmabuf_device_data* this   = dev_get_drvdata(&pdev->dev);
+-    int                         retval = 0;
++    int                         retval;
+ 
+     dev_dbg(&pdev->dev, "driver remove start.\n");
+ 
+     retval = udmabuf_device_remove(&pdev->dev, this);
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 11, 0))
++    if (retval != 0) {
++        dev_warn(&pdev->dev, "driver remove returned %d.\n", retval);
++    }
++#endif
+ 
+     if (info_enable) {
+         dev_info(&pdev->dev, "driver removed.\n");
+     }
++
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(6, 11, 0))
+     return retval;
++#endif
+ }
+ 
++
+ /**
+  * Open Firmware Device Identifier Matching Table
+  */
+-- 
+2.25.1
