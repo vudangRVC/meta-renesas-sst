@@ -46,6 +46,18 @@ SRC_URI:append:rz-cmn =	" \
 	file://rzg2l-sbc/touch.cfg \
 "
 
+# PowerVR (Renesas GSX) GPU enablement for the R-Car V4H (Sparrow Hawk).
+# The team's linux-yocto V4H kernel ships neither the drm_file FOP_UNSIGNED_OFFSET
+# bypass that the PowerVR pvrsrvkm driver needs, nor the gsx@fd000000 GPU node
+# in its device tree. Add both so the pvrsrvkm module (kernel-module-gles) can
+# bind and the userspace PowerVR stack (gles-user-module) can bring up the GPU.
+# NOTE: this is kernel-side enablement, added here so a single-machine rz-cmn
+# core-image-weston can drive the V4H GPU without switching kernel providers.
+SRC_URI:append:rz-cmn = " \
+	file://gpu/0002-HACK-drivers-gpu-drm-drm_file-Ingnore-flag-checking.patch \
+	file://gpu/0003-arm64-dts-r8a779g0-add-GSX-PowerVR-GPU-node.patch \
+"
+
 S = "${UNPACKDIR}/git"
 
 ####################################################################
