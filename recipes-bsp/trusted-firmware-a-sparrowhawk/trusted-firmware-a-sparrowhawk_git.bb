@@ -9,7 +9,10 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 inherit deploy
 
 BRANCH = "styhead/rz-cmn-support-v4h-sparrow"
-SRC_URI = "git://github.com/vudangRVC/rz-atf-sst.git;branch=${BRANCH};protocol=https"
+SRC_URI = " \
+    git://github.com/vudangRVC/rz-atf-sst.git;branch=${BRANCH};protocol=https \
+    file://0001-fix-rcar_gen4-V4H-CPU-topology-1-cluster-4-cores.patch \
+"
 SRCREV = "7325a329a12228027d9a9d642e36751facd7aee2"
 PV = "v2.14.0+sparrowhawk+git${SRCPV}"
 
