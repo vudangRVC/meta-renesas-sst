@@ -1,0 +1,37 @@
+From 7325a329a12228027d9a9d642e36751facd7aee2 Mon Sep 17 00:00:00 2001
+From: Quoc Trinh <quoc.trinh.fz@renesas.com>
+Date: Sun, 5 Jul 2026 12:18:22 +0700
+Subject: [PATCH] fix: rcar_gen4 V4H CPU topology - 1 cluster, 4 cores
+
+R-Car V4H has 4 Cortex-A76 cores in a single cluster, not 2 clusters
+of 2 cores each. The incorrect topology caused only 2 of 4 cores
+to be visible to Linux (PSCI only brought up cores 0-1; cores 2-3
+were mapped to a non-existent cluster 1).
+
+Upstream-Status: Inappropriate [configuration fix for V4H platform]
+Signed-off-by: Quoc Trinh <quoc.trinh.fz@renesas.com>
+---
+ plat/renesas/rcar_gen4/include/platform_def.h | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/plat/renesas/rcar_gen4/include/platform_def.h b/plat/renesas/rcar_gen4/include/platform_def.h
+index 951dfc2..93a67b4 100644
+--- a/plat/renesas/rcar_gen4/include/platform_def.h
++++ b/plat/renesas/rcar_gen4/include/platform_def.h
+@@ -36,8 +36,12 @@
+ #define PLATFORM_CLUSTER_COUNT        1
+ #define PLATFORM_MAX_CPUS_PER_CLUSTER 4
+ #elif RCAR_LSI == RCAR_V4H
+-#define PLATFORM_CLUSTER_COUNT        2
+-#define PLATFORM_MAX_CPUS_PER_CLUSTER 2
++/*
++ * R-Car V4H has 4x Cortex-A76 in a single cluster.
++ * Correct topology: 1 cluster, 4 cores per cluster.
++ */
++#define PLATFORM_CLUSTER_COUNT        1
++#define PLATFORM_MAX_CPUS_PER_CLUSTER 4
+ #else /* S4 and V3U */
+ #define PLATFORM_CLUSTER_COUNT        4
+ #define PLATFORM_MAX_CPUS_PER_CLUSTER 2
+-- 
+2.43.0
