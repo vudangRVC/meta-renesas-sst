@@ -8,11 +8,13 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
 
 # u-boot source code repository
-UBOOT_URL = "git://github.com/renesas-sst/u-boot.git"
-BRANCH = "styhead/rz-cmn-3.4-sparrowhawk"
-SRCREV = "c4473a7cd7d11ac9ab41e4ca9cc51c127516f46c"
+UBOOT_URL = "git://github.com/vudangRVC/u-boot-sst.git"
+BRANCH = "styhead/rz-cmn-sparrowhawk"
+SRCREV = "a47a8308e4354fde8197d73049186ec6e7fb438b"
 
-SRC_URI = "${UBOOT_URL};name=machine;protocol=https;branch=${BRANCH}"
+SRC_URI = "${UBOOT_URL};name=machine;protocol=https;branch=${BRANCH} \
+    file://0001-board-renesas-rz-cmn-rename-sparrowhawk-model_string.patch \
+"
 
 FILES:${PN} = "/boot ${sysconfdir}"
 

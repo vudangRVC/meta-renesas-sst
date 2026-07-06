@@ -231,11 +231,11 @@
         "kernel_dtb_desc": []
     },
 
-    "sparrowhawk": {
+    "sparrow-hawk": {
         "model_id": 64,
         "revision_minor": 0,
         "revision_major": 1,
-        "model_string": "sparrowhawk",
+        "model_string": "sparrow-hawk",
         "mfg_name": "Renesas",
 
         "bl2_loc": 0,
