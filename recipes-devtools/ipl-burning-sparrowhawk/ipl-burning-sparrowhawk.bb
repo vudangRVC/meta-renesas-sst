@@ -23,7 +23,6 @@ SRC_URI:append = " \
     file://ipl_burning.py \
     file://run.bat \
     file://run.sh \
-    file://Flash_writer_sparrow_hawk_CR52.mot \
     file://LICENSE-index.txt \
     file://LICENSE.MIT \
     file://LICENSE.BSD-3-Clause \
@@ -42,6 +41,7 @@ do_install[noexec] = "1"
 
 do_deploy[depends] += "u-boot:do_deploy"
 do_deploy[depends] += "u-boot:do_populate_lic"
+do_deploy[depends] += "flash-writer:do_deploy"
 
 do_deploy() {
     install -d ${DEPLOYDIR}/${PN}
@@ -56,7 +56,8 @@ do_deploy() {
     install -m 0644 ${UNPACKDIR}/ipl_burning.json ${DEPLOYDIR}/${PN}
     install -m 0755 ${UNPACKDIR}/run.sh ${DEPLOYDIR}/${PN}
     install -m 0644 ${UNPACKDIR}/run.bat ${DEPLOYDIR}/${PN}
-    install -m 0644 ${UNPACKDIR}/Flash_writer_sparrow_hawk_CR52.mot ${DEPLOYDIR}/${PN}
+    install -m 0644 ${DEPLOY_DIR}/images/${MACHINE}/target/images/Flash_Writer_SCIF_sparrow-hawk.mot \
+        ${DEPLOYDIR}/${PN}/Flash_writer_sparrow_hawk_CR52.mot
     install -m 0644 ${DEPLOY_DIR}/images/${MACHINE}/target/images/sparrowhawk/u-boot/flash.bin ${DEPLOYDIR}/${PN}
     MACHINE_LIC=$(echo ${MACHINE} | tr '-' '_')
     cp -r ${DEPLOY_DIR}/licenses/${MACHINE_LIC}/u-boot ${DEPLOYDIR}/${PN}/License/u-boot_licenses
