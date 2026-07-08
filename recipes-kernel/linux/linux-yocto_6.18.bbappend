@@ -6,6 +6,7 @@ inherit kernel
 inherit kernel-devicetree
 inherit renesas-kernel-variants
 
+KBRANCH  = "styhead/rz-cmn"
 KBRANCH_RT = "styhead/rz-cmn-rt"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}:"
@@ -13,19 +14,10 @@ FILESEXTRAPATHS:prepend := "${THISDIR}:"
 # Default: use the Renesas-SST Git repository.
 # Comment out the following entries to use the Yocto Git repositories instead.
 # This may conflict with the current setup.
-# SRC_URI:rz-cmn = " \
-#   git://github.com/Renesas-SST/linux-rz.git;name=nonrt;branch=${KBRANCH};protocol=https;destsuffix=git-nonrt \
-#   git://github.com/Renesas-SST/linux-rz.git;name=rt;branch=${KBRANCH_RT};protocol=https;destsuffix=git-rt \
-# "
-
 SRC_URI:rz-cmn = " \
-  git://github.com/vudangRVC/linux-rz-sst.git;branch=${KBRANCH};protocol=https; \
+  git://github.com/Renesas-SST/linux-rz.git;name=nonrt;branch=${KBRANCH};protocol=https;destsuffix=git-nonrt \
+  git://github.com/Renesas-SST/linux-rz.git;name=rt;branch=${KBRANCH_RT};protocol=https;destsuffix=git-rt \
 "
-KBRANCH  = "styhead/rz-cmn-v6.18-support-v4h-sparrow"
-SRCREV = "c482c37879fc6894963a13a506dfdb4d16bd9993"
-SRCREV_machine:rz-cmn ?= "c482c37879fc6894963a13a506dfdb4d16bd9993"
-LINUX_VERSION:rz-cmn ?= "6.18.20"
-
 
 # Common config fragments and patches
 SRC_URI:append:rz-cmn = " \
@@ -46,7 +38,7 @@ SRC_URI:append:rz-cmn =	" \
 	file://rzg2l-sbc/touch.cfg \
 "
 
-S = "${UNPACKDIR}/git"
+S = "${UNPACKDIR}/git-nonrt"
 
 ####################################################################
 # Variant metadata describing tree locations, config fragments, etc.
@@ -54,7 +46,7 @@ S = "${UNPACKDIR}/git"
 RENESAS_KERNEL_VARIANTS:rz-cmn = "preempt_rt nonpreempt"
 
 # Non-preempt variant: from the same non-RT tree as base
-RENESAS_KERNEL_VARIANT_nonpreempt_SRCTREE:rz-cmn  = "${UNPACKDIR}/git"
+RENESAS_KERNEL_VARIANT_nonpreempt_SRCTREE:rz-cmn  = "${UNPACKDIR}/git-nonrt"
 # Let TREE default to ${WORKDIR}/git-nonpreempt (set by the class)
 RENESAS_KERNEL_VARIANT_nonpreempt_PRETTY:rz-cmn   = "non-preempt"
 RENESAS_KERNEL_VARIANT_nonpreempt_CONFIG:rz-cmn = "${THISDIR}/rz-cmn/common/nonpreempt.cfg"
@@ -62,8 +54,8 @@ RENESAS_KERNEL_VARIANT_nonpreempt_IMAGE:rz-cmn    = "Image-nonpreempt-${KERNEL_A
 RENESAS_KERNEL_VARIANT_nonpreempt_SYMLINK:rz-cmn  = "Image-nonpreempt"
 RENESAS_KERNEL_VARIANT_nonpreempt_MODULES:rz-cmn  = "${PN}-modules-nonpreempt"
 
-# PREEMPT_RT variant: from same source tree (no separate RT fetch)
-RENESAS_KERNEL_VARIANT_preempt_rt_SRCTREE:rz-cmn  = "${UNPACKDIR}/git"
+# PREEMPT_RT variant: from RT branch
+RENESAS_KERNEL_VARIANT_preempt_rt_SRCTREE:rz-cmn  = "${UNPACKDIR}/git-rt"
 # Let TREE default to ${WORKDIR}/git-preempt_rt
 RENESAS_KERNEL_VARIANT_preempt_rt_PRETTY:rz-cmn   = "PREEMPT_RT"
 RENESAS_KERNEL_VARIANT_preempt_rt_CONFIG:rz-cmn = "${THISDIR}/rz-cmn/common/preempt-rt.cfg"
@@ -115,6 +107,7 @@ DEVICETREE_NAME:rz-cmn = " \
 	rzv2h-evk-ver1 \
 	rzv2h-rdk-ver1 \
 	rs-g2l100 \
+	imdt-v2h-sbc \
 	r8a779g3-sparrow-hawk \
 "
 
@@ -132,6 +125,11 @@ KERNEL_DEVICETREE:append:rz-cmn = " \
 	renesas/overlays/rzv2h-rdk-1.0-audio-codec.dtbo \
 	renesas/overlays/rzv2h-rdk-1.0-can.dtbo \
 	renesas/overlays/rzv2h-rdk-1.0-ext-spi.dtbo \
+	renesas/overlays/imdt-v2h-sbc-1.0-dsi.dtbo \
+	renesas/overlays/imdt-v2h-sbc-1.0-cru-csi22-ar1335.dtbo \
+	renesas/overlays/imdt-v2h-sbc-1.0-cru-csi23-ar1335.dtbo \
+	renesas/sparrow-hawk-1.0-cru-csi-j1-imx219.dtbo \
+	renesas/sparrow-hawk-1.0-cru-csi-j2-imx219.dtbo \
 "
 
 # Override the dtc flags to support dtbo build in kernel-devicetree.bbclass
@@ -151,9 +149,16 @@ do_deploy:append:rz-cmn(){
 	done
 }
 
+SRCREV_machine:rz-cmn ?= "${AUTOREV}"
+SRCREV_nonrt:rz-cmn ?= "${AUTOREV}"
+SRCREV_rt:rz-cmn ?= "${AUTOREV}"
+SRCREV_FORMAT = "nonrt_rt"
+
+LINUX_VERSION:rz-cmn ?= "6.18.20"
 
 # COMPATIBLE_MACHINE is regex matcher.
 COMPATIBLE_MACHINE:rz-cmn = "(rz-cmn)"
 COMPATIBLE_MACHINE = "^(aarch64|rz-cmn)$"
 
 EXTRA_OEMAKE += "${PARALLEL_MAKE}"
+KERNEL_VERSION_SANITY_SKIP="1"
