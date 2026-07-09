@@ -6,7 +6,7 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 PCIE_FIRMWARE:rz-cmn = "https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain/rcar_gen4_pcie.bin;md5sum=293bdf19d8e16d3c4d8179e438db921b;name=rcargen4pcie"
-PCIE_FIRMWARE_LIC:rz-cmn = "https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain/LICENCE.r8a779g_pcie_phy;md5sum=0b20e76a9a004b83c4a1c87e2153bbad;name=rcargen4pcielic"
+PCIE_FIRMWARE_LICENSE:rz-cmn = "https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain/LICENSES/LICENCE.r8a779g_pcie_phy;name=rcargen4pcielic"
 
 SRC_URI:append = " \
     file://ap1302_ar1335_single_fw.bin \
@@ -14,7 +14,7 @@ SRC_URI:append = " \
 "
 SRC_URI:append:rz-cmn = " \
     ${PCIE_FIRMWARE} \
-    ${PCIE_FIRMWARE_LIC} \
+    ${PCIE_FIRMWARE_LICENSE} \
 "
 SRC_URI[rcargen4pcie.sha256sum] = "cad6315e51397e9e2dd401d79eaa873c7b67290bce381bb97728883cc243e5ff"
 SRC_URI[rcargen4pcielic.sha256sum] = "fa0df1c508be531a302823721ae14258ba0481c9b1d717b2d3f2344aa0f66894"
