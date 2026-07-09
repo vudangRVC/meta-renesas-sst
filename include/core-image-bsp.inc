@@ -35,9 +35,15 @@ IMAGE_INSTALL:append = " \
 "
 
 # Camera stack: libcamera with R-Car Gen4 ISP / rkisp1 pipelines
-# (libpisp is pulled in automatically as a runtime dependency)
 IMAGE_INSTALL:append = " \
     libcamera \
     libcamera-gst \
     libcamera-pycamera \
+"
+
+# QoS stack: qos.ko driver, libqos library and qos_tp test tool
+IMAGE_INSTALL:append = " \
+    kernel-module-qos \
+    qosif-user-module \
+    qosif-tp-user-module \
 "
