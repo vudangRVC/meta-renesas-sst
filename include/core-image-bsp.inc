@@ -33,3 +33,11 @@ IMAGE_INSTALL:append = " \
     connman-wait-online \
     tcf-agent \
 "
+
+# Camera stack: libcamera with R-Car Gen4 ISP / rkisp1 pipelines
+# (libpisp is pulled in automatically as a runtime dependency)
+IMAGE_INSTALL:append = " \
+    libcamera \
+    libcamera-gst \
+    libcamera-pycamera \
+"
