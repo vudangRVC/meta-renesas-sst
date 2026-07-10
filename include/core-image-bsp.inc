@@ -47,3 +47,9 @@ IMAGE_INSTALL:append = " \
     qosif-user-module \
     qosif-tp-user-module \
 "
+
+# OpenCV: pulls in all libopencv-* modules and their runtime
+# dependencies (libwebp/libsharpyuv, libtiff, libtbb, ...)
+IMAGE_INSTALL:append = " \
+    opencv \
+"
