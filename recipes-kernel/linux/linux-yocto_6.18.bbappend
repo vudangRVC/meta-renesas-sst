@@ -6,8 +6,10 @@ inherit kernel
 inherit kernel-devicetree
 inherit renesas-kernel-variants
 
-KBRANCH  = "styhead/rz-cmn"
-KBRANCH_RT = "styhead/rz-cmn-rt"
+# The generic rz-cmn branches do not contain the Sparrow Hawk DTBs requested
+# by DEVICETREE_NAME below. Use the paired V4H branches for both variants.
+KBRANCH  = "styhead/rz-cmn-v6.18-v4h-sparrow"
+KBRANCH_RT = "styhead/rz-cmn-3.3-rt-sparrow-hawk"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}:"
 
