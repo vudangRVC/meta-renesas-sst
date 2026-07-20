@@ -11,7 +11,6 @@ inherit deploy python3native
 
 PV = "4.10.0+git${SRCPV}"
 BRANCH = "styhead/rz-cmn"
-SRCREV = "${AUTOREV}"
 
 SRC_URI = " \
     git://github.com/Renesas-SST/rz_optee_os.git;name=rz;branch=${BRANCH};protocol=https;destsuffix=git-rz \
@@ -70,6 +69,7 @@ do_compile() {
         PLATFORM=rcar_gen4 \
         LSI=V4H \
         CFG_ARM64_core=y \
+        CFG_DT=n \
         CROSS_COMPILE64=${TARGET_PREFIX} \
         O=${V4H_S}/out-v4h
 }
