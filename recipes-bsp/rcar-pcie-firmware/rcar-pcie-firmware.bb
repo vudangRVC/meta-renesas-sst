@@ -1,5 +1,6 @@
 DESCRIPTION = "R-Car Gen4 PCIe PHY firmware for V4H (Sparrow Hawk)"
 LICENSE = "Proprietary"
+LICENSE_FLAGS = "commercial"
 LIC_FILES_CHKSUM = "file://${UNPACKDIR}/LICENCE.r8a779g_pcie_phy;md5=0b20e76a9a004b83c4a1c87e2153bbad"
 
 COMPATIBLE_MACHINE = "rz-cmn"
