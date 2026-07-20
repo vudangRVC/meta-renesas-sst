@@ -8,10 +8,10 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
 
 # u-boot source code repository
-UBOOT_URL = "git://github.com/Renesas-SST/u-boot.git"
-BRANCH = "styhead/rz-cmn"
+UBOOT_URL = "git://github.com/vudangRVC/u-boot-sst.git"
+BRANCH = "fix/v4h-rz-cmn-bid-boot"
 SRC_URI = "${UBOOT_URL};name=machine;protocol=https;branch=${BRANCH}"
-SRCREV_machine = "${AUTOREV}"
+SRCREV_machine = "06faf6fc2afbb1e9a4bf51d94b302bdd7888ca8a"
 
 FILES:${PN} = "/boot ${sysconfdir}"
 
