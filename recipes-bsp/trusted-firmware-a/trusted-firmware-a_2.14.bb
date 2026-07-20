@@ -96,7 +96,6 @@ LIC_FILES_CHKSUM += "file://${WORKDIR}/git/sparrowhawk/license.rst;md5=1dd070c98
 
 SRC_URI:append:rz-cmn = " \
     git://github.com/ARM-software/arm-trusted-firmware.git;name=sparrowhawk;branch=${SPARROWHAWK_BRANCH};protocol=https;destsuffix=git/sparrowhawk \
-    file://0001-fix-rcar_gen4-V4H-CPU-topology-1-cluster-4-cores.patch;patchdir=${WORKDIR}/git/sparrowhawk \
 "
 SPARROWHAWK_BRANCH = "master"
 SRCREV_sparrowhawk = "1d5aa939bc8d3d892e2ed9945fa50e36a1a924cc"
