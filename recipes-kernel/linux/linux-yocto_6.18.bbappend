@@ -13,12 +13,11 @@ KBRANCH_RT = "styhead/rz-cmn-3.3-rt-sparrow-hawk"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}:"
 
-# Default: use the Renesas-SST Git repository.
-# Comment out the following entries to use the Yocto Git repositories instead.
-# This may conflict with the current setup.
+# The V4H Sparrow Hawk branches are maintained in the project kernel fork.
+# They are not present in the generic Renesas-SST/linux-rz repository.
 SRC_URI:rz-cmn = " \
-  git://github.com/Renesas-SST/linux-rz.git;name=nonrt;branch=${KBRANCH};protocol=https;destsuffix=git-nonrt \
-  git://github.com/Renesas-SST/linux-rz.git;name=rt;branch=${KBRANCH_RT};protocol=https;destsuffix=git-rt \
+  git://github.com/vudangRVC/linux-rz-sst.git;name=nonrt;branch=${KBRANCH};protocol=https;destsuffix=git-nonrt \
+  git://github.com/vudangRVC/linux-rz-sst.git;name=rt;branch=${KBRANCH_RT};protocol=https;destsuffix=git-rt \
 "
 # Common config fragments and patches
 SRC_URI:append:rz-cmn = " \
