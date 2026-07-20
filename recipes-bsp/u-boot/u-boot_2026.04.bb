@@ -11,7 +11,7 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda
 UBOOT_URL = "git://github.com/vudangRVC/u-boot-sst.git"
 BRANCH = "fix/v4h-rz-cmn-bid-boot"
 SRC_URI = "${UBOOT_URL};name=machine;protocol=https;branch=${BRANCH}"
-SRCREV_machine = "06faf6fc2afbb1e9a4bf51d94b302bdd7888ca8a"
+SRCREV_machine = "254aa8a134f11302474bfc7378aa32f236a64602"
 
 FILES:${PN} = "/boot ${sysconfdir}"
 
