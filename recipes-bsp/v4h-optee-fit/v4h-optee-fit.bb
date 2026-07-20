@@ -8,6 +8,7 @@ DEPENDS = "u-boot-mkimage-native virtual/kernel trusted-firmware-a optee-os"
 COMPATIBLE_MACHINE = "rz-cmn"
 
 SRC_URI = "file://fit-image-sparrow-hawk.its"
+S = "${WORKDIR}"
 
 do_compile[noexec] = "1"
 do_deploy[depends] += "virtual/kernel:do_deploy trusted-firmware-a:do_deploy optee-os:do_deploy"
