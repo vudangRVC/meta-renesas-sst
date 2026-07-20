@@ -7,13 +7,13 @@ Image plus external DTB flow when the FIT is not installed.
 Upstream-Status: Inappropriate [unified rz-cmn boot flow]
 Signed-off-by: Quoc Trinh <quoc.trinh.fz@renesas.com>
 ---
- include/configs/rz-cmn_env.h | 6 ++++++
- 1 file changed, 6 insertions(+)
+ include/configs/rz-cmn_env.h | 5 +++++
+ 1 file changed, 5 insertions(+)
 
 diff --git a/include/configs/rz-cmn_env.h b/include/configs/rz-cmn_env.h
 --- a/include/configs/rz-cmn_env.h
 +++ b/include/configs/rz-cmn_env.h
-@@ -128,6 +128,12 @@
+@@ -122,4 +122,9 @@
  	"mmc_do_boot=run mmc_args; run image_select; " \
 +		"run fdt_select; " \
 +		"if test \"${fdtfile}\" = \"r8a779g3-sparrow-hawk.dtb\" && " \
