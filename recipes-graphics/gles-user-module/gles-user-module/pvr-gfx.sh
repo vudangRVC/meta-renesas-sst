@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Export the same PowerVR environment for interactive login shells on V4H.
+# Non-V4H boards keep Mesa because no environment file is generated for them.
+# Source /run/pvr-gfx.env explicitly in non-interactive SSH commands.
 pvr_gfx_is_pvr_board()
 {
     if [ -r /proc/device-tree/model ] && tr '\0' '\n' < /proc/device-tree/model | grep -Eiq 'sparrow|v4h|r8a779g'; then

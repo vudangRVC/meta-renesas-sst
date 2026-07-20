@@ -19,19 +19,17 @@ index 951dfc2..93a67b4 100644
 --- a/plat/renesas/rcar_gen4/include/platform_def.h
 +++ b/plat/renesas/rcar_gen4/include/platform_def.h
 @@ -36,8 +36,12 @@
- #define PLATFORM_CLUSTER_COUNT        1
- #define PLATFORM_MAX_CPUS_PER_CLUSTER 4
+ #define PLATFORM_CLUSTER_COUNT		1
+ #define PLATFORM_MAX_CPUS_PER_CLUSTER	4
  #elif RCAR_LSI == RCAR_V4H
--#define PLATFORM_CLUSTER_COUNT        2
--#define PLATFORM_MAX_CPUS_PER_CLUSTER 2
+-#define PLATFORM_CLUSTER_COUNT		2
+-#define PLATFORM_MAX_CPUS_PER_CLUSTER	2
 +/*
 + * R-Car V4H has 4x Cortex-A76 in a single cluster.
 + * Correct topology: 1 cluster, 4 cores per cluster.
 + */
-+#define PLATFORM_CLUSTER_COUNT        1
-+#define PLATFORM_MAX_CPUS_PER_CLUSTER 4
++#define PLATFORM_CLUSTER_COUNT		1
++#define PLATFORM_MAX_CPUS_PER_CLUSTER	4
  #else /* S4 and V3U */
- #define PLATFORM_CLUSTER_COUNT        4
- #define PLATFORM_MAX_CPUS_PER_CLUSTER 2
--- 
-2.43.0
+ #define PLATFORM_CLUSTER_COUNT		4
+ #define PLATFORM_MAX_CPUS_PER_CLUSTER	2

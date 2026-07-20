@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Generate the environment consumed by Weston on Sparrow-Hawk/V4H only.
+# Mesa owns the generic graphics libraries for every rz-cmn image; this keeps
+# the proprietary PowerVR libraries private until a PowerVR board is detected.
 set -eu
 
 ENV_FILE=/run/pvr-gfx.env
