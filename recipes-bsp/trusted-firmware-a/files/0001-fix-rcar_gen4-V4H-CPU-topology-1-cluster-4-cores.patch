@@ -1,4 +1,3 @@
-From 7325a329a12228027d9a9d642e36751facd7aee2 Mon Sep 17 00:00:00 2001
 From: Quoc Trinh <quoc.trinh.fz@renesas.com>
 Date: Sun, 5 Jul 2026 12:18:22 +0700
 Subject: [PATCH] fix: rcar_gen4 V4H CPU topology - 1 cluster, 4 cores
