@@ -11,6 +11,10 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda
 UBOOT_URL = "git://github.com/vudangRVC/u-boot-sst.git"
 BRANCH = "fix/v4h-rz-cmn-bid-boot"
 SRC_URI = "${UBOOT_URL};name=machine;protocol=https;branch=${BRANCH}"
+SRC_URI:append:rz-cmn = " \
+    ${@oe.utils.conditional('ENABLE_SPD_OPTEE', '1', 'file://0001-renesas-gen4-add-optee-bl32-fit-handoff.patch', '', d)} \
+    ${@oe.utils.conditional('ENABLE_SPD_OPTEE', '1', 'file://0002-rz-cmn-boot-v4h-fit-when-present.patch', '', d)} \
+"
 SRCREV_machine = "254aa8a134f11302474bfc7378aa32f236a64602"
 
 FILES:${PN} = "/boot ${sysconfdir}"

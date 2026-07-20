@@ -44,6 +44,7 @@ SRC_URI:append:rz-cmn =	" \
 # linux-yocto recipe so the single rz-cmn machine builds all supported DTBs.
 SRC_URI:append:rz-cmn = " \
 	file://gpu/0003-arm64-dts-r8a779g0-add-GSX-PowerVR-GPU-node.patch \
+	${@oe.utils.conditional('ENABLE_SPD_OPTEE', '1', 'file://optee/0004-arm64-dts-renesas-sparrow-hawk-add-optee-firmware-node.patch', '', d)} \
 "
 
 S = "${UNPACKDIR}/git-nonrt"

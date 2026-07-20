@@ -13,10 +13,18 @@ PV = "4.10.0+git${SRCPV}"
 BRANCH = "styhead/rz-cmn"
 SRCREV = "${AUTOREV}"
 
-SRC_URI = "git://github.com/Renesas-SST/rz_optee_os.git;branch=${BRANCH};protocol=https"
+SRC_URI = " \
+    git://github.com/Renesas-SST/rz_optee_os.git;name=rz;branch=${BRANCH};protocol=https;destsuffix=git-rz \
+    git://github.com/Renesas-SST/rz_optee_os.git;name=v4h;branch=${V4H_BRANCH};protocol=https;destsuffix=git-v4h \
+"
+SRCREV_rz = "${AUTOREV}"
+SRCREV_v4h = "75e17800ed7e660fead6e3a2cb11c8e050dbbd87"
+SRCREV_FORMAT = "rz_v4h"
+V4H_BRANCH = "quoctrinh-v4h-optee"
 
 COMPATIBLE_MACHINE = "rz-cmn"
-S = "${WORKDIR}/git"
+S = "${WORKDIR}/git-rz"
+V4H_S = "${WORKDIR}/git-v4h"
 
 PLATFORM = "rz"
 
@@ -55,6 +63,15 @@ do_compile() {
         PLATFORM_FLAVOR=v2h_evk_1 \
         CFG_DT=n \
         O=${S}/out-v2h
+
+    # R-Car V4H uses the board-verified 4.10 rcar_gen4 port. CFG_DT remains
+    # off because Linux supplies the OP-TEE firmware node for Sparrow Hawk.
+    oe_runmake -C ${V4H_S} \
+        PLATFORM=rcar_gen4 \
+        LSI=V4H \
+        CFG_ARM64_core=y \
+        CROSS_COMPILE64=${TARGET_PREFIX} \
+        O=${V4H_S}/out-v4h
 }
 
 do_install() {
@@ -62,6 +79,7 @@ do_install() {
 
     install -m 0644 ${S}/out-g2l/core/tee-raw.bin  ${D}/boot/tee-${MACHINE}-g2l.bin
     install -m 0644 ${S}/out-v2h/core/tee-raw.bin  ${D}/boot/tee-${MACHINE}-v2h.bin
+    install -m 0644 ${V4H_S}/out-v4h/core/tee-raw.bin ${D}/boot/tee-${MACHINE}-v4h.bin
 
     install -d ${D}${includedir}/optee/export-user_ta
     cp -aR ${S}/out-g2l/export-ta_arm64/* ${D}${includedir}/optee/export-user_ta/
@@ -72,6 +90,7 @@ do_deploy() {
 
     install -m 0644 ${D}/boot/tee-${MACHINE}-g2l.bin ${DEPLOYDIR}/target/images/atf/tee-${MACHINE}-g2l.bin
     install -m 0644 ${D}/boot/tee-${MACHINE}-v2h.bin ${DEPLOYDIR}/target/images/atf/tee-${MACHINE}-v2h.bin
+    install -m 0644 ${D}/boot/tee-${MACHINE}-v4h.bin ${DEPLOYDIR}/target/images/atf/tee-${MACHINE}-v4h.bin
 }
 
 addtask deploy after do_install

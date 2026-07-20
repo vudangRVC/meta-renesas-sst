@@ -1,0 +1,12 @@
+/dts-v1/;
+
+/ {
+    description = "Sparrow Hawk Linux, TF-A, and OP-TEE";
+    images {
+        kernel-1 { data = /incbin/("./Image"); type = "kernel"; arch = "arm64"; os = "linux"; compression = "none"; load = <0x50200000>; entry = <0x50200000>; hash-1 { algo = "crc32"; }; };
+        fdt-1 { data = /incbin/("./r8a779g3-sparrow-hawk.dtb"); type = "flat_dt"; arch = "arm64"; compression = "none"; hash-1 { algo = "crc32"; }; };
+        atf-1 { data = /incbin/("./bl31-sparrowhawk.bin"); type = "tfa-bl31"; arch = "arm64"; os = "arm-trusted-firmware"; compression = "none"; load = <0x46400000>; entry = <0x46400000>; hash-1 { algo = "crc32"; }; };
+        tee-1 { data = /incbin/("./tee-rz-cmn-v4h.bin"); type = "tee"; arch = "arm64"; os = "tee"; compression = "none"; load = <0x44100000>; entry = <0x44100000>; hash-1 { algo = "crc32"; }; };
+    };
+    configurations { default = "sparrow-hawk"; sparrow-hawk { kernel = "kernel-1"; fdt = "fdt-1"; loadables = "atf-1", "tee-1"; }; };
+};

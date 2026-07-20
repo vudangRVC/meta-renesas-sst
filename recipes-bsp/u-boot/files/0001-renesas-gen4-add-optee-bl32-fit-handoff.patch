@@ -1,0 +1,65 @@
+From: Quoc Trinh <quoc.trinh.fz@renesas.com>
+Subject: [PATCH] board: renesas: gen4: add OP-TEE BL32 FIT handoff
+
+Record an IH_TYPE_TEE FIT loadable and pass it to BL31 as BL32.
+
+Upstream-Status: Inappropriate [R-Car Gen4 board integration]
+Signed-off-by: Quoc Trinh <quoc.trinh.fz@renesas.com>
+---
+ board/renesas/common/gen4-common.c | 48 ++++++++++++++++++++++++++++++
+ 1 file changed, 48 insertions(+)
+
+diff --git a/board/renesas/common/gen4-common.c b/board/renesas/common/gen4-common.c
+--- a/board/renesas/common/gen4-common.c
++++ b/board/renesas/common/gen4-common.c
+@@ -165,6 +165,47 @@
+ 
+ U_BOOT_FIT_LOADABLE_HANDLER(IH_TYPE_TFA_BL31, tfa_bl31_image_process);
+ 
++static bool tee_image_loaded;
++static ulong tee_image_addr;
++static u32 tee_image_size;
++
++static void tee_image_process(ulong image, size_t size)
++{
++	if (current_el() != 3)
++		return;
++
++	tee_image_addr = image;
++	tee_image_size = (u32)size;
++	tee_image_loaded = true;
++}
++
++U_BOOT_FIT_LOADABLE_HANDLER(IH_TYPE_TEE, tee_image_process);
++
++static void fill_bl32_info(struct bl2_to_bl31_params_mem *blinfo)
++{
++	if (!tee_image_loaded)
++		return;
++
++	blinfo->bl32_ep_info.h.type = 1;
++	blinfo->bl32_ep_info.h.version = 2;
++	blinfo->bl32_ep_info.h.size = sizeof(struct entry_point_info);
++	blinfo->bl32_ep_info.h.attr = 0;
++	blinfo->bl32_ep_info.pc = tee_image_addr;
++	blinfo->bl32_ep_info.spsr = 0x3c5;
++
++	blinfo->bl32_image_info.h.type = 1;
++	blinfo->bl32_image_info.h.version = 2;
++	blinfo->bl32_image_info.h.size = sizeof(struct tfa_image_info);
++	blinfo->bl32_image_info.h.attr = 0;
++	blinfo->bl32_image_info.image_base = tee_image_addr;
++	blinfo->bl32_image_info.image_size = tee_image_size;
++	blinfo->bl32_image_info.image_max_size = tee_image_size;
++}
++
+ void armv8_switch_to_el2_prep(u64 args, u64 mach_nr, u64 fdt_addr,
+ 			      u64 arg4, u64 entry_point, u64 es_flag)
+ {
+@@ -202,6 +243,7 @@
+ 	blinfo->bl33_ep_info.args.arg5 = es_flag;
+ 	blinfo->bl33_image_info.image_base = ep;
++	fill_bl32_info(blinfo);
+ 
+ 	/* Jump to TFA BL31 */
+ 	image_entry();

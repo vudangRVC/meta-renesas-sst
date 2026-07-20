@@ -46,12 +46,14 @@ IMAGE_BOOT_FILES:rz-cmn = " \
     target/images/linux/Image;Image \
     target/images/linux/Image-preempt_rt;Image-preempt_rt \
     target/images/linux/Image-nonpreempt;Image-nonpreempt \
+    ${@oe.utils.conditional('ENABLE_SPD_OPTEE', '1', 'target/images/linux/fitImage-sparrow-hawk;fitImage-sparrow-hawk', '', d)} \
     target/env/uEnv.txt;uEnv.txt \
     Readme.md;Readme.md \
     target/images/*.bin;uload-bootloader/ \
 "
 
 DEPENDS += " linux-yocto uenv platform-gen "
+EXTRA_IMAGEDEPENDS:append:rz-cmn = " ${@oe.utils.conditional('ENABLE_SPD_OPTEE', '1', 'v4h-optee-fit', '', d)}"
 
 add_bootloader_rootfs() {
     install -d ${IMAGE_ROOTFS}/boot/uload-bootloader
