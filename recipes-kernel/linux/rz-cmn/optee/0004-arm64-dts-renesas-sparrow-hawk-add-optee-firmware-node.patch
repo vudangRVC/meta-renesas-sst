@@ -12,7 +12,7 @@ Signed-off-by: Quoc Trinh <quoc.trinh.fz@renesas.com>
 diff --git a/arch/arm64/boot/dts/renesas/r8a779g3-sparrow-hawk.dts b/arch/arm64/boot/dts/renesas/r8a779g3-sparrow-hawk.dts
 --- a/arch/arm64/boot/dts/renesas/r8a779g3-sparrow-hawk.dts
 +++ b/arch/arm64/boot/dts/renesas/r8a779g3-sparrow-hawk.dts
-@@ -199,6 +199,13 @@
+@@ -187,4 +187,11 @@
  		gpios-states = <1>;
  		states = <1800000 0>, <3300000 1>;
  	};

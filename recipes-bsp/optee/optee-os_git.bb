@@ -14,12 +14,12 @@ BRANCH = "styhead/rz-cmn"
 
 SRC_URI = " \
     git://github.com/Renesas-SST/rz_optee_os.git;name=rz;branch=${BRANCH};protocol=https;destsuffix=git-rz \
-    git://github.com/Renesas-SST/rz_optee_os.git;name=v4h;branch=${V4H_BRANCH};protocol=https;destsuffix=git-v4h \
+    git://github.com/Renesas-SST/rz_optee_os.git;name=v4h;protocol=https;nobranch=1;destsuffix=git-v4h \
 "
 SRCREV_rz = "${AUTOREV}"
 SRCREV_v4h = "75e17800ed7e660fead6e3a2cb11c8e050dbbd87"
 SRCREV_FORMAT = "rz_v4h"
-V4H_BRANCH = "quoctrinh-v4h-optee"
+V4H_VERIFIED_TAG = "v4h-optee-4.10-verified-75e17800e"
 
 COMPATIBLE_MACHINE = "rz-cmn"
 S = "${WORKDIR}/git-rz"
