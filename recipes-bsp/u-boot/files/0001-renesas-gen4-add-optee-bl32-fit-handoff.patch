@@ -12,7 +12,7 @@ Signed-off-by: Quoc Trinh <quoc.trinh.fz@renesas.com>
 diff --git a/board/renesas/common/gen4-common.c b/board/renesas/common/gen4-common.c
 --- a/board/renesas/common/gen4-common.c
 +++ b/board/renesas/common/gen4-common.c
-@@ -165,6 +165,47 @@
+@@ -109,6 +109,43 @@
  
  U_BOOT_FIT_LOADABLE_HANDLER(IH_TYPE_TFA_BL31, tfa_bl31_image_process);
  
@@ -56,7 +56,7 @@ diff --git a/board/renesas/common/gen4-common.c b/board/renesas/common/gen4-comm
  void armv8_switch_to_el2_prep(u64 args, u64 mach_nr, u64 fdt_addr,
  			      u64 arg4, u64 entry_point, u64 es_flag)
  {
-@@ -202,6 +243,7 @@
+@@ -146,6 +183,7 @@
  	blinfo->bl33_ep_info.args.arg5 = es_flag;
  	blinfo->bl33_image_info.image_base = ep;
 +	fill_bl32_info(blinfo);
