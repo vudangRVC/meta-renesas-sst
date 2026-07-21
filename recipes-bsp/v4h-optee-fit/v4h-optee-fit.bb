@@ -15,7 +15,7 @@ do_deploy[depends] += "virtual/kernel:do_deploy trusted-firmware-a:do_deploy opt
 
 do_deploy() {
     install -d ${WORKDIR}/fit ${DEPLOYDIR}/target/images/linux
-    set -- ${DEPLOY_DIR_IMAGE}/target/images/linux/Image-*.bin
+    set -- ${DEPLOY_DIR_IMAGE}/target/images/linux/Image--*.bin
     test "$#" -eq 1
     install -m 0644 "$1" ${WORKDIR}/fit/Image
     install -m 0644 ${DEPLOY_DIR_IMAGE}/r8a779g3-sparrow-hawk.dtb ${WORKDIR}/fit/r8a779g3-sparrow-hawk.dtb
