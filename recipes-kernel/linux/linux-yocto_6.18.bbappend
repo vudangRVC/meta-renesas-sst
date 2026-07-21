@@ -134,10 +134,6 @@ KERNEL_DEVICETREE:append:rz-cmn = " \
 	renesas/overlays/rzv2h-rdk-1.0-audio-codec.dtbo \
 	renesas/overlays/rzv2h-rdk-1.0-can.dtbo \
 	renesas/overlays/rzv2h-rdk-1.0-ext-spi.dtbo \
-	renesas/overlays/imdt-v2h-sbc-1.0-cru-csi22-ar1335.dtbo \
-	renesas/overlays/imdt-v2h-sbc-1.0-cru-csi23-ar1335.dtbo \
-	renesas/sparrow-hawk-1.0-cru-csi-j1-imx219.dtbo \
-	renesas/sparrow-hawk-1.0-cru-csi-j2-imx219.dtbo \
 "
 
 # Override the dtc flags to support dtbo build in kernel-devicetree.bbclass
