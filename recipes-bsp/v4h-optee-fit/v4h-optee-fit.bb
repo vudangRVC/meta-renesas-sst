@@ -21,7 +21,7 @@ do_deploy() {
     install -m 0644 ${DEPLOY_DIR_IMAGE}/r8a779g3-sparrow-hawk.dtb ${WORKDIR}/fit/r8a779g3-sparrow-hawk.dtb
     install -m 0644 ${DEPLOY_DIR_IMAGE}/target/images/atf/bl31-sparrowhawk.bin ${WORKDIR}/fit/bl31-sparrowhawk.bin
     install -m 0644 ${DEPLOY_DIR_IMAGE}/target/images/atf/tee-rz-cmn-v4h.bin ${WORKDIR}/fit/tee-rz-cmn-v4h.bin
-    install -m 0644 ${WORKDIR}/fit-image-sparrow-hawk.its ${WORKDIR}/fit/
+    install -m 0644 ${S}/fit-image-sparrow-hawk.its ${WORKDIR}/fit/
     cd ${WORKDIR}/fit
     mkimage -f fit-image-sparrow-hawk.its fitImage-sparrow-hawk
     install -m 0644 ${WORKDIR}/fit/fitImage-sparrow-hawk ${DEPLOYDIR}/target/images/linux/
