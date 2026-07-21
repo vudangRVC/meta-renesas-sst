@@ -6,13 +6,13 @@ Record an IH_TYPE_TEE FIT loadable and pass it to BL31 as BL32.
 Upstream-Status: Inappropriate [R-Car Gen4 board integration]
 Signed-off-by: Quoc Trinh <quoc.trinh.fz@renesas.com>
 ---
- board/renesas/common/gen4-common.c | 48 ++++++++++++++++++++++++++++++
- 1 file changed, 48 insertions(+)
+ board/renesas/common/gen4-common.c | 38 ++++++++++++++++++++++++++++++
+ 1 file changed, 38 insertions(+)
 
 diff --git a/board/renesas/common/gen4-common.c b/board/renesas/common/gen4-common.c
 --- a/board/renesas/common/gen4-common.c
 +++ b/board/renesas/common/gen4-common.c
-@@ -109,6 +109,43 @@
+@@ -110,6 +110,43 @@
  
  U_BOOT_FIT_LOADABLE_HANDLER(IH_TYPE_TFA_BL31, tfa_bl31_image_process);
  
@@ -56,7 +56,7 @@ diff --git a/board/renesas/common/gen4-common.c b/board/renesas/common/gen4-comm
  void armv8_switch_to_el2_prep(u64 args, u64 mach_nr, u64 fdt_addr,
  			      u64 arg4, u64 entry_point, u64 es_flag)
  {
-@@ -146,6 +183,7 @@
+@@ -148,5 +185,6 @@
  	blinfo->bl33_ep_info.args.arg5 = es_flag;
  	blinfo->bl33_image_info.image_base = ep;
 +	fill_bl32_info(blinfo);
