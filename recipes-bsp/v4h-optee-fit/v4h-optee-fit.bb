@@ -15,10 +15,12 @@ do_deploy[depends] += "virtual/kernel:do_deploy trusted-firmware-a:do_deploy opt
 
 do_deploy() {
     install -d ${WORKDIR}/fit ${DEPLOYDIR}/target/images/linux
-    install -m 0644 ${DEPLOYDIR}/target/images/linux/Image ${WORKDIR}/fit/Image
-    install -m 0644 ${DEPLOYDIR}/target/images/linux/dtbs/r8a779g3-sparrow-hawk.dtb ${WORKDIR}/fit/r8a779g3-sparrow-hawk.dtb
-    install -m 0644 ${DEPLOYDIR}/target/images/atf/bl31-sparrowhawk.bin ${WORKDIR}/fit/bl31-sparrowhawk.bin
-    install -m 0644 ${DEPLOYDIR}/target/images/atf/tee-rz-cmn-v4h.bin ${WORKDIR}/fit/tee-rz-cmn-v4h.bin
+    set -- ${DEPLOY_DIR_IMAGE}/target/images/linux/Image-*.bin
+    test "$#" -eq 1
+    install -m 0644 "$1" ${WORKDIR}/fit/Image
+    install -m 0644 ${DEPLOY_DIR_IMAGE}/r8a779g3-sparrow-hawk.dtb ${WORKDIR}/fit/r8a779g3-sparrow-hawk.dtb
+    install -m 0644 ${DEPLOY_DIR_IMAGE}/target/images/atf/bl31-sparrowhawk.bin ${WORKDIR}/fit/bl31-sparrowhawk.bin
+    install -m 0644 ${DEPLOY_DIR_IMAGE}/target/images/atf/tee-rz-cmn-v4h.bin ${WORKDIR}/fit/tee-rz-cmn-v4h.bin
     install -m 0644 ${WORKDIR}/fit-image-sparrow-hawk.its ${WORKDIR}/fit/
     cd ${WORKDIR}/fit
     mkimage -f fit-image-sparrow-hawk.its fitImage-sparrow-hawk
