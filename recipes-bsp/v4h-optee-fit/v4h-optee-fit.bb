@@ -4,7 +4,7 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda
 
 inherit deploy
 
-DEPENDS = "u-boot-mkimage-native virtual/kernel trusted-firmware-a optee-os"
+DEPENDS = "dtc-native u-boot-mkimage-native virtual/kernel trusted-firmware-a optee-os"
 COMPATIBLE_MACHINE = "rz-cmn"
 
 SRC_URI = "file://fit-image-sparrow-hawk.its"
