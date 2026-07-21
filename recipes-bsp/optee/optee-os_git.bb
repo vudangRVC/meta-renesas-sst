@@ -23,7 +23,7 @@ V4H_VERIFIED_TAG = "v4h-optee-4.10-verified-75e17800e"
 
 COMPATIBLE_MACHINE = "rz-cmn"
 S = "${WORKDIR}/git-rz"
-V4H_S = "${WORKDIR}/git-v4h"
+V4H_S = "${UNPACKDIR}/git-v4h"
 
 PLATFORM = "rz"
 
