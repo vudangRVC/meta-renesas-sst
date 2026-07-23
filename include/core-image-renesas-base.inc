@@ -55,6 +55,7 @@ IMAGE_BOOT_FILES:rz-cmn = " \
 
 DEPENDS += " linux-yocto uenv platform-gen "
 EXTRA_IMAGEDEPENDS:append:rz-cmn = " ${@oe.utils.conditional('ENABLE_SPD_OPTEE', '1', 'v4h-optee-fit', '', d)}"
+EXTRA_IMAGEDEPENDS:append:rz-cmn = " ${@oe.utils.conditional('ENABLE_V4H_DIRECT_OPTEE', '1', 'rcar-pcie-firmware:do_deploy', '', d)}"
 
 add_bootloader_rootfs() {
     install -d ${IMAGE_ROOTFS}/boot/uload-bootloader

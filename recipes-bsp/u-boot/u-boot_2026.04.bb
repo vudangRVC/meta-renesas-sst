@@ -12,7 +12,7 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda
 UBOOT_URL ?= "git://github.com/vudangRVC/u-boot-sst.git"
 UBOOT_PROTOCOL ?= "https"
 UBOOT_DIRECT_BRANCH ?= "quoctrinh-v4h-direct-optee"
-UBOOT_DIRECT_SRCREV ?= "b04cee8ec69d167aca72f1fc3b625de9457f2a8b"
+UBOOT_DIRECT_SRCREV ?= "${V4H_DIRECT_UBOOT_SRCREV}"
 BRANCH = "${@oe.utils.conditional('ENABLE_V4H_DIRECT_OPTEE', '1', d.getVar('UBOOT_DIRECT_BRANCH'), 'fix/v4h-rz-cmn-bid-boot', d)}"
 SRC_URI = "${UBOOT_URL};name=machine;protocol=${UBOOT_PROTOCOL};branch=${BRANCH}"
 SRC_URI:append:rz-cmn = " \
@@ -56,6 +56,16 @@ do_deploy() {
     for dtb_name in ${DEVICETREE_NAME}; do
         install -m 644 ${D}/boot/dtbs/${dtb_name}.dtb ${DEPLOYDIR}/target/images/u-boot/dtbs
     done
+
+    if [ "${ENABLE_V4H_DIRECT_OPTEE}" = "1" ]; then
+        # V4H binman emits the SPI inputs as a SA0+SPL blob and a U-Boot FIT.
+        # Keep their native names for provenance and stable aliases for rz-utils.
+        install -m 0644 ${KCONFIG_CONFIG_ROOTDIR}/sa0.bin ${DEPLOYDIR}/target/images/u-boot/sa0.bin
+        install -m 0644 ${KCONFIG_CONFIG_ROOTDIR}/u-boot.itb ${DEPLOYDIR}/target/images/u-boot/u-boot.itb
+        install -m 0644 ${KCONFIG_CONFIG_ROOTDIR}/flash.bin ${DEPLOYDIR}/target/images/u-boot/flash.bin
+        install -m 0644 ${KCONFIG_CONFIG_ROOTDIR}/sa0.bin ${DEPLOYDIR}/target/images/u-boot/sa0-rz-cmn.bin
+        install -m 0644 ${KCONFIG_CONFIG_ROOTDIR}/u-boot.itb ${DEPLOYDIR}/target/images/u-boot/u-boot-rz-cmn.itb
+    fi
 }
 
 addtask deploy after do_install

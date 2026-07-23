@@ -156,9 +156,9 @@ do_deploy:append:rz-cmn(){
 	done
 }
 
-SRCREV_machine:rz-cmn ?= "${AUTOREV}"
-SRCREV_nonrt:rz-cmn ?= "${AUTOREV}"
-SRCREV_rt:rz-cmn ?= "${AUTOREV}"
+SRCREV_machine:rz-cmn = "${V4H_DIRECT_KERNEL_NONRT_SRCREV}"
+SRCREV_nonrt:rz-cmn = "${V4H_DIRECT_KERNEL_NONRT_SRCREV}"
+SRCREV_rt:rz-cmn = "${V4H_DIRECT_KERNEL_RT_SRCREV}"
 SRCREV_FORMAT = "nonrt_rt"
 
 LINUX_VERSION:rz-cmn ?= "6.18.20"

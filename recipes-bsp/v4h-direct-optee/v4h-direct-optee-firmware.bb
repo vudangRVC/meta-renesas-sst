@@ -2,6 +2,8 @@ DESCRIPTION = "Sparrow-Hawk direct OP-TEE boot payload"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
 
+require include/rz-optee-config.inc
+
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 COMPATIBLE_MACHINE = "rz-cmn"
 
@@ -32,7 +34,26 @@ python do_generate_manifest () {
         ('bl31', 'bl31-sparrow-hawk.bin', 0x46400000, 0x22200),
         ('tee', 'tee-raw-sparrow-hawk.bin', 0x44100000, 0x300000),
     )
-    manifest = {'format': 1, 'payloads': {}}
+    manifest = {
+        'format': 2,
+        'build': {
+            'machine': d.getVar('MACHINE'),
+            'distro': d.getVar('DISTRO'),
+            'distro_version': d.getVar('DISTRO_VERSION'),
+            'target_sys': d.getVar('TARGET_SYS'),
+            'source_date_epoch': d.getVar('SOURCE_DATE_EPOCH'),
+        },
+        'sources': {
+            'u_boot': d.getVar('V4H_DIRECT_UBOOT_SRCREV'),
+            'tfa_rz': d.getVar('V4H_DIRECT_TFA_RZ_SRCREV'),
+            'tfa_v4h': d.getVar('V4H_DIRECT_TFA_V4H_SRCREV'),
+            'optee_rz': d.getVar('V4H_DIRECT_OPTEE_RZ_SRCREV'),
+            'optee_v4h': d.getVar('V4H_DIRECT_OPTEE_V4H_SRCREV'),
+            'kernel_nonrt': d.getVar('V4H_DIRECT_KERNEL_NONRT_SRCREV'),
+            'kernel_rt': d.getVar('V4H_DIRECT_KERNEL_RT_SRCREV'),
+        },
+        'payloads': {},
+    }
 
     for key, name, address, maximum in payloads:
         path = os.path.join(boot, name)

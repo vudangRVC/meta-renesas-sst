@@ -17,7 +17,7 @@ SRC_URI:rz-cmn = " \
     git://github.com/Renesas-SST/rz-atf.git;name=machine;branch=${BRANCH};protocol=https;destsuffix=git/cmn \
 "
 BRANCH:rz-cmn = "styhead/rz-cmn"
-SRCREV_machine:rz-cmn = "${AUTOREV}"
+SRCREV_machine:rz-cmn = "${V4H_DIRECT_TFA_RZ_SRCREV}"
 PV = "v2.14+git"
 
 # Configuration for rz-cmn board
@@ -98,7 +98,7 @@ SRC_URI:append:rz-cmn = " \
     git://github.com/ARM-software/arm-trusted-firmware.git;name=sparrowhawk;branch=${SPARROWHAWK_BRANCH};protocol=https;destsuffix=git/sparrowhawk \
 "
 SPARROWHAWK_BRANCH = "master"
-SRCREV_sparrowhawk = "1d5aa939bc8d3d892e2ed9945fa50e36a1a924cc"
+SRCREV_sparrowhawk = "${V4H_DIRECT_TFA_V4H_SRCREV}"
 SRCREV_FORMAT = "machine_sparrowhawk"
 
 SPARROWHAWK_S = "${WORKDIR}/git/sparrowhawk"

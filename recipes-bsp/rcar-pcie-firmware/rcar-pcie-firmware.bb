@@ -6,6 +6,8 @@ LIC_FILES_CHKSUM = "file://${UNPACKDIR}/LICENCE.r8a779g_pcie_phy;md5=0b20e76a9a0
 COMPATIBLE_MACHINE = "rz-cmn"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
+inherit deploy
+
 # Keep the binary and its redistribution terms pinned to the same
 # linux-firmware snapshot. The license must travel with the runtime package.
 PCIE_FIRMWARE = "https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain/rcar_gen4_pcie.bin?h=20260519;name=pcie-firmware;downloadfilename=rcar_gen4_pcie.bin"
@@ -27,6 +29,13 @@ do_install() {
     install -d ${D}${datadir}/licenses/${PN}
     install -m 0644 ${UNPACKDIR}/LICENCE.r8a779g_pcie_phy ${D}${datadir}/licenses/${PN}/
 }
+
+do_deploy() {
+    install -d ${DEPLOYDIR}/target/images
+    install -m 0644 ${UNPACKDIR}/rcar_gen4_pcie.bin ${DEPLOYDIR}/target/images/rcar_gen4_pcie.bin
+}
+
+addtask deploy after do_install
 
 FILES:${PN} = " \
     ${nonarch_base_libdir}/firmware/rcar_gen4_pcie.bin \

@@ -16,8 +16,8 @@ SRC_URI = " \
     git://github.com/Renesas-SST/rz_optee_os.git;name=rz;branch=${BRANCH};protocol=https;destsuffix=git-rz \
     git://github.com/Renesas-SST/rz_optee_os.git;name=v4h;protocol=https;nobranch=1;destsuffix=git-v4h \
 "
-SRCREV_rz = "${AUTOREV}"
-SRCREV_v4h = "75e17800ed7e660fead6e3a2cb11c8e050dbbd87"
+SRCREV_rz = "${V4H_DIRECT_OPTEE_RZ_SRCREV}"
+SRCREV_v4h = "${V4H_DIRECT_OPTEE_V4H_SRCREV}"
 SRCREV_FORMAT = "rz_v4h"
 V4H_VERIFIED_TAG = "v4h-optee-4.10-verified-75e17800e"
 
