@@ -51,18 +51,18 @@ python do_generate_manifest () {
 
     env_path = os.path.join(boot, 'v4h-direct-optee.env')
     with open(env_path, 'w', encoding='ascii') as env:
-        env.write('v4h_manifest_version=1\\n')
+        env.write('v4h_manifest_version=1\n')
         for key in ('bl31', 'tee'):
             item = manifest['payloads'][key]
-            env.write('%s_file=%s\\n' % (key, item['file']))
-            env.write('%s_addr=%s\\n' % (key, item['load_address']))
-            env.write('%s_size=0x%x\\n' % (key, item['size']))
-            env.write('%s_crc32=%s\\n' % (key, item['crc32']))
+            env.write('%s_file=%s\n' % (key, item['file']))
+            env.write('%s_addr=%s\n' % (key, item['load_address']))
+            env.write('%s_size=0x%x\n' % (key, item['size']))
+            env.write('%s_crc32=%s\n' % (key, item['crc32']))
 
     manifest_path = os.path.join(boot, 'v4h-direct-optee.manifest')
     with open(manifest_path, 'w', encoding='ascii') as output:
         json.dump(manifest, output, indent=2, sort_keys=True)
-        output.write('\\n')
+        output.write('\n')
 
     os.chown(env_path, 0, 0)
     os.chown(manifest_path, 0, 0)
