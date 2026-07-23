@@ -73,7 +73,6 @@ do_release_clean() {
     rm -f ${DEPLOY_DIR_IMAGE}/*.dtbo
     rm -f ${DEPLOY_DIR_IMAGE}/modules*
     rm -f ${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}*
-    rm -f ${DEPLOY_DIR_IMAGE}/Readme.md
 }
 
 addtask release_clean after do_image_complete before do_populate_lic_deploy
