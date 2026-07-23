@@ -12,7 +12,7 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda
 UBOOT_URL ?= "git://github.com/vudangRVC/u-boot-sst.git"
 UBOOT_PROTOCOL ?= "https"
 UBOOT_DIRECT_BRANCH ?= "quoctrinh-v4h-direct-optee"
-UBOOT_DIRECT_SRCREV ?= "4d8393e13bb287d31d7332886ac99cdf64d1cd51"
+UBOOT_DIRECT_SRCREV ?= "b04cee8ec69d167aca72f1fc3b625de9457f2a8b"
 BRANCH = "${@oe.utils.conditional('ENABLE_V4H_DIRECT_OPTEE', '1', d.getVar('UBOOT_DIRECT_BRANCH'), 'fix/v4h-rz-cmn-bid-boot', d)}"
 SRC_URI = "${UBOOT_URL};name=machine;protocol=${UBOOT_PROTOCOL};branch=${BRANCH}"
 SRC_URI:append:rz-cmn = " \
