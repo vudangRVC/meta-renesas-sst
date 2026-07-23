@@ -59,11 +59,16 @@ python do_generate_manifest () {
             env.write('%s_size=0x%x\\n' % (key, item['size']))
             env.write('%s_crc32=%s\\n' % (key, item['crc32']))
 
-    with open(os.path.join(boot, 'v4h-direct-optee.manifest'), 'w', encoding='ascii') as output:
+    manifest_path = os.path.join(boot, 'v4h-direct-optee.manifest')
+    with open(manifest_path, 'w', encoding='ascii') as output:
         json.dump(manifest, output, indent=2, sort_keys=True)
         output.write('\\n')
+
+    os.chown(env_path, 0, 0)
+    os.chown(manifest_path, 0, 0)
 }
 
 addtask generate_manifest after do_install before do_package
+do_generate_manifest[fakeroot] = "1"
 
 FILES:${PN} = "/boot"
