@@ -104,7 +104,7 @@ SRCREV_FORMAT = "machine_sparrowhawk"
 SPARROWHAWK_S = "${WORKDIR}/git/sparrowhawk"
 SPARROWHAWK_PLATFORM = "rcar_gen4"
 SPARROWHAWK_OPT = "LSI=V4H CTX_INCLUDE_AARCH32_REGS=0 MBEDTLS_COMMON_MK=1 PTP_NONSECURE_ACCESS=1 LOG_LEVEL=20 DEBUG=0 ENABLE_ASSERTIONS=0 E=0"
-SPARROWHAWK_SPD = "${@oe.utils.conditional('ENABLE_SPD_OPTEE', '1', 'opteed', 'none', d)}"
+SPARROWHAWK_SPD = "${@oe.utils.conditional('ENABLE_V4H_DIRECT_OPTEE', '1', 'opteed', 'none', d)}"
 
 # Build BL31 for the Sparrow-Hawk (V4H) companion SoC after the main build.
 # Uses ${MAKE} directly (not oe_runmake) since oe_runmake always injects

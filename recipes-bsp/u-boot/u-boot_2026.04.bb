@@ -1,5 +1,6 @@
 require recipes-bsp/u-boot/u-boot-common.inc
 require recipes-bsp/u-boot/u-boot.inc
+require include/rz-optee-config.inc
 
 PROVIDES += "u-boot"
 DEPENDS += "lzop-native srecord-native bc-native dtc-native python3-pyelftools-native gnutls-native"
@@ -8,14 +9,16 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
 
 # u-boot source code repository
-UBOOT_URL = "git://github.com/vudangRVC/u-boot-sst.git"
-BRANCH = "fix/v4h-rz-cmn-bid-boot"
+UBOOT_URL ?= "git://github.com/vudangRVC/u-boot-sst.git"
+UBOOT_DIRECT_BRANCH ?= "quoctrinh-v4h-direct-optee"
+UBOOT_DIRECT_SRCREV ?= "efda01ef0f74a0fd23f7c45336ecd9b82cfda19e"
+BRANCH = "${@oe.utils.conditional('ENABLE_V4H_DIRECT_OPTEE', '1', d.getVar('UBOOT_DIRECT_BRANCH'), 'fix/v4h-rz-cmn-bid-boot', d)}"
 SRC_URI = "${UBOOT_URL};name=machine;protocol=https;branch=${BRANCH}"
 SRC_URI:append:rz-cmn = " \
     ${@oe.utils.conditional('ENABLE_SPD_OPTEE', '1', 'file://0001-renesas-gen4-add-optee-bl32-fit-handoff.patch', '', d)} \
     ${@oe.utils.conditional('ENABLE_SPD_OPTEE', '1', 'file://0002-rz-cmn-boot-v4h-fit-when-present.patch', '', d)} \
 "
-SRCREV_machine = "254aa8a134f11302474bfc7378aa32f236a64602"
+SRCREV_machine = "${@oe.utils.conditional('ENABLE_V4H_DIRECT_OPTEE', '1', d.getVar('UBOOT_DIRECT_SRCREV'), '254aa8a134f11302474bfc7378aa32f236a64602', d)}"
 
 FILES:${PN} = "/boot ${sysconfdir}"
 
