@@ -5,8 +5,10 @@ inherit deploy
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-LICENSE = "MIT"
-LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302 \
+LICENSE = "MIT & BSD-3-Clause"
+LIC_FILES_CHKSUM = " \
+    file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302 \
+    file://${WORKDIR}/git/sparrowhawk/license.rst;md5=1dd070c98a281d18d9eefd938729b031 \
 "
 # Set S variable to folder that includes Makefile
 S = "${WORKDIR}/git/cmn"
@@ -91,9 +93,6 @@ COMPATIBLE_MACHINE = "rz-cmn"
 # BL31 is built from a second checkout of upstream ARM Trusted Firmware-A
 # (v2.14 release) and only deployed (not packaged)
 #==============================================================================
-LICENSE = "MIT & BSD-3-Clause"
-LIC_FILES_CHKSUM += "file://${WORKDIR}/git/sparrowhawk/license.rst;md5=1dd070c98a281d18d9eefd938729b031"
-
 SRC_URI:append:rz-cmn = " \
     git://github.com/ARM-software/arm-trusted-firmware.git;name=sparrowhawk;branch=${SPARROWHAWK_BRANCH};protocol=https;destsuffix=git/sparrowhawk \
 "

@@ -36,6 +36,7 @@ IMAGE_INSTALL:append = " \
 
 # Camera stack: libcamera with R-Car Gen4 ISP / rkisp1 pipelines
 IMAGE_INSTALL:append = " \
+    libpisp \
     libcamera \
     libcamera-gst \
     libcamera-pycamera \
@@ -46,10 +47,4 @@ IMAGE_INSTALL:append = " \
     kernel-module-qos \
     qosif-user-module \
     qosif-tp-user-module \
-"
-
-# OpenCV: pulls in all libopencv-* modules and their runtime
-# dependencies (libwebp/libsharpyuv, libtiff, libtbb, ...)
-IMAGE_INSTALL:append = " \
-    opencv \
 "

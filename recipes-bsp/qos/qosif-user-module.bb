@@ -11,8 +11,6 @@ QOSIF_LIB_DIR = "qos_if-module/files/qos_if"
 
 EXTRA_OEMAKE = "ARCH=${TARGET_ARCH}"
 
-includedir:rcar-gen3 = "${RENESAS_DATADIR}/include"
-
 do_compile() {
     # Build shared library
     cd ${S}/${QOSIF_LIB_DIR}/if

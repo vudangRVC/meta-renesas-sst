@@ -10,6 +10,8 @@ COMPATIBLE_MACHINE = "(rz-cmn)"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 QOSIF_LIB_URL = "git://github.com/renesas-rcar/qos_lib.git;protocol=https"
+# Upstream publishes this generic ioctl userspace library only on rcar-gen3.
+# The branch name is not a Yocto machine or SoC-family override.
 BRANCH = "rcar-gen3"
 SRCREV = "761a765901ab9e009f6503904276c62fcf5cbb9b"
 

@@ -9,9 +9,6 @@ PR = "r0"
 S = "${WORKDIR}/git"
 QOSIF_TP_DIR = "qos_if-tp-user/files/qos_if"
 
-includedir:rcar-gen3 = "${RENESAS_DATADIR}/include"
-bindir:rcar-gen3 = "${RENESAS_DATADIR}/bin"
-
 do_compile() {
     cd ${S}/${QOSIF_TP_DIR}
     oe_runmake
