@@ -10,8 +10,9 @@ inherit deploy
 
 # Keep the binary and its redistribution terms pinned to the same
 # linux-firmware snapshot. The license must travel with the runtime package.
-PCIE_FIRMWARE = "https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain/rcar_gen4_pcie.bin?h=20260519;name=pcie-firmware;downloadfilename=rcar_gen4_pcie.bin"
-PCIE_FIRMWARE_LICENSE = "https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain/LICENCE.r8a779g_pcie_phy?h=20260519;name=pcie-firmware-license;downloadfilename=LICENCE.r8a779g_pcie_phy"
+LINUX_FIRMWARE_SRCREV = "924d73c9a2501a256d18a26cbe640548c70b3a9a"
+PCIE_FIRMWARE = "https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain/rcar_gen4_pcie.bin?id=${LINUX_FIRMWARE_SRCREV};name=pcie-firmware;downloadfilename=rcar_gen4_pcie.bin"
+PCIE_FIRMWARE_LICENSE = "https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain/LICENSES/LICENCE.r8a779g_pcie_phy?id=${LINUX_FIRMWARE_SRCREV};name=pcie-firmware-license;downloadfilename=LICENCE.r8a779g_pcie_phy"
 
 SRC_URI = "${PCIE_FIRMWARE} ${PCIE_FIRMWARE_LICENSE}"
 SRC_URI[pcie-firmware.md5sum] = "293bdf19d8e16d3c4d8179e438db921b"
