@@ -1,4 +1,4 @@
-DESCRIPTION = "Sparrow-Hawk direct OP-TEE boot payload"
+DESCRIPTION = "Packages the Sparrow-Hawk BL31 and OP-TEE payloads for manual U-Boot loading, and generates size, CRC32, and SHA-256 metadata for boot-time validation"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
 

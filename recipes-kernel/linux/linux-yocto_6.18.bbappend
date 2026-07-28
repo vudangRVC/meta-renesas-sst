@@ -2,8 +2,6 @@
 KERNEL_DTBDEST = "${KERNEL_IMAGEDEST}/dtb"
 KERNEL_DTBVENDORED = "1"
 
-require include/rz-optee-config.inc
-
 inherit kernel
 inherit kernel-devicetree
 inherit renesas-kernel-variants
@@ -34,16 +32,6 @@ SRC_URI:append:rz-cmn = " \
 SRC_URI:append:rz-cmn =	" \
 	file://rzg2l-sbc/laird.cfg \
 	file://rzg2l-sbc/touch.cfg \
-"
-
-# PowerVR (Renesas GSX) GPU enablement for the R-Car V4H (Sparrow Hawk).
-# The PowerVR pvrsrvkm module requires the drm_file FOP_UNSIGNED_OFFSET bypass
-# and the V4H GSX device-tree node. Keep these patches in the shared
-# linux-yocto recipe so the single rz-cmn machine builds all supported DTBs.
-SRC_URI:append:rz-cmn = " \
-	file://gpu/0003-arm64-dts-r8a779g0-add-GSX-PowerVR-GPU-node.patch \
-	${@oe.utils.conditional('ENABLE_SPD_OPTEE', '1', 'file://optee/0004-arm64-dts-renesas-sparrow-hawk-add-optee-firmware-node.patch', '', d)} \
-	${@oe.utils.conditional('ENABLE_V4H_DIRECT_OPTEE', '1', 'file://sparrow-hawk/optee.cfg file://optee/0004-arm64-dts-renesas-sparrow-hawk-add-optee-firmware-node.patch', '', d)} \
 "
 
 S = "${UNPACKDIR}/git-nonrt"

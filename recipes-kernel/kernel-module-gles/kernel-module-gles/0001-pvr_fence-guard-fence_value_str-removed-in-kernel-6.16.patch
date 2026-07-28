@@ -3,24 +3,15 @@ From: Quoc Trinh <quoc.trinh.fz@renesas.com>
 Date: Sat, 5 Jul 2026 07:40:00 +0000
 Subject: [PATCH] pvr_fence: guard fence_value_str (removed in kernel 6.16)
 
-The PowerVR fence tracepoints in pvr_fence_trace.h call
-dma_fence_ops::fence_value_str, but that callback was removed from
-struct dma_fence_ops in Linux v6.16. On the team's linux-yocto V4H
-kernel (6.18.20, built with KCONFIG_MODE=alldefconfig which enables
-CONFIG_EVENT_TRACING), the TRACE_EVENT macros expand these TP_fast_assign
-blocks for real, so the now-missing member fails do_compile:
+The PowerVR fence tracepoints call dma_fence_ops::fence_value_str, which
+was removed in Linux v6.16. This causes the driver to fail compilation
+when event tracing is enabled:
 
   pvr_fence_trace.h:119: error: 'const struct dma_fence_ops' has no
   member named 'fence_value_str'
 
-(The rcar-community linux-renesas build did not hit this only because its
-config left event tracing off, so the macro bodies were never compiled.)
-
-Guard the three fence_value_str uses behind a version check, mirroring
-the driver's own existing pvr_assign_str KERNEL_VERSION guard. For
-kernels >= 6.16 the trace records just carry "unknown" for the fence
-value string (a debug-only field), which is exactly the fallback the
-driver already uses for foreign fences when the callback is absent.
+Guard the three uses with a kernel version check. On Linux v6.16 and
+later, store "unknown" in this debug-only trace field.
 
 Upstream-Status: Pending [PowerVR closed-source DDK, kernel 6.16 port]
 
