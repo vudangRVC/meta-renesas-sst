@@ -36,7 +36,20 @@ do_install() {
 
     install -m 644 ${KCONFIG_CONFIG_ROOTDIR}/u-boot-nodtb.bin ${D}/boot/
     for dtb_name in ${DEVICETREE_NAME}; do
-        install -m 644 ${KCONFIG_CONFIG_ROOTDIR}/dts/upstream/src/arm64/renesas/${dtb_name}.dtb ${D}/boot/dtbs
+        dtb_path=""
+        for dtb_dir in \
+            ${KCONFIG_CONFIG_ROOTDIR}/dts/upstream/src/arm64/renesas \
+            ${KCONFIG_CONFIG_ROOTDIR}/arch/arm/dts; do
+            if [ -f "${dtb_dir}/${dtb_name}.dtb" ]; then
+                dtb_path="${dtb_dir}/${dtb_name}.dtb"
+                break
+            fi
+        done
+
+        if [ -z "${dtb_path}" ]; then
+            bbfatal "U-Boot DTB ${dtb_name}.dtb was not built"
+        fi
+        install -m 644 "${dtb_path}" ${D}/boot/dtbs/
     done
 }
 
