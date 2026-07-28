@@ -9,13 +9,10 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
 
 # u-boot source code repository
-UBOOT_URL ?= "git://github.com/vudangRVC/u-boot-sst.git"
-UBOOT_PROTOCOL ?= "https"
-UBOOT_DIRECT_BRANCH ?= "quoctrinh-v4h-direct-optee"
-UBOOT_DIRECT_SRCREV ?= "${V4H_DIRECT_UBOOT_SRCREV}"
-BRANCH = "${@oe.utils.conditional('ENABLE_V4H_DIRECT_OPTEE', '1', d.getVar('UBOOT_DIRECT_BRANCH'), 'fix/v4h-rz-cmn-bid-boot', d)}"
-SRC_URI = "${UBOOT_URL};name=machine;protocol=${UBOOT_PROTOCOL};branch=${BRANCH}"
-SRCREV_machine = "${@oe.utils.conditional('ENABLE_V4H_DIRECT_OPTEE', '1', d.getVar('UBOOT_DIRECT_SRCREV'), '254aa8a134f11302474bfc7378aa32f236a64602', d)}"
+UBOOT_URL = "git://github.com/Renesas-SST/u-boot.git"
+BRANCH = "styhead/rz-cmn-3.4"
+SRC_URI = "${UBOOT_URL};name=machine;protocol=https;branch=${BRANCH}"
+SRCREV_machine = "${AUTOREV}"
 
 FILES:${PN} = "/boot ${sysconfdir}"
 

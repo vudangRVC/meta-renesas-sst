@@ -10,19 +10,13 @@ require include/rz-optee-config.inc
 inherit deploy python3native
 
 PV = "4.10.0+git${SRCPV}"
-BRANCH = "styhead/rz-cmn"
+BRANCH = "styhead/rz-cmn-3.4"
+SRCREV = "${AUTOREV}"
 
-SRC_URI = " \
-    git://github.com/Renesas-SST/rz_optee_os.git;name=rz;branch=${BRANCH};protocol=https;destsuffix=git-rz \
-"
-SRC_URI:append = " ${@oe.utils.conditional('ENABLE_V4H_DIRECT_OPTEE', '1', 'git://github.com/Renesas-SST/rz_optee_os.git;name=v4h;protocol=https;nobranch=1;destsuffix=git-v4h', '', d)}"
-SRCREV_rz = "${V4H_DIRECT_OPTEE_RZ_SRCREV}"
-SRCREV_v4h = "${V4H_DIRECT_OPTEE_V4H_SRCREV}"
-SRCREV_FORMAT = "${@oe.utils.conditional('ENABLE_V4H_DIRECT_OPTEE', '1', 'rz_v4h', 'rz', d)}"
+SRC_URI = "git://github.com/Renesas-SST/rz_optee_os.git;branch=${BRANCH};protocol=https"
 
 COMPATIBLE_MACHINE = "rz-cmn"
-S = "${WORKDIR}/git-rz"
-V4H_S = "${UNPACKDIR}/git-v4h"
+S = "${WORKDIR}/git"
 
 PLATFORM = "rz"
 
@@ -65,13 +59,13 @@ do_compile() {
     if [ "${ENABLE_V4H_DIRECT_OPTEE}" = "1" ]; then
         # R-Car V4H uses the board-verified 4.10 rcar_gen4 port. CFG_DT remains
         # off because Linux supplies the OP-TEE firmware node for Sparrow Hawk.
-        oe_runmake -C ${V4H_S} \
+        oe_runmake -C ${S} \
             PLATFORM=rcar_gen4 \
             LSI=V4H \
             CFG_ARM64_core=y \
             CFG_DT=n \
             CROSS_COMPILE64=${TARGET_PREFIX} \
-            O=${V4H_S}/out-v4h
+            O=${S}/out-v4h
     fi
 }
 
@@ -81,8 +75,8 @@ do_install() {
     install -m 0644 ${S}/out-g2l/core/tee-raw.bin  ${D}/boot/tee-${MACHINE}-g2l.bin
     install -m 0644 ${S}/out-v2h/core/tee-raw.bin  ${D}/boot/tee-${MACHINE}-v2h.bin
     if [ "${ENABLE_V4H_DIRECT_OPTEE}" = "1" ]; then
-        install -m 0644 ${V4H_S}/out-v4h/core/tee-raw.bin ${D}/boot/tee-${MACHINE}-v4h.bin
-        install -m 0644 ${V4H_S}/out-v4h/core/tee-raw.bin ${D}/boot/tee-raw-sparrow-hawk.bin
+        install -m 0644 ${S}/out-v4h/core/tee-raw.bin ${D}/boot/tee-${MACHINE}-v4h.bin
+        install -m 0644 ${S}/out-v4h/core/tee-raw.bin ${D}/boot/tee-raw-sparrow-hawk.bin
     fi
 
     install -d ${D}${includedir}/optee/export-user_ta

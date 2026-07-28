@@ -43,15 +43,7 @@ python do_generate_manifest () {
             'target_sys': d.getVar('TARGET_SYS'),
             'source_date_epoch': d.getVar('SOURCE_DATE_EPOCH'),
         },
-        'sources': {
-            'u_boot': d.getVar('V4H_DIRECT_UBOOT_SRCREV'),
-            'tfa_rz': d.getVar('V4H_DIRECT_TFA_RZ_SRCREV'),
-            'tfa_v4h': d.getVar('V4H_DIRECT_TFA_V4H_SRCREV'),
-            'optee_rz': d.getVar('V4H_DIRECT_OPTEE_RZ_SRCREV'),
-            'optee_v4h': d.getVar('V4H_DIRECT_OPTEE_V4H_SRCREV'),
-            'kernel_nonrt': d.getVar('V4H_DIRECT_KERNEL_NONRT_SRCREV'),
-            'kernel_rt': d.getVar('V4H_DIRECT_KERNEL_RT_SRCREV'),
-        },
+        'source_policy': 'recipe branch heads (AUTOREV)',
         'payloads': {},
     }
 

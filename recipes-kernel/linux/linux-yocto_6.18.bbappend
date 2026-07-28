@@ -8,18 +8,14 @@ inherit kernel
 inherit kernel-devicetree
 inherit renesas-kernel-variants
 
-# The generic rz-cmn branches do not contain the Sparrow Hawk DTBs requested
-# by DEVICETREE_NAME below. Use the paired V4H branches for both variants.
-KBRANCH  = "styhead/rz-cmn-v6.18-v4h-sparrow"
-KBRANCH_RT = "styhead/rz-cmn-3.3-rt-sparrow-hawk"
+KBRANCH = "styhead/rz-cmn-3.4"
+KBRANCH_RT = "styhead/rz-cmn-3.3-rt"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}:"
 
-# The V4H Sparrow Hawk branches are maintained in the project kernel fork.
-# They are not present in the generic Renesas-SST/linux-rz repository.
 SRC_URI:rz-cmn = " \
-  git://github.com/vudangRVC/linux-rz-sst.git;name=nonrt;branch=${KBRANCH};protocol=https;destsuffix=git-nonrt \
-  git://github.com/vudangRVC/linux-rz-sst.git;name=rt;branch=${KBRANCH_RT};protocol=https;destsuffix=git-rt \
+  git://github.com/Renesas-SST/linux-rz.git;name=nonrt;branch=${KBRANCH};protocol=https;destsuffix=git-nonrt \
+  git://github.com/Renesas-SST/linux-rz.git;name=rt;branch=${KBRANCH_RT};protocol=https;destsuffix=git-rt \
 "
 # Common config fragments and patches
 SRC_URI:append:rz-cmn = " \
@@ -137,6 +133,11 @@ KERNEL_DEVICETREE:append:rz-cmn = " \
 	renesas/overlays/rzv2h-rdk-1.0-audio-codec.dtbo \
 	renesas/overlays/rzv2h-rdk-1.0-can.dtbo \
 	renesas/overlays/rzv2h-rdk-1.0-ext-spi.dtbo \
+	renesas/overlays/imdt-v2h-sbc-1.0-dsi.dtbo \
+	renesas/overlays/imdt-v2h-sbc-1.0-cru-csi22-ar1335.dtbo \
+	renesas/overlays/imdt-v2h-sbc-1.0-cru-csi23-ar1335.dtbo \
+	renesas/overlays/sparrow-hawk-1.0-cru-csi-j1-imx219.dtbo \
+	renesas/overlays/sparrow-hawk-1.0-cru-csi-j2-imx219.dtbo \
 "
 
 # Override the dtc flags to support dtbo build in kernel-devicetree.bbclass
@@ -156,12 +157,12 @@ do_deploy:append:rz-cmn(){
 	done
 }
 
-SRCREV_machine:rz-cmn = "${V4H_DIRECT_KERNEL_NONRT_SRCREV}"
-SRCREV_nonrt:rz-cmn = "${V4H_DIRECT_KERNEL_NONRT_SRCREV}"
-SRCREV_rt:rz-cmn = "${V4H_DIRECT_KERNEL_RT_SRCREV}"
+SRCREV_machine:rz-cmn ?= "${AUTOREV}"
+SRCREV_nonrt:rz-cmn ?= "${AUTOREV}"
+SRCREV_rt:rz-cmn ?= "${AUTOREV}"
 SRCREV_FORMAT = "nonrt_rt"
 
-LINUX_VERSION:rz-cmn ?= "6.18.0"
+LINUX_VERSION:rz-cmn ?= "6.18.20"
 
 # COMPATIBLE_MACHINE is regex matcher.
 COMPATIBLE_MACHINE:rz-cmn = "(rz-cmn)"
