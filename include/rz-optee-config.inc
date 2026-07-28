@@ -6,7 +6,7 @@ ENABLE_V4H_DIRECT_OPTEE     ?= '0'
 
 # Direct V4H release inputs. Keep these immutable so the WIC, SPI loader and
 # rootfs payload can be reproduced from the same source revisions.
-V4H_DIRECT_UBOOT_SRCREV ?= "cfc9c932aaef4f24e22ec3480af20106a7429fe9"
+V4H_DIRECT_UBOOT_SRCREV ?= "72248e81dd897dc139e126641fd3659647440f2a"
 V4H_DIRECT_TFA_RZ_SRCREV ?= "b60ca2c677854755d7bfd24cca6320a5190b969c"
 V4H_DIRECT_TFA_V4H_SRCREV ?= "1d5aa939bc8d3d892e2ed9945fa50e36a1a924cc"
 V4H_DIRECT_OPTEE_RZ_SRCREV ?= "0327d33267abdef688588e1af8a134934d09563c"

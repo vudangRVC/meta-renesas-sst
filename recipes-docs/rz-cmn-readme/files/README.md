@@ -2202,7 +2202,8 @@ ENABLE_V4H_DIRECT_OPTEE = "1"
 bitbake core-image-weston
 ```
 
-The resulting root filesystem contains the following V4H-only payloads:
+The resulting WIC contains the following V4H-only payloads under `/boot` on
+both FAT partition 1 and rootfs partition 2:
 
 | Path | Purpose |
 | ---- | ------- |
@@ -2211,15 +2212,23 @@ The resulting root filesystem contains the following V4H-only payloads:
 | `/boot/v4h-direct-optee.env` | U-Boot load addresses, sizes, and CRC32 values |
 | `/boot/v4h-direct-optee.manifest` | Human-readable SHA-256 manifest |
 
-At a normal `boot`, U-Boot selects the board DTB. When it selects `r8a779g3-sparrow-hawk.dtb`, it automatically loads BL31 and OP-TEE from the rootfs partition, validates their size and CRC32 against `v4h-direct-optee.env`, prepares the TF-A handoff, and boots Linux. Non-V4H boards retain the normal boot path.
-
-For recovery or serial-console diagnosis, run the same V4H-only flow explicitly:
+Normal `boot` and `run mmc_do_boot` keep the standard Linux path and do not
+load OP-TEE. To test the direct V4H secure-world handoff, stop autoboot and
+run it explicitly:
 
 ```shell
 => run tfa_boot
 ```
 
-Do not enable `ENABLE_SPD_OPTEE` together with `ENABLE_V4H_DIRECT_OPTEE`; the former is the FIP-based flow for the existing RZ boards, while the latter is the V4H rootfs-loaded flow. After boot, confirm the secure-world driver and client are available:
+`tfa_boot` loads the manifest, BL31, OP-TEE, kernel, and DTB from FAT
+partition 1, verifies payload size and CRC32, calls `tfa_prepare`, then boots
+Linux. If FAT recovery files are unavailable, use the rootfs copy explicitly:
+
+```shell
+=> run tfa_boot_ext4
+```
+
+Do not enable `ENABLE_SPD_OPTEE` together with `ENABLE_V4H_DIRECT_OPTEE`; the former is the FIP-based flow for the existing RZ boards, while the latter is the V4H manually selected direct flow. After boot, confirm the secure-world driver and client are available:
 
 ```shell
 root@rz-cmn:~# dmesg | grep -i optee

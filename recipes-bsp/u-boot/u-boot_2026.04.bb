@@ -54,13 +54,11 @@ do_deploy() {
     done
 
     if [ "${ENABLE_V4H_DIRECT_OPTEE}" = "1" ]; then
-        # V4H binman emits the SPI inputs as a SA0+SPL blob and a U-Boot FIT.
-        # Keep their native names for provenance and stable aliases for rz-utils.
+        # rz-utils combines u-boot-nodtb with the selected board DTB. Yocto
+        # only exports the common SA0+SPL input and does not ship a prebuilt
+        # multi-board U-Boot FIT.
         install -m 0644 ${KCONFIG_CONFIG_ROOTDIR}/sa0.bin ${DEPLOYDIR}/target/images/u-boot/sa0.bin
-        install -m 0644 ${KCONFIG_CONFIG_ROOTDIR}/u-boot.itb ${DEPLOYDIR}/target/images/u-boot/u-boot.itb
-        install -m 0644 ${KCONFIG_CONFIG_ROOTDIR}/flash.bin ${DEPLOYDIR}/target/images/u-boot/flash.bin
         install -m 0644 ${KCONFIG_CONFIG_ROOTDIR}/sa0.bin ${DEPLOYDIR}/target/images/u-boot/sa0-rz-cmn.bin
-        install -m 0644 ${KCONFIG_CONFIG_ROOTDIR}/u-boot.itb ${DEPLOYDIR}/target/images/u-boot/u-boot-rz-cmn.itb
     fi
 }
 
