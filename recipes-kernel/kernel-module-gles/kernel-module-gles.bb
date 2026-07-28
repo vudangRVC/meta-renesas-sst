@@ -37,7 +37,10 @@ B = "${KBUILD_DIR}"
 KBUILD_DIR:rz-cmn = "${S}/build/linux/r8a779g_linux"
 KBUILD_OUTDIR:rz-cmn = "binary_r8a779g_linux_nullws_drm_release/target_aarch64/kbuild"
 
-EXTRA_OEMAKE = "KERNELDIR=${STAGING_KERNEL_BUILDDIR}"
+# The DDK invokes the kernel Makefile with `make -C`. Use the staged source
+# tree here; module-base.bbclass exports KBUILD_OUTPUT for the separate build
+# artifacts directory.
+EXTRA_OEMAKE = "KERNELDIR=${STAGING_KERNEL_DIR}"
 EXTRA_OEMAKE += "CROSS_COMPILE=${CROSS_COMPILE}"
 
 # Build GFX kernel module without suffix
@@ -45,12 +48,14 @@ KERNEL_MODULE_PACKAGE_SUFFIX = ""
 
 module_do_compile() {
     unset CFLAGS CPPFLAGS CXXFLAGS LDFLAGS
+    unset CC CXX LD AR NM OBJCOPY OBJDUMP STRIP
     cd ${KBUILD_DIR}
     oe_runmake
 }
 
 module_do_install() {
     unset CFLAGS CPPFLAGS CXXFLAGS LDFLAGS
+    unset CC CXX LD AR NM OBJCOPY OBJDUMP STRIP
     install -d ${D}${nonarch_base_libdir}/modules/${KERNEL_VERSION}
     cd ${KBUILD_DIR}
     oe_runmake DISCIMAGE="${D}" install
