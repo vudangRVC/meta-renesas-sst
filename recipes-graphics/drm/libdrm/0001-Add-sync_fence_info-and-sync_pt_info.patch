@@ -26,7 +26,7 @@ index f1a2f96..09ca5b4 100644
 +#include <stdlib.h>
  #include <string.h>
  #include <sys/ioctl.h>
-#include <poll.h>
+ #include <poll.h>
 @@ -58,6 +59,54 @@ struct sync_merge_data {
  #endif
  
