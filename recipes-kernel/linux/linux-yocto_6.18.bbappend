@@ -124,8 +124,8 @@ KERNEL_DEVICETREE:append:rz-cmn = " \
 	renesas/overlays/imdt-v2h-sbc-1.0-dsi.dtbo \
 	renesas/overlays/imdt-v2h-sbc-1.0-cru-csi22-ar1335.dtbo \
 	renesas/overlays/imdt-v2h-sbc-1.0-cru-csi23-ar1335.dtbo \
-	renesas/overlays/sparrow-hawk-1.0-cru-csi-j1-imx219.dtbo \
-	renesas/overlays/sparrow-hawk-1.0-cru-csi-j2-imx219.dtbo \
+	renesas/r8a779g3-sparrow-hawk-camera-j1-imx219.dtbo \
+	renesas/r8a779g3-sparrow-hawk-camera-j2-imx219.dtbo \
 "
 
 # Override the dtc flags to support dtbo build in kernel-devicetree.bbclass
@@ -135,6 +135,9 @@ KERNEL_DTC_FLAGS = "-@"
 do_deploy:append:rz-cmn(){
 	install -d ${DEPLOYDIR}/target/images/linux/dtbs/overlays
 	install -m 0644 ${B}/arch/arm64/boot/dts/renesas/overlays/* ${DEPLOYDIR}/target/images/linux/dtbs/overlays
+
+	install -m 0644 ${B}/arch/arm64/boot/dts/renesas/r8a779g3-sparrow-hawk-camera-j1-imx219.dtbo ${DEPLOYDIR}/target/images/linux/dtbs/overlays
+	install -m 0644 ${B}/arch/arm64/boot/dts/renesas/r8a779g3-sparrow-hawk-camera-j2-imx219.dtbo ${DEPLOYDIR}/target/images/linux/dtbs/overlays
 
 	install -m 0644 ${B}/arch/arm64/boot/Image ${DEPLOYDIR}/target/images/linux/${KERNEL_IMAGETYPE}-${KERNEL_ARTIFACT_NAME}.bin
 	ln -sf ${KERNEL_IMAGETYPE}-${KERNEL_ARTIFACT_NAME}.bin ${DEPLOYDIR}/target/images/linux/Image
