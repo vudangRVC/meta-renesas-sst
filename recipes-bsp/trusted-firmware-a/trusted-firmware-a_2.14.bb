@@ -95,6 +95,7 @@ COMPATIBLE_MACHINE = "rz-cmn"
 #==============================================================================
 SRC_URI:append:rz-cmn = " \
     git://github.com/ARM-software/arm-trusted-firmware.git;name=sparrowhawk;branch=${SPARROWHAWK_BRANCH};protocol=https;destsuffix=git/sparrowhawk \
+    file://0001-rcar4-fix-opteed-runtime-setup-build.patch;patchdir=../sparrowhawk \
 "
 SPARROWHAWK_BRANCH = "master"
 SRCREV_sparrowhawk = "${AUTOREV}"
