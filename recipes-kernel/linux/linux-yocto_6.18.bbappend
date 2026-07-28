@@ -8,7 +8,7 @@ inherit kernel
 inherit kernel-devicetree
 inherit renesas-kernel-variants
 
-KBRANCH = "styhead/rz-cmn-3.4"
+KBRANCH = "styhead/rz-cmn-3.3"
 KBRANCH_RT = "styhead/rz-cmn-3.3-rt"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}:"
