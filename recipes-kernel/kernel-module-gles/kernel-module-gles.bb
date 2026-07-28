@@ -42,6 +42,7 @@ KBUILD_OUTDIR:rz-cmn = "binary_r8a779g_linux_nullws_drm_release/target_aarch64/k
 # artifacts directory.
 EXTRA_OEMAKE = "KERNELDIR=${STAGING_KERNEL_DIR}"
 EXTRA_OEMAKE += "CROSS_COMPILE=${CROSS_COMPILE}"
+EXTRA_OEMAKE += "KERNEL_ID=${KERNEL_VERSION}"
 
 # Build GFX kernel module without suffix
 KERNEL_MODULE_PACKAGE_SUFFIX = ""
