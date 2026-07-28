@@ -23,8 +23,8 @@ RDEPENDS:packagegroup-renesas-graphics = " \
     packagegroup-graphics-oss-opencl \
 "
 
-# GFX package — userspace only. pvrsrvkm (kernel-module-gles) is out of
-# scope: it's provided by the kernel (linux-yocto), not this layer.
+# The userspace package pulls in gles-user-module, which in turn depends on the
+# out-of-tree kernel-module-gles package containing pvrsrvkm.ko.
 RDEPENDS:packagegroup-graphics-renesas-gles = " \
     gles-user-module \
     pvr-libgbm \

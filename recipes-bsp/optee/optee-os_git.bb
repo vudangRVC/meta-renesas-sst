@@ -14,12 +14,11 @@ BRANCH = "styhead/rz-cmn"
 
 SRC_URI = " \
     git://github.com/Renesas-SST/rz_optee_os.git;name=rz;branch=${BRANCH};protocol=https;destsuffix=git-rz \
-    git://github.com/Renesas-SST/rz_optee_os.git;name=v4h;protocol=https;nobranch=1;destsuffix=git-v4h \
 "
+SRC_URI:append = " ${@oe.utils.conditional('ENABLE_V4H_DIRECT_OPTEE', '1', 'git://github.com/Renesas-SST/rz_optee_os.git;name=v4h;protocol=https;nobranch=1;destsuffix=git-v4h', '', d)}"
 SRCREV_rz = "${V4H_DIRECT_OPTEE_RZ_SRCREV}"
 SRCREV_v4h = "${V4H_DIRECT_OPTEE_V4H_SRCREV}"
-SRCREV_FORMAT = "rz_v4h"
-V4H_VERIFIED_TAG = "v4h-optee-4.10-verified-75e17800e"
+SRCREV_FORMAT = "${@oe.utils.conditional('ENABLE_V4H_DIRECT_OPTEE', '1', 'rz_v4h', 'rz', d)}"
 
 COMPATIBLE_MACHINE = "rz-cmn"
 S = "${WORKDIR}/git-rz"
@@ -63,15 +62,17 @@ do_compile() {
         CFG_DT=n \
         O=${S}/out-v2h
 
-    # R-Car V4H uses the board-verified 4.10 rcar_gen4 port. CFG_DT remains
-    # off because Linux supplies the OP-TEE firmware node for Sparrow Hawk.
-    oe_runmake -C ${V4H_S} \
-        PLATFORM=rcar_gen4 \
-        LSI=V4H \
-        CFG_ARM64_core=y \
-        CFG_DT=n \
-        CROSS_COMPILE64=${TARGET_PREFIX} \
-        O=${V4H_S}/out-v4h
+    if [ "${ENABLE_V4H_DIRECT_OPTEE}" = "1" ]; then
+        # R-Car V4H uses the board-verified 4.10 rcar_gen4 port. CFG_DT remains
+        # off because Linux supplies the OP-TEE firmware node for Sparrow Hawk.
+        oe_runmake -C ${V4H_S} \
+            PLATFORM=rcar_gen4 \
+            LSI=V4H \
+            CFG_ARM64_core=y \
+            CFG_DT=n \
+            CROSS_COMPILE64=${TARGET_PREFIX} \
+            O=${V4H_S}/out-v4h
+    fi
 }
 
 do_install() {
@@ -79,8 +80,10 @@ do_install() {
 
     install -m 0644 ${S}/out-g2l/core/tee-raw.bin  ${D}/boot/tee-${MACHINE}-g2l.bin
     install -m 0644 ${S}/out-v2h/core/tee-raw.bin  ${D}/boot/tee-${MACHINE}-v2h.bin
-    install -m 0644 ${V4H_S}/out-v4h/core/tee-raw.bin ${D}/boot/tee-${MACHINE}-v4h.bin
-    install -m 0644 ${V4H_S}/out-v4h/core/tee-raw.bin ${D}/boot/tee-raw-sparrow-hawk.bin
+    if [ "${ENABLE_V4H_DIRECT_OPTEE}" = "1" ]; then
+        install -m 0644 ${V4H_S}/out-v4h/core/tee-raw.bin ${D}/boot/tee-${MACHINE}-v4h.bin
+        install -m 0644 ${V4H_S}/out-v4h/core/tee-raw.bin ${D}/boot/tee-raw-sparrow-hawk.bin
+    fi
 
     install -d ${D}${includedir}/optee/export-user_ta
     cp -aR ${S}/out-g2l/export-ta_arm64/* ${D}${includedir}/optee/export-user_ta/
@@ -91,8 +94,10 @@ do_deploy() {
 
     install -m 0644 ${D}/boot/tee-${MACHINE}-g2l.bin ${DEPLOYDIR}/target/images/atf/tee-${MACHINE}-g2l.bin
     install -m 0644 ${D}/boot/tee-${MACHINE}-v2h.bin ${DEPLOYDIR}/target/images/atf/tee-${MACHINE}-v2h.bin
-    install -m 0644 ${D}/boot/tee-${MACHINE}-v4h.bin ${DEPLOYDIR}/target/images/atf/tee-${MACHINE}-v4h.bin
-    install -m 0644 ${D}/boot/tee-raw-sparrow-hawk.bin ${DEPLOYDIR}/target/images/atf/tee-raw-sparrow-hawk.bin
+    if [ "${ENABLE_V4H_DIRECT_OPTEE}" = "1" ]; then
+        install -m 0644 ${D}/boot/tee-${MACHINE}-v4h.bin ${DEPLOYDIR}/target/images/atf/tee-${MACHINE}-v4h.bin
+        install -m 0644 ${D}/boot/tee-raw-sparrow-hawk.bin ${DEPLOYDIR}/target/images/atf/tee-raw-sparrow-hawk.bin
+    fi
 }
 
 addtask deploy after do_install

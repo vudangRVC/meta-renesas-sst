@@ -5,13 +5,6 @@ SRC_URI:append:rz-cmn = " \
     file://Add-libkms.patch \
 "
 
-# These patches were authored against scarthgap libdrm; on styhead's
-# libdrm 2.4.123 the sync_fence hunk applies with fuzz 1 (correct content,
-# just a line-offset shift). poky styhead promotes patch-fuzz to a fatal QA
-# error — downgrade to a warning here (rz-cmn only); the patch still applies.
-ERROR_QA:remove:rz-cmn = "patch-fuzz"
-WARN_QA:append:rz-cmn = " patch-fuzz"
-
 PACKAGES:prepend:rz-cmn = "${PN}-kms "
 
 # libkms handling — TARGET ONLY, via EXTRA_OEMESON (NOT PACKAGECONFIG).

@@ -15,10 +15,6 @@ UBOOT_DIRECT_BRANCH ?= "quoctrinh-v4h-direct-optee"
 UBOOT_DIRECT_SRCREV ?= "${V4H_DIRECT_UBOOT_SRCREV}"
 BRANCH = "${@oe.utils.conditional('ENABLE_V4H_DIRECT_OPTEE', '1', d.getVar('UBOOT_DIRECT_BRANCH'), 'fix/v4h-rz-cmn-bid-boot', d)}"
 SRC_URI = "${UBOOT_URL};name=machine;protocol=${UBOOT_PROTOCOL};branch=${BRANCH}"
-SRC_URI:append:rz-cmn = " \
-    ${@oe.utils.conditional('ENABLE_SPD_OPTEE', '1', 'file://0001-renesas-gen4-add-optee-bl32-fit-handoff.patch', '', d)} \
-    ${@oe.utils.conditional('ENABLE_SPD_OPTEE', '1', 'file://0002-rz-cmn-boot-v4h-fit-when-present.patch', '', d)} \
-"
 SRCREV_machine = "${@oe.utils.conditional('ENABLE_V4H_DIRECT_OPTEE', '1', d.getVar('UBOOT_DIRECT_SRCREV'), '254aa8a134f11302474bfc7378aa32f236a64602', d)}"
 
 FILES:${PN} = "/boot ${sysconfdir}"
