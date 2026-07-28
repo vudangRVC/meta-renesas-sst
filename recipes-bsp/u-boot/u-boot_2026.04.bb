@@ -48,6 +48,15 @@ do_deploy() {
     # Create deploy folder
     install -d ${DEPLOYDIR}/target/images/u-boot/dtbs
 
+    # Keep incremental deploys aligned with the current output contract.
+    # These V4H-only/prebuilt artifacts may exist from an older recipe revision.
+    rm -f \
+        ${DEPLOYDIR}/target/images/u-boot/sa0.bin \
+        ${DEPLOYDIR}/target/images/u-boot/sa0-${MACHINE}.bin \
+        ${DEPLOYDIR}/target/images/u-boot/u-boot.itb \
+        ${DEPLOYDIR}/target/images/u-boot/u-boot-${MACHINE}.itb \
+        ${DEPLOYDIR}/target/images/u-boot/flash.bin
+
     install -m 0644 ${D}/boot/u-boot-nodtb.bin ${DEPLOYDIR}/target/images/u-boot/u-boot-nodtb-${MACHINE}.bin
     for dtb_name in ${DEVICETREE_NAME}; do
         install -m 644 ${D}/boot/dtbs/${dtb_name}.dtb ${DEPLOYDIR}/target/images/u-boot/dtbs
