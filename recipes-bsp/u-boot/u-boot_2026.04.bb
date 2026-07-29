@@ -1,5 +1,6 @@
 require recipes-bsp/u-boot/u-boot-common.inc
 require recipes-bsp/u-boot/u-boot.inc
+require include/rz-optee-config.inc
 
 PROVIDES += "u-boot"
 DEPENDS += "lzop-native srecord-native bc-native dtc-native python3-pyelftools-native gnutls-native"
@@ -9,7 +10,7 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda
 
 # u-boot source code repository
 UBOOT_URL = "git://github.com/Renesas-SST/u-boot.git"
-BRANCH = "styhead/rz-cmn"
+BRANCH = "styhead/rz-cmn-3.4"
 SRC_URI = "${UBOOT_URL};name=machine;protocol=https;branch=${BRANCH}"
 SRCREV_machine = "${AUTOREV}"
 
@@ -57,10 +58,22 @@ do_deploy() {
     # Create deploy folder
     install -d ${DEPLOYDIR}/target/images/u-boot/dtbs
 
+    rm -f \
+        ${DEPLOYDIR}/target/images/u-boot/sa0.bin \
+        ${DEPLOYDIR}/target/images/u-boot/sa0-rz-cmn.bin
+
     install -m 0644 ${D}/boot/u-boot-nodtb.bin ${DEPLOYDIR}/target/images/u-boot/u-boot-nodtb-${MACHINE}.bin
     for dtb_name in ${DEVICETREE_NAME}; do
         install -m 644 ${D}/boot/dtbs/${dtb_name}.dtb ${DEPLOYDIR}/target/images/u-boot/dtbs
     done
+
+    if [ "${ENABLE_V4H_DIRECT_OPTEE}" = "1" ]; then
+        if [ ! -s "${KCONFIG_CONFIG_ROOTDIR}/sa0.bin" ]; then
+            bbfatal "V4H SA0+SPL image was not built"
+        fi
+        install -m 0644 ${KCONFIG_CONFIG_ROOTDIR}/sa0.bin \
+            ${DEPLOYDIR}/target/images/u-boot/sa0.bin
+    fi
 }
 
 addtask deploy after do_install
