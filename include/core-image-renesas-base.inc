@@ -60,7 +60,6 @@ add_bootloader_rootfs() {
 
 # Clean the output directory after the build
 do_release_clean() {   
-    rm -rf ${DEPLOY_DIR_IMAGE}/target/images/v4h-direct-optee
     rm -f ${DEPLOY_DIR_IMAGE}/bl31*
     rm -f ${DEPLOY_DIR_IMAGE}/bl2*    
     rm -f ${DEPLOY_DIR_IMAGE}/u-boot*
