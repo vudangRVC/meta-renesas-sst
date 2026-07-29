@@ -8,17 +8,14 @@ inherit kernel
 inherit kernel-devicetree
 inherit renesas-kernel-variants
 
-# The generic rz-cmn branches do not contain the Sparrow Hawk DTBs requested
-# by DEVICETREE_NAME below. Use the paired V4H branches for both variants.
-KBRANCH  = "styhead/rz-cmn-v6.18-v4h-sparrow"
+# Use the audited RZ-CMN 3.4 update branch for the non-RT V4H kernel.
+KBRANCH  = "quoctrinh-rz-cmn-3.4-update"
 KBRANCH_RT = "styhead/rz-cmn-3.3-rt-sparrow-hawk"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}:"
 
-# The V4H Sparrow Hawk branches are maintained in the project kernel fork.
-# They are not present in the generic Renesas-SST/linux-rz repository.
 SRC_URI:rz-cmn = " \
-  git://github.com/vudangRVC/linux-rz-sst.git;name=nonrt;branch=${KBRANCH};protocol=https;destsuffix=git-nonrt \
+  git://github.com/Renesas-SST/linux-rz.git;name=nonrt;branch=${KBRANCH};protocol=https;destsuffix=git-nonrt \
   git://github.com/vudangRVC/linux-rz-sst.git;name=rt;branch=${KBRANCH_RT};protocol=https;destsuffix=git-rt \
 "
 # Common config fragments and patches
@@ -40,14 +37,8 @@ SRC_URI:append:rz-cmn =	" \
 	file://rzg2l-sbc/touch.cfg \
 "
 
-# PowerVR (Renesas GSX) GPU enablement for the R-Car V4H (Sparrow Hawk).
-# The PowerVR pvrsrvkm module requires the drm_file FOP_UNSIGNED_OFFSET bypass
-# and the V4H GSX device-tree node. Keep these patches in the shared
-# linux-yocto recipe so the single rz-cmn machine builds all supported DTBs.
 SRC_URI:append:rz-cmn = " \
-	file://gpu/0003-arm64-dts-r8a779g0-add-GSX-PowerVR-GPU-node.patch \
-	${@oe.utils.conditional('ENABLE_SPD_OPTEE', '1', 'file://optee/0004-arm64-dts-renesas-sparrow-hawk-add-optee-firmware-node.patch', '', d)} \
-	${@oe.utils.conditional('ENABLE_V4H_DIRECT_OPTEE', '1', 'file://sparrow-hawk/optee.cfg file://optee/0004-arm64-dts-renesas-sparrow-hawk-add-optee-firmware-node.patch', '', d)} \
+		${@oe.utils.conditional('ENABLE_V4H_DIRECT_OPTEE', '1', 'file://sparrow-hawk/optee.cfg', '', d)} \
 "
 
 S = "${UNPACKDIR}/git-nonrt"
@@ -161,7 +152,7 @@ SRCREV_nonrt:rz-cmn = "${V4H_DIRECT_KERNEL_NONRT_SRCREV}"
 SRCREV_rt:rz-cmn = "${V4H_DIRECT_KERNEL_RT_SRCREV}"
 SRCREV_FORMAT = "nonrt_rt"
 
-LINUX_VERSION:rz-cmn ?= "6.18.0"
+LINUX_VERSION:rz-cmn ?= "6.18.20"
 
 # COMPATIBLE_MACHINE is regex matcher.
 COMPATIBLE_MACHINE:rz-cmn = "(rz-cmn)"
