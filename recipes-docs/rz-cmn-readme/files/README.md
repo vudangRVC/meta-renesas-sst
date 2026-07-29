@@ -1195,7 +1195,6 @@ Mount the SD card on a Windows computer. The `uEnv.txt` file should be accessibl
 When working within a Linux environment (e.g., via SSH or serial console on the RZG2L-SBC), the SD card's first partition can be mounted and the file edited:
 
 
-You can refer to the `Readme.md` file in partition 1 for the FDT overlays information.
 You can mount the sdcard on Windows to edit the uEnv.txt or do it on linux as below
 
 Step 1: Mount the partition
@@ -1215,8 +1214,6 @@ root@rz-cmn:~# sync
 ```
 
 After changing the value of overlays options, we need to run `sync` to ensure that the changes are affected. Then, execute `reboot` to apply the changes.
-
-For further details on FDT overlays and advanced configurations, refer to the `Readme.md` file located in partition 1 of the SD card.
 
 #### 4.1.2. Generic USB Bluetooth Framework
 
