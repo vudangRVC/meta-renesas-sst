@@ -69,12 +69,22 @@ do_install() {
     done
     install -m 644 ${S}/build/${PLATFORM}/release/bl31.bin ${D}/boot/bl31-${MACHINE}.bin
     install -m 644 ${S}/build/${PLATFORM}/release/fdts/*.dtb ${D}/boot/fdts
+    if [ "${ENABLE_V4H_DIRECT_OPTEE}" = "1" ]; then
+        install -m 0644 \
+            ${SPARROWHAWK_S}/build/${SPARROWHAWK_PLATFORM}/release/bl31.bin \
+            ${D}/boot/bl31-sparrow-hawk.bin
+    fi
 }
 
 # Deploy bin file to deploy dir
 do_deploy() {
     # Create deploy folder
     install -d ${DEPLOYDIR}/target/images/atf/fdts
+
+    rm -f \
+        ${DEPLOYDIR}/target/images/atf/bl31-sparrowhawk.bin \
+        ${DEPLOYDIR}/target/images/atf/bl31-sparrowhawk.elf \
+        ${DEPLOYDIR}/target/images/atf/bl31-sparrowhawk.srec
 
     # Copy bl2, bl31 and fdts to deploy folder
     for method in ${BL2_METHODS}; do
@@ -91,7 +101,7 @@ COMPATIBLE_MACHINE = "rz-cmn"
 #==============================================================================
 # Sparrow-Hawk (V4H) companion SoC support
 # BL31 is built from a second checkout of upstream ARM Trusted Firmware-A
-# (v2.14 release) and only deployed (not packaged)
+# (v2.14 release) and staged through /boot for the rootfs payload package.
 #==============================================================================
 SRC_URI:append:rz-cmn = " \
     git://github.com/ARM-software/arm-trusted-firmware.git;name=sparrowhawk;branch=${SPARROWHAWK_BRANCH};protocol=https;destsuffix=git/sparrowhawk \
@@ -112,13 +122,5 @@ SPARROWHAWK_SPD = "${@oe.utils.conditional('ENABLE_V4H_DIRECT_OPTEE', '1', 'opte
 do_compile:append() {
     cd ${SPARROWHAWK_S}
     ${MAKE} distclean
-    ${MAKE} clean_srecord PLAT=${SPARROWHAWK_PLATFORM} SPD=${SPARROWHAWK_SPD} MBEDTLS_COMMON_MK=1 ${SPARROWHAWK_OPT}
-    ${MAKE} bl31 rcar_srecord PLAT=${SPARROWHAWK_PLATFORM} SPD=${SPARROWHAWK_SPD} MBEDTLS_COMMON_MK=1 ${SPARROWHAWK_OPT}
-}
-
-# Copy Sparrow-Hawk (V4H) BL31 images to deploy folder
-do_deploy:append() {
-    install -m 0644 ${SPARROWHAWK_S}/build/${SPARROWHAWK_PLATFORM}/release/bl31/bl31.elf ${DEPLOYDIR}/target/images/atf/bl31-sparrowhawk.elf
-    install -m 0644 ${SPARROWHAWK_S}/build/${SPARROWHAWK_PLATFORM}/release/bl31.bin       ${DEPLOYDIR}/target/images/atf/bl31-sparrowhawk.bin
-    install -m 0644 ${SPARROWHAWK_S}/build/${SPARROWHAWK_PLATFORM}/release/bl31.srec      ${DEPLOYDIR}/target/images/atf/bl31-sparrowhawk.srec
+    ${MAKE} bl31 PLAT=${SPARROWHAWK_PLATFORM} SPD=${SPARROWHAWK_SPD} MBEDTLS_COMMON_MK=1 ${SPARROWHAWK_OPT}
 }

@@ -81,7 +81,6 @@ do_install() {
     install -m 0644 ${S}/out-g2l/core/tee-raw.bin  ${D}/boot/tee-${MACHINE}-g2l.bin
     install -m 0644 ${S}/out-v2h/core/tee-raw.bin  ${D}/boot/tee-${MACHINE}-v2h.bin
     if [ "${ENABLE_V4H_DIRECT_OPTEE}" = "1" ]; then
-        install -m 0644 ${V4H_S}/out-v4h/core/tee-raw.bin ${D}/boot/tee-${MACHINE}-v4h.bin
         install -m 0644 ${V4H_S}/out-v4h/core/tee-raw.bin ${D}/boot/tee-raw-sparrow-hawk.bin
     fi
 
@@ -92,12 +91,12 @@ do_install() {
 do_deploy() {
     install -d ${DEPLOYDIR}/target/images/atf
 
+    rm -f \
+        ${DEPLOYDIR}/target/images/atf/tee-${MACHINE}-v4h.bin \
+        ${DEPLOYDIR}/target/images/atf/tee-raw-sparrow-hawk.bin
+
     install -m 0644 ${D}/boot/tee-${MACHINE}-g2l.bin ${DEPLOYDIR}/target/images/atf/tee-${MACHINE}-g2l.bin
     install -m 0644 ${D}/boot/tee-${MACHINE}-v2h.bin ${DEPLOYDIR}/target/images/atf/tee-${MACHINE}-v2h.bin
-    if [ "${ENABLE_V4H_DIRECT_OPTEE}" = "1" ]; then
-        install -m 0644 ${D}/boot/tee-${MACHINE}-v4h.bin ${DEPLOYDIR}/target/images/atf/tee-${MACHINE}-v4h.bin
-        install -m 0644 ${D}/boot/tee-raw-sparrow-hawk.bin ${DEPLOYDIR}/target/images/atf/tee-raw-sparrow-hawk.bin
-    fi
 }
 
 addtask deploy after do_install
