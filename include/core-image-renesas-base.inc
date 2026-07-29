@@ -51,10 +51,8 @@ IMAGE_BOOT_FILES:rz-cmn = " \
     Readme.md;Readme.md \
     target/images/*.bin;uload-bootloader/ \
 "
-IMAGE_BOOT_FILES:append:rz-cmn = " ${@oe.utils.conditional('ENABLE_V4H_DIRECT_OPTEE', '1', 'target/images/v4h-direct-optee/bl31-sparrow-hawk.bin;boot/bl31-sparrow-hawk.bin target/images/v4h-direct-optee/tee-raw-sparrow-hawk.bin;boot/tee-raw-sparrow-hawk.bin target/images/v4h-direct-optee/v4h-direct-optee.env;boot/v4h-direct-optee.env target/images/v4h-direct-optee/v4h-direct-optee.manifest;boot/v4h-direct-optee.manifest', '', d)}"
-
 DEPENDS += " linux-yocto uenv platform-gen "
-EXTRA_IMAGEDEPENDS:append:rz-cmn = " ${@oe.utils.conditional('ENABLE_V4H_DIRECT_OPTEE', '1', 'rcar-pcie-firmware:do_deploy v4h-direct-optee-firmware:do_deploy', '', d)}"
+EXTRA_IMAGEDEPENDS:append:rz-cmn = " ${@oe.utils.conditional('ENABLE_V4H_DIRECT_OPTEE', '1', 'rcar-pcie-firmware:do_deploy', '', d)}"
 
 add_bootloader_rootfs() {
     install -d ${IMAGE_ROOTFS}/boot/uload-bootloader
@@ -63,6 +61,7 @@ add_bootloader_rootfs() {
 
 # Clean the output directory after the build
 do_release_clean() {   
+    rm -rf ${DEPLOY_DIR_IMAGE}/target/images/v4h-direct-optee
     rm -f ${DEPLOY_DIR_IMAGE}/bl31*
     rm -f ${DEPLOY_DIR_IMAGE}/bl2*    
     rm -f ${DEPLOY_DIR_IMAGE}/u-boot*

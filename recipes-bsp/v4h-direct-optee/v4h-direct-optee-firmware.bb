@@ -8,12 +8,11 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 COMPATIBLE_MACHINE = "rz-cmn"
 
 DEPENDS = "trusted-firmware-a optee-os python3-native"
-do_install[depends] += "trusted-firmware-a:do_deploy optee-os:do_deploy"
 
-inherit deploy python3native
+inherit python3native
 
-DIRECT_OPTEE_BL31 = "${DEPLOY_DIR_IMAGE}/target/images/atf/bl31-sparrowhawk.bin"
-DIRECT_OPTEE_TEE = "${DEPLOY_DIR_IMAGE}/target/images/atf/tee-raw-sparrow-hawk.bin"
+DIRECT_OPTEE_BL31 = "${RECIPE_SYSROOT}/boot/bl31-sparrow-hawk.bin"
+DIRECT_OPTEE_TEE = "${RECIPE_SYSROOT}/boot/tee-raw-sparrow-hawk.bin"
 
 do_install() {
     install -d ${D}/boot
@@ -83,19 +82,5 @@ python do_generate_manifest () {
 
 addtask generate_manifest after do_install before do_package
 do_generate_manifest[fakeroot] = "1"
-
-do_deploy() {
-    install -d ${DEPLOYDIR}/target/images/v4h-direct-optee
-    for payload in \
-        bl31-sparrow-hawk.bin \
-        tee-raw-sparrow-hawk.bin \
-        v4h-direct-optee.env \
-        v4h-direct-optee.manifest; do
-        install -m 0644 ${D}/boot/${payload} \
-            ${DEPLOYDIR}/target/images/v4h-direct-optee/${payload}
-    done
-}
-
-addtask deploy after do_generate_manifest before do_build
 
 FILES:${PN} = "/boot"
