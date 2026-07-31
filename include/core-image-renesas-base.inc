@@ -25,6 +25,7 @@ IMAGE_INSTALL:append = " \
     linux-firmware-ap1302 \
     linux-firmware-sdiouartiw416 \
     firmwared \
+    linux-firmware-rcar-gen4-pcie \
 "
 
 IMAGE_INSTALL:append:rz-cmn = " uenv"
