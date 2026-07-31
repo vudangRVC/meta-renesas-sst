@@ -1194,7 +1194,6 @@ Mount the SD card on a Windows computer. The `uEnv.txt` file should be accessibl
 
 When working within a Linux environment (e.g., via SSH or serial console on the RZG2L-SBC), the SD card's first partition can be mounted and the file edited:
 
-
 You can refer to the `Readme.md` file in partition 1 for the FDT overlays information.
 You can mount the sdcard on Windows to edit the uEnv.txt or do it on linux as below
 
@@ -2153,12 +2152,13 @@ root@rz-cmn:~# uname -v
 
 OP-TEE (Open Portable Trusted Execution Environment) provides a secure world environment running alongside Linux in the Normal World. The RZ CMN BSP supports open-source OP-TEE built from [Renesas-SST/rz_optee_os](https://github.com/Renesas-SST/rz_optee_os).
 
-Two firmware binaries are built per Yocto build run and packed into the FIP by `firmware_compile.py`:
+The common RZ boards use firmware binaries packed into the FIP by `firmware_compile.py`. Sparrow-Hawk (R-Car V4H) uses a direct U-Boot handoff and keeps its firmware in the root filesystem `/boot` directory:
 
 | Binary | SoC Family | Platform Flavor |
 | ------ | ---------- | --------------- |
 | `tee-rz-cmn-g2l.bin` | RZ/G2L, RZ/V2L | `g2l_smarc_2` — NS DTB injected via U-Boot (`CFG_DT=y`) |
 | `tee-rz-cmn-v2h.bin` | RZ/V2H | `v2h_evk_1` — static DT node in kernel (`CFG_DT=n`) |
+| `tee-raw-sparrow-hawk.bin` | R-Car V4H Sparrow-Hawk | `rcar_gen4` — raw BL32 loaded by U-Boot from `/boot` (`CFG_DT=n`) |
 
 **Enable OP-TEE**
 
@@ -2189,6 +2189,51 @@ After a successful boot, verify OP-TEE is running:
 ```shell
 root@rz-cmn:~# ls /dev/tee*
 /dev/tee0  /dev/teepriv0
+```
+
+**R-Car V4H Sparrow-Hawk Direct OP-TEE**
+
+V4H does not put OP-TEE in the FIP. Build the direct profile with the U-Boot branch that includes the V4H direct OP-TEE support:
+
+```shell
+ENABLE_SPD_OPTEE = "0"
+ENABLE_V4H_DIRECT_OPTEE = "1"
+bitbake core-image-weston
+```
+
+The resulting WIC contains the following V4H-only payloads under `/boot` on
+both FAT partition 1 and rootfs partition 2:
+
+| Path | Purpose |
+| ---- | ------- |
+| `/boot/bl31-sparrow-hawk.bin` | TF-A BL31 secure monitor |
+| `/boot/tee-raw-sparrow-hawk.bin` | OP-TEE BL32 payload |
+| `/boot/v4h-direct-optee.env` | U-Boot load addresses, sizes, and CRC32 values |
+| `/boot/v4h-direct-optee.manifest` | Human-readable SHA-256 manifest |
+
+Normal `boot` and `run mmc_do_boot` keep the standard Linux path and do not
+load OP-TEE. To test the direct V4H secure-world handoff, stop autoboot and
+run it explicitly:
+
+```shell
+=> run tfa_boot
+```
+
+`tfa_boot` loads the manifest, BL31, OP-TEE, kernel, and DTB from FAT
+partition 1, verifies payload size and CRC32, calls `tfa_prepare`, then boots
+Linux. If FAT recovery files are unavailable, use the rootfs copy explicitly:
+
+```shell
+=> run tfa_boot_ext4
+```
+
+Do not enable `ENABLE_SPD_OPTEE` together with `ENABLE_V4H_DIRECT_OPTEE`; the former is the FIP-based flow for the existing RZ boards, while the latter is the V4H manually selected direct flow. After boot, confirm the secure-world driver and client are available:
+
+```shell
+root@rz-cmn:~# dmesg | grep -i optee
+root@rz-cmn:~# ls -l /dev/tee*
+root@rz-cmn:~# tee-supplicant &
+root@rz-cmn:~# xtest
 ```
 
 **Disable OP-TEE**
