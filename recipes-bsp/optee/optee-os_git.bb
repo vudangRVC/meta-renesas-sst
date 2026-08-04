@@ -22,7 +22,7 @@ SRCREV_FORMAT = "rz_v4h"
 
 COMPATIBLE_MACHINE = "rz-cmn"
 S = "${WORKDIR}/git-rz"
-V4H_S = "${WORKDIR}/git-v4h"
+V4H_S = "${UNPACKDIR}/git-v4h"
 
 PLATFORM = "rz"
 
