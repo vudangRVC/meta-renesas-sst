@@ -70,6 +70,7 @@ do_compile() {
             LSI=V4H \
             CFG_ARM64_core=y \
             CFG_DT=n \
+            SOURCE_DATE_EPOCH=${V4H_DIRECT_OPTEE_V4H_SOURCE_DATE_EPOCH} \
             CROSS_COMPILE64=${TARGET_PREFIX} \
             O=${V4H_S}/out-v4h
     fi
