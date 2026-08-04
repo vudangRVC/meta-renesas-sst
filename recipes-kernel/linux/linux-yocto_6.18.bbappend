@@ -123,7 +123,7 @@ DEVICETREE_NAME:rz-cmn = " \
 	rzv2h-rdk-ver1 \
 	rs-g2l100 \
 	imdt-v2h-sbc \
-	r8a779g3-sparrow-hawk \
+	sparrow-hawk \
 "
 
 # Supported device tree and device tree overlays
