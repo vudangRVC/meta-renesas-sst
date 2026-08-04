@@ -104,10 +104,9 @@ COMPATIBLE_MACHINE = "rz-cmn"
 # (v2.14 release) and staged through /boot for the rootfs payload package.
 #==============================================================================
 SRC_URI:append:rz-cmn = " \
-    git://github.com/ARM-software/arm-trusted-firmware.git;name=sparrowhawk;branch=${SPARROWHAWK_BRANCH};protocol=https;destsuffix=git/sparrowhawk \
-    file://0001-rcar4-fix-opteed-runtime-setup-build.patch;patchdir=../sparrowhawk \
+    git://github.com/vudangRVC/rz-atf-sst.git;name=sparrowhawk;branch=${SPARROWHAWK_BRANCH};protocol=https;destsuffix=git/sparrowhawk \
 "
-SPARROWHAWK_BRANCH = "master"
+SPARROWHAWK_BRANCH = "master-quoctrinh"
 SRCREV_sparrowhawk = "${AUTOREV}"
 SRCREV_FORMAT = "machine_sparrowhawk"
 
