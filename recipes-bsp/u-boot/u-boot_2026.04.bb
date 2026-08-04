@@ -9,8 +9,8 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
 
 # u-boot source code repository
-UBOOT_URL = "git://github.com/Renesas-SST/u-boot.git"
-BRANCH = "styhead/rz-cmn"
+UBOOT_URL = "git://github.com/vudangRVC/u-boot-sst.git"
+BRANCH = "styhead/rz-cmn-sparrowhawk-quoctrinh"
 SRC_URI = "${UBOOT_URL};name=machine;protocol=https;branch=${BRANCH}"
 SRCREV_machine = "${AUTOREV}"
 
@@ -27,7 +27,7 @@ DEVICETREE_NAME:rz-cmn = " \
     rzv2h-rdk-ver1 \
     rs-g2l100 \
     imdt-v2h-sbc \
-    r8a779g3-sparrow-hawk \
+    sparrow-hawk \
 "
 
 # Install u-boot-nodtb.bin and u-boot device tree to temp location

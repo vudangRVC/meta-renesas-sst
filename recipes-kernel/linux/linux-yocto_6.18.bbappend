@@ -6,8 +6,8 @@ inherit kernel
 inherit kernel-devicetree
 inherit renesas-kernel-variants
 
-KBRANCH = "styhead/rz-cmn"
-KBRANCH_RT = "styhead/rz-cmn-rt"
+KBRANCH = "styhead/rz-cmn-3.4-quoctrinh"
+KBRANCH_RT = "styhead/rz-cmn-3.4-quoctrinh"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}:"
 
@@ -30,6 +30,7 @@ SRC_URI:append:rz-cmn = " \
 	${@bb.utils.contains('DOCKER_SUPPORT', '1', 'file://common/docker.cfg', '', d)} \
 	${@bb.utils.contains('DISTRO', 'ubuntu-tiny', 'file://common/docker.cfg', '', d)} \
 	${@oe.utils.conditional("OPTIMIZE_KERN", "1", "file://common/optimize.cfg", "", d)} \
+	${@oe.utils.conditional("ENABLE_V4H_DIRECT_OPTEE", "1", "file://rz-cmn/common/v4h-optee.cfg", "", d)} \
 "
 
 # RZ/G2L-SBC specific config fragments

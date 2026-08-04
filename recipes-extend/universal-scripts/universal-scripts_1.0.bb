@@ -3,8 +3,8 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
 
 URL = "git://github.com/Renesas-SST/rz-utils.git"
-BRANCH = "styhead/rz-cmn"
-SRCREV = "${AUTOREV}"
+BRANCH = "quoctrinh-optee-v4h"
+SRCREV = "6d3da79aefd1fe16a20be82a505c8ae083d4b18b"
 
 SRC_URI = "${URL};protocol=https;branch=${BRANCH}"
 
