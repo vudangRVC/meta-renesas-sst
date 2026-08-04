@@ -107,7 +107,7 @@ SRC_URI:append:rz-cmn = " \
     git://github.com/vudangRVC/rz-atf-sst.git;name=sparrowhawk;branch=${SPARROWHAWK_BRANCH};protocol=https;destsuffix=git/sparrowhawk \
 "
 SPARROWHAWK_BRANCH = "master-quoctrinh"
-SRCREV_sparrowhawk = "${AUTOREV}"
+SRCREV_sparrowhawk = "${V4H_DIRECT_TFA_V4H_SRCREV}"
 SRCREV_FORMAT = "machine_sparrowhawk"
 
 SPARROWHAWK_S = "${WORKDIR}/git/sparrowhawk"

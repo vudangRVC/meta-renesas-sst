@@ -30,8 +30,10 @@ python do_generate_manifest () {
 
     boot = os.path.join(d.getVar('D'), 'boot')
     payloads = (
-        ('bl31', 'bl31-sparrow-hawk.bin', 0x46400000, 0x22200),
-        ('tee', 'tee-raw-sparrow-hawk.bin', 0x44100000, 0x300000),
+        ('bl31', 'bl31-sparrow-hawk.bin', 0x46400000,
+         int(d.getVar('V4H_DIRECT_BL31_SIZE'), 0), d.getVar('V4H_DIRECT_BL31_CRC32')),
+        ('tee', 'tee-raw-sparrow-hawk.bin', 0x44100000,
+         int(d.getVar('V4H_DIRECT_TEE_SIZE'), 0), d.getVar('V4H_DIRECT_TEE_CRC32')),
     )
     manifest = {
         'format': 2,
@@ -42,22 +44,29 @@ python do_generate_manifest () {
             'target_sys': d.getVar('TARGET_SYS'),
             'source_date_epoch': d.getVar('SOURCE_DATE_EPOCH'),
         },
-        'source_policy': 'recipe branch heads (AUTOREV)',
+        'source_policy': 'pinned verified revisions',
+        'sources': {
+            'tfa_v4h': d.getVar('V4H_DIRECT_TFA_V4H_SRCREV'),
+            'optee_v4h': d.getVar('V4H_DIRECT_OPTEE_V4H_SRCREV'),
+        },
         'payloads': {},
     }
 
-    for key, name, address, maximum in payloads:
+    for key, name, address, expected_size, expected_crc in payloads:
         path = os.path.join(boot, name)
         with open(path, 'rb') as payload:
             data = payload.read()
         size = len(data)
-        if not size or size > maximum:
-            bb.fatal('%s has invalid size %d (maximum %#x)' % (name, size, maximum))
+        crc32 = '%08x' % (binascii.crc32(data) & 0xffffffff)
+        if size != expected_size or crc32 != expected_crc:
+            bb.fatal('%s does not match the verified V4H contract: '
+                     'size=%#x expected=%#x crc32=%s expected=%s' %
+                     (name, size, expected_size, crc32, expected_crc))
         manifest['payloads'][key] = {
             'file': '/boot/' + name,
             'load_address': '0x%08x' % address,
             'size': size,
-            'crc32': '%08x' % (binascii.crc32(data) & 0xffffffff),
+            'crc32': crc32,
             'sha256': hashlib.sha256(data).hexdigest(),
         }
 

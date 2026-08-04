@@ -4,7 +4,7 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda
 
 URL = "git://github.com/Renesas-SST/rz-utils.git"
 BRANCH = "quoctrinh-optee-v4h"
-SRCREV = "6d3da79aefd1fe16a20be82a505c8ae083d4b18b"
+SRCREV = "3f00543ddede7c0ca9f82bb6241ac23e41c9e263"
 
 SRC_URI = "${URL};protocol=https;branch=${BRANCH}"
 
