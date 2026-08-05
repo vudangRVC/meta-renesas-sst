@@ -67,13 +67,11 @@ do_deploy() {
         install -m 644 ${D}/boot/dtbs/${dtb_name}.dtb ${DEPLOYDIR}/target/images/u-boot/dtbs
     done
 
-    if [ "${ENABLE_V4H_DIRECT_OPTEE}" = "1" ]; then
-        if [ ! -s "${KCONFIG_CONFIG_ROOTDIR}/sa0.bin" ]; then
-            bbfatal "V4H SA0+SPL image was not built"
-        fi
-        install -m 0644 ${KCONFIG_CONFIG_ROOTDIR}/sa0.bin \
-            ${DEPLOYDIR}/target/images/u-boot/sa0.bin
+    if [ ! -s "${KCONFIG_CONFIG_ROOTDIR}/sa0.bin" ]; then
+        bbfatal "V4H SA0+SPL image was not built"
     fi
+    install -m 0644 ${KCONFIG_CONFIG_ROOTDIR}/sa0.bin \
+        ${DEPLOYDIR}/target/images/u-boot/sa0.bin
 }
 
 addtask deploy after do_install
