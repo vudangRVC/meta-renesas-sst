@@ -2202,30 +2202,28 @@ bitbake core-image-weston
 ```
 
 The resulting WIC contains the following V4H-only payloads under `/boot` on
-both FAT partition 1 and rootfs partition 2:
+rootfs partition 2:
 
 | Path | Purpose |
 | ---- | ------- |
 | `/boot/bl31-sparrow-hawk.bin` | TF-A BL31 secure monitor |
 | `/boot/tee-raw-sparrow-hawk.bin` | OP-TEE BL32 payload |
-| `/boot/v4h-direct-optee.env` | U-Boot load addresses, sizes, and CRC32 values |
-| `/boot/v4h-direct-optee.manifest` | Human-readable SHA-256 manifest |
 
 Normal `boot` and `run mmc_do_boot` keep the standard Linux path and do not
 load OP-TEE. To test the direct V4H secure-world handoff, stop autoboot and
-run it explicitly:
+run each command explicitly:
 
 ```shell
-=> run tfa_boot
+=> ext4load mmc 0:2 0x46400000 /boot/bl31-sparrow-hawk.bin
+=> crc32 -v 0x46400000 0x20040 af9584fe
+=> ext4load mmc 0:2 0x44100000 /boot/tee-raw-sparrow-hawk.bin
+=> crc32 -v 0x44100000 0x65cd0 82b95c35
+=> tfa_prepare 0x46400000 0x20040 0x44100000 0x65cd0
+=> run mmc_do_boot
 ```
 
-`tfa_boot` loads the manifest, BL31, OP-TEE, kernel, and DTB from FAT
-partition 1, verifies payload size and CRC32, calls `tfa_prepare`, then boots
-Linux. If FAT recovery files are unavailable, use the rootfs copy explicitly:
-
-```shell
-=> run tfa_boot_ext4
-```
+Continue only when both CRC32 checks succeed. The recipe rejects payloads
+that do not match these verified sizes and CRC32 values.
 
 Do not enable `ENABLE_SPD_OPTEE` together with `ENABLE_V4H_DIRECT_OPTEE`; the former is the FIP-based flow for the existing RZ boards, while the latter is the V4H manually selected direct flow. After boot, confirm the secure-world driver and client are available:
 
