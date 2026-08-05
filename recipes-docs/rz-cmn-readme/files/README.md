@@ -2191,7 +2191,15 @@ root@rz-cmn:~# ls /dev/tee*
 /dev/tee0  /dev/teepriv0
 ```
 
-**R-Car V4H Sparrow-Hawk Direct OP-TEE**
+**R-Car V4H Sparrow-Hawk TF-A and optional Direct OP-TEE**
+
+Sparrow-Hawk always loads a BL31 secure monitor before Linux so that TF-A
+provides PSCI CPU_ON and all four Cortex-A76 cores can start. This normal path
+uses `/boot/bl31-sparrow-hawk-nooptee.bin` and does not start OP-TEE. U-Boot
+loads and validates it automatically when `boot` or `run mmc_do_boot` is used.
+
+OP-TEE remains optional. Enable the direct profile only when the BL32 payload,
+client, and tests are required:
 
 V4H does not put OP-TEE in the FIP. Build the direct profile with the U-Boot branch that includes the V4H direct OP-TEE support:
 
@@ -2202,7 +2210,7 @@ bitbake core-image-weston
 ```
 
 The resulting WIC contains the following V4H-only payloads under `/boot` on
-both FAT partition 1 and rootfs partition 2:
+rootfs partition 2:
 
 | Path | Purpose |
 | ---- | ------- |
@@ -2211,21 +2219,23 @@ both FAT partition 1 and rootfs partition 2:
 | `/boot/v4h-direct-optee.env` | U-Boot load addresses, sizes, and CRC32 values |
 | `/boot/v4h-direct-optee.manifest` | Human-readable SHA-256 manifest |
 
-Normal `boot` and `run mmc_do_boot` keep the standard Linux path and do not
-load OP-TEE. To test the direct V4H secure-world handoff, stop autoboot and
-run it explicitly:
+Normal `boot` and `run mmc_do_boot` use the BL31-only path and do not load
+OP-TEE. To test the direct V4H secure-world handoff, stop autoboot, import the
+generated metadata, and load both payloads explicitly:
 
 ```shell
-=> run tfa_boot
+=> ext4load mmc 0:2 ${env_addr} /boot/v4h-direct-optee.env
+=> env import -t ${env_addr} ${filesize}
+=> ext4load mmc 0:2 ${bl31_addr} ${bl31_file}
+=> test 0x${filesize} -eq ${bl31_size} && crc32 -v ${bl31_addr} ${filesize} ${bl31_crc32}
+=> ext4load mmc 0:2 ${tee_addr} ${tee_file}
+=> test 0x${filesize} -eq ${tee_size} && crc32 -v ${tee_addr} ${filesize} ${tee_crc32}
+=> tfa_prepare ${bl31_addr} ${bl31_size} ${tee_addr} ${tee_size}
+=> run mmc_do_boot
 ```
 
-`tfa_boot` loads the manifest, BL31, OP-TEE, kernel, and DTB from FAT
-partition 1, verifies payload size and CRC32, calls `tfa_prepare`, then boots
-Linux. If FAT recovery files are unavailable, use the rootfs copy explicitly:
-
-```shell
-=> run tfa_boot_ext4
-```
+The size comparison prefixes `${filesize}` with `0x` because `ext4load`
+returns it as hexadecimal text without a prefix.
 
 Do not enable `ENABLE_SPD_OPTEE` together with `ENABLE_V4H_DIRECT_OPTEE`; the former is the FIP-based flow for the existing RZ boards, while the latter is the V4H manually selected direct flow. After boot, confirm the secure-world driver and client are available:
 

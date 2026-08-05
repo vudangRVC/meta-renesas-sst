@@ -69,9 +69,12 @@ do_install() {
     done
     install -m 644 ${S}/build/${PLATFORM}/release/bl31.bin ${D}/boot/bl31-${MACHINE}.bin
     install -m 644 ${S}/build/${PLATFORM}/release/fdts/*.dtb ${D}/boot/fdts
+    install -m 0644 \
+        ${SPARROWHAWK_BUILD_NONE}/${SPARROWHAWK_PLATFORM}/release/bl31.bin \
+        ${D}/boot/bl31-sparrow-hawk-nooptee.bin
     if [ "${ENABLE_V4H_DIRECT_OPTEE}" = "1" ]; then
         install -m 0644 \
-            ${SPARROWHAWK_S}/build/${SPARROWHAWK_PLATFORM}/release/bl31.bin \
+            ${SPARROWHAWK_BUILD_OPTEE}/${SPARROWHAWK_PLATFORM}/release/bl31.bin \
             ${D}/boot/bl31-sparrow-hawk.bin
     fi
 }
@@ -84,7 +87,9 @@ do_deploy() {
     rm -f \
         ${DEPLOYDIR}/target/images/atf/bl31-sparrowhawk.bin \
         ${DEPLOYDIR}/target/images/atf/bl31-sparrowhawk.elf \
-        ${DEPLOYDIR}/target/images/atf/bl31-sparrowhawk.srec
+        ${DEPLOYDIR}/target/images/atf/bl31-sparrowhawk.srec \
+        ${DEPLOYDIR}/target/images/atf/bl31-sparrow-hawk-nooptee.bin \
+        ${DEPLOYDIR}/target/images/atf/bl31-sparrow-hawk.bin
 
     # Copy bl2, bl31 and fdts to deploy folder
     for method in ${BL2_METHODS}; do
@@ -92,6 +97,12 @@ do_deploy() {
     done
     install -m 0644 ${D}/boot/bl31-${MACHINE}.bin ${DEPLOYDIR}/target/images/atf/bl31-${MACHINE}.bin
     install -m 0644 ${D}/boot/fdts/*.dtb ${DEPLOYDIR}/target/images/atf/fdts
+    install -m 0644 ${D}/boot/bl31-sparrow-hawk-nooptee.bin \
+        ${DEPLOYDIR}/target/images/atf/bl31-sparrow-hawk-nooptee.bin
+    if [ "${ENABLE_V4H_DIRECT_OPTEE}" = "1" ]; then
+        install -m 0644 ${D}/boot/bl31-sparrow-hawk.bin \
+            ${DEPLOYDIR}/target/images/atf/bl31-sparrow-hawk.bin
+    fi
 }
 
 addtask deploy after do_install
@@ -113,7 +124,8 @@ SRCREV_FORMAT = "machine_sparrowhawk"
 SPARROWHAWK_S = "${WORKDIR}/git/sparrowhawk"
 SPARROWHAWK_PLATFORM = "rcar_gen4"
 SPARROWHAWK_OPT = "LSI=V4H CTX_INCLUDE_AARCH32_REGS=0 MBEDTLS_COMMON_MK=1 PTP_NONSECURE_ACCESS=1 LOG_LEVEL=20 DEBUG=0 ENABLE_ASSERTIONS=0 E=0"
-SPARROWHAWK_SPD = "${@oe.utils.conditional('ENABLE_V4H_DIRECT_OPTEE', '1', 'opteed', 'none', d)}"
+SPARROWHAWK_BUILD_NONE = "${B}/sparrowhawk-none"
+SPARROWHAWK_BUILD_OPTEE = "${B}/sparrowhawk-optee"
 
 # Build BL31 for the Sparrow-Hawk (V4H) companion SoC after the main build.
 # Uses ${MAKE} directly (not oe_runmake) since oe_runmake always injects
@@ -121,6 +133,11 @@ SPARROWHAWK_SPD = "${@oe.utils.conditional('ENABLE_V4H_DIRECT_OPTEE', '1', 'opte
 # and would conflict with the sparrowhawk platform/targets here.
 do_compile:append() {
     cd ${SPARROWHAWK_S}
-    ${MAKE} distclean
-    ${MAKE} bl31 PLAT=${SPARROWHAWK_PLATFORM} SPD=${SPARROWHAWK_SPD} MBEDTLS_COMMON_MK=1 ${SPARROWHAWK_OPT}
+    rm -rf ${SPARROWHAWK_BUILD_NONE} ${SPARROWHAWK_BUILD_OPTEE}
+    ${MAKE} bl31 PLAT=${SPARROWHAWK_PLATFORM} SPD=none \
+        BUILD_BASE=${SPARROWHAWK_BUILD_NONE} ${SPARROWHAWK_OPT}
+    if [ "${ENABLE_V4H_DIRECT_OPTEE}" = "1" ]; then
+        ${MAKE} bl31 PLAT=${SPARROWHAWK_PLATFORM} SPD=opteed \
+            BUILD_BASE=${SPARROWHAWK_BUILD_OPTEE} ${SPARROWHAWK_OPT}
+    fi
 }
