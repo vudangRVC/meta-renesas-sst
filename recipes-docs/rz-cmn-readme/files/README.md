@@ -2216,26 +2216,23 @@ rootfs partition 2:
 | ---- | ------- |
 | `/boot/bl31-sparrow-hawk.bin` | TF-A BL31 secure monitor |
 | `/boot/tee-raw-sparrow-hawk.bin` | OP-TEE BL32 payload |
-| `/boot/v4h-direct-optee.env` | U-Boot load addresses, sizes, and CRC32 values |
-| `/boot/v4h-direct-optee.manifest` | Human-readable SHA-256 manifest |
 
 Normal `boot` and `run mmc_do_boot` use the BL31-only path and do not load
-OP-TEE. To test the direct V4H secure-world handoff, stop autoboot, import the
-generated metadata, and load both payloads explicitly:
+OP-TEE. To test the direct V4H secure-world handoff, stop autoboot and load
+both verified payloads explicitly:
 
 ```shell
-=> ext4load mmc 0:2 ${env_addr} /boot/v4h-direct-optee.env
-=> env import -t ${env_addr} ${filesize}
-=> ext4load mmc 0:2 ${bl31_addr} ${bl31_file}
-=> test 0x${filesize} -eq ${bl31_size} && crc32 -v ${bl31_addr} ${filesize} ${bl31_crc32}
-=> ext4load mmc 0:2 ${tee_addr} ${tee_file}
-=> test 0x${filesize} -eq ${tee_size} && crc32 -v ${tee_addr} ${filesize} ${tee_crc32}
-=> tfa_prepare ${bl31_addr} ${bl31_size} ${tee_addr} ${tee_size}
+=> ext4load mmc 0:2 0x46400000 /boot/bl31-sparrow-hawk.bin
+=> crc32 -v 0x46400000 0x20040 af9584fe
+=> ext4load mmc 0:2 0x44100000 /boot/tee-raw-sparrow-hawk.bin
+=> crc32 -v 0x44100000 0x65cd0 82b95c35
+=> tfa_prepare 0x46400000 0x20040 0x44100000 0x65cd0
 => run mmc_do_boot
 ```
 
-The size comparison prefixes `${filesize}` with `0x` because `ext4load`
-returns it as hexadecimal text without a prefix.
+Run each command separately and continue only when both CRC32 checks succeed.
+The recipe rejects payloads that do not match these verified sizes and CRC32
+values.
 
 Do not enable `ENABLE_SPD_OPTEE` together with `ENABLE_V4H_DIRECT_OPTEE`; the former is the FIP-based flow for the existing RZ boards, while the latter is the V4H manually selected direct flow. After boot, confirm the secure-world driver and client are available:
 
