@@ -20,7 +20,7 @@ do_install:append() {
 }
 
 # Executables have already have their symbols stripped
-INSANE_SKIP:${PN}:append = "already-stripped"
+INSANE_SKIP:${PN}:append = " already-stripped"
 
 FILES:${PN} = " \
     /usr/bin/ \

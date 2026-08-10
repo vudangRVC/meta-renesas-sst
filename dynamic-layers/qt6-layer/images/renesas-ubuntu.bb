@@ -54,6 +54,22 @@ IMAGE_INSTALL:append = "\
     hostapd \
 "
 
+
+# Camera stack: libcamera with R-Car Gen4 ISP / rkisp1 pipelines
+IMAGE_INSTALL:append = " \
+    libpisp \
+    libcamera \
+    libcamera-gst \
+    libcamera-pycamera \
+"
+
+# QoS stack: qos.ko driver, libqos library and qos_tp test tool
+IMAGE_INSTALL:append = " \
+    kernel-module-qos \
+    qosif-user-module \
+    qosif-tp-user-module \
+"
+
 # Add QT to rootfs
 IMAGE_INSTALL:append = " packagegroup-qt6 packagegroup-qt6-modules"
 

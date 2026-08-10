@@ -3,6 +3,8 @@ IMAGE_INSTALL:append = " \
 	packagegroup-multimedia-libs \
 	packagegroup-multimedia-kernel-modules \
 	packagegroup-wayland-community \
+	packagegroup-renesas-graphics \
 "
+
 # For GPU testing purposes
 IMAGE_INSTALL:append = " kmscube glmark2 apitrace"
