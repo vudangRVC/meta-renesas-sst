@@ -52,6 +52,7 @@ IMAGE_BOOT_FILES:rz-cmn = " \
     target/env/uEnv.txt;uEnv.txt \
     Readme.md;Readme.md \
     target/images/*.bin;uload-bootloader/ \
+    ${@oe.utils.conditional('ENABLE_V4H_DIRECT_OPTEE', '1', '', 'target/boot/bl31-sparrow-hawk.bin;bl31-sparrow-hawk.bin', d)} \
 "
 DEPENDS += " linux-yocto uenv platform-gen "
 

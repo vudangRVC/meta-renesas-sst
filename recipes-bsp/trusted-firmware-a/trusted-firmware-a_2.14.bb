@@ -60,7 +60,8 @@ LD[unexport] = "1"
 #   - FCONF device trees (dtbs)
 EXTRA_OEMAKE = "PLAT=${PLATFORM} ${EXTRA_FLAGS} LD=${TARGET_PREFIX}ld.bfd bl2-all bl31 dtbs"
 
-# Install bl2.bin and bl31.bin to boot folder and rename
+# Install bl2.bin and bl31.bin to boot folder and rename.
+# Use one canonical Sparrow-Hawk filename for either TF-A build profile.
 do_install() {
     install -d ${D}/boot/fdts
 
@@ -69,20 +70,23 @@ do_install() {
     done
     install -m 644 ${S}/build/${PLATFORM}/release/bl31.bin ${D}/boot/bl31-${MACHINE}.bin
     install -m 644 ${S}/build/${PLATFORM}/release/fdts/*.dtb ${D}/boot/fdts
-    install -m 0644 \
-        ${SPARROWHAWK_BUILD_NONE}/${SPARROWHAWK_PLATFORM}/release/bl31.bin \
-        ${D}/boot/bl31-sparrow-hawk-nooptee.bin
     if [ "${ENABLE_V4H_DIRECT_OPTEE}" = "1" ]; then
         install -m 0644 \
             ${SPARROWHAWK_BUILD_OPTEE}/${SPARROWHAWK_PLATFORM}/release/bl31.bin \
+            ${D}/boot/bl31-sparrow-hawk.bin
+    else
+        install -m 0644 \
+            ${SPARROWHAWK_BUILD_NONE}/${SPARROWHAWK_PLATFORM}/release/bl31.bin \
             ${D}/boot/bl31-sparrow-hawk.bin
     fi
 }
 
 # Deploy bin file to deploy dir
 do_deploy() {
-    # Create deploy folder
+    # Keep the Sparrow-Hawk BL31 outside the ATF release directory. target/boot
+    # is staging for the WIC FAT partition when direct OP-TEE is disabled.
     install -d ${DEPLOYDIR}/target/images/atf/fdts
+    install -d ${DEPLOYDIR}/target/boot
 
     rm -f \
         ${DEPLOYDIR}/target/images/atf/bl31-sparrowhawk.bin \
@@ -97,12 +101,8 @@ do_deploy() {
     done
     install -m 0644 ${D}/boot/bl31-${MACHINE}.bin ${DEPLOYDIR}/target/images/atf/bl31-${MACHINE}.bin
     install -m 0644 ${D}/boot/fdts/*.dtb ${DEPLOYDIR}/target/images/atf/fdts
-    install -m 0644 ${D}/boot/bl31-sparrow-hawk-nooptee.bin \
-        ${DEPLOYDIR}/target/images/atf/bl31-sparrow-hawk-nooptee.bin
-    if [ "${ENABLE_V4H_DIRECT_OPTEE}" = "1" ]; then
-        install -m 0644 ${D}/boot/bl31-sparrow-hawk.bin \
-            ${DEPLOYDIR}/target/images/atf/bl31-sparrow-hawk.bin
-    fi
+    install -m 0644 ${D}/boot/bl31-sparrow-hawk.bin \
+        ${DEPLOYDIR}/target/boot/bl31-sparrow-hawk.bin
 }
 
 addtask deploy after do_install
