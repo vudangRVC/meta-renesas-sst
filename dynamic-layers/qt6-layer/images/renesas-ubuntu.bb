@@ -60,6 +60,13 @@ IMAGE_INSTALL:append = " packagegroup-qt6 packagegroup-qt6-modules"
 # Add weston to rootfs
 CORE_IMAGE_BASE_INSTALL += "weston"
 
+# PowerVR (Renesas GSX) userspace GPU stack for rz-cmn (Sparrow Hawk / V4H):
+# the proprietary libEGL/libGLESv2 + wayland-kms/wsegl + libgbm libraries.
+IMAGE_INSTALL:append:rz-cmn = " packagegroup-renesas-graphics"
+
+# GPU benchmark tool used to verify PowerVR HW acceleration on-target.
+IMAGE_INSTALL:append = " glmark2"
+
 # compatible machine comes with linux-yocto but not available in this build
 # so bring back these parameters
 COMPATIBLE_MACHINE = "^(aarch64|rz-cmn)$"

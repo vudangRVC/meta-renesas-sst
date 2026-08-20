@@ -6,8 +6,8 @@ inherit kernel
 inherit kernel-devicetree
 inherit renesas-kernel-variants
 
-KBRANCH = "styhead/rz-cmn"
-KBRANCH_RT = "styhead/rz-cmn-rt"
+KBRANCH = "styhead/rz-cmn-3.4"
+KBRANCH_RT = "styhead/rz-cmn-3.4-rt"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}:"
 
@@ -144,6 +144,7 @@ KERNEL_DEVICETREE:append:rz-cmn = " \
 	renesas/overlays/imdt-v2h-sbc-1.0-cru-csi23-ar1335.dtbo \
 	renesas/overlays/sparrow-hawk-1.0-cru-csi-j1-imx219.dtbo \
 	renesas/overlays/sparrow-hawk-1.0-cru-csi-j2-imx219.dtbo \
+	renesas/overlays/sparrow-hawk-1.0-uio.dtbo \
 "
 
 # Override the dtc flags to support dtbo build in kernel-devicetree.bbclass
